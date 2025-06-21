@@ -11,3 +11,6 @@ windowHeight: 600.0
 
 # Behavior
 skipTaskbar: true
+
+# Window Level (normal, alwaysOnTop, alwaysBelow)
+windowLevel: alwaysBelow

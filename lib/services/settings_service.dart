@@ -47,14 +47,16 @@ class SettingsService {
       final yamlMap = loadYaml(yamlString) as Map;
       final settingsMap = Map<String, dynamic>.from(yamlMap);
       _settings = AppSettings.fromMap(settingsMap);
-
-      // Create local copy for user to customize
-      await _createLocalSettingsFile(localFile, yamlString);
+      // Only create local copy if user doesn't have one yet
+      // This allows users to customize settings locally
+      debugPrint(
+        'Settings loaded from assets. Local file can be created for customization.',
+      );
     } catch (e) {
       debugPrint('Assets settings not found, using defaults: $e');
       _settings = const AppSettings();
 
-      // Create example settings file
+      // Create example settings file only if none exists
       await _createExampleSettingsFile(localFile);
     }
   }
@@ -64,17 +66,6 @@ class SettingsService {
     // Use current directory for local settings file
     final currentDir = Directory.current;
     return File('${currentDir.path}/$_localFileName');
-  }
-
-  /// Create local copy of settings file for user customization
-  Future<void> _createLocalSettingsFile(File file, String content) async {
-    try {
-      await file.writeAsString(content);
-      debugPrint('Local settings file created at: ${file.path}');
-      debugPrint('You can now customize settings by editing this file.');
-    } catch (e) {
-      debugPrint('Error creating local settings file: $e');
-    }
   }
 
   /// Create example settings file for user reference
@@ -103,6 +94,9 @@ windowHeight: ${exampleSettings.windowHeight}
 
 # Behavior
 skipTaskbar: ${exampleSettings.skipTaskbar}
+
+# Window Level (normal, alwaysOnTop, alwaysBelow)
+windowLevel: normal
 ''';
 
       await file.writeAsString(yamlContent);
