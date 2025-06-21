@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:custom_launcher/models/app_settings.dart';
 
 /// Home page widget for Custom Launcher
 /// Displays main UI with system tray information
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title, required this.onHideToTray});
+  const HomePage({
+    super.key,
+    required this.title,
+    required this.onHideToTray,
+    required this.settings,
+  });
 
   final String title;
   final Future<void> Function() onHideToTray;
+  final AppSettings settings;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -17,7 +24,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary
+            .withValues(alpha: widget.settings.appBarOpacity),
         title: Text(widget.title),
         actions: [
           IconButton(
@@ -29,6 +37,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      backgroundColor: Colors.transparent,
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
