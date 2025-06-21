@@ -5,25 +5,24 @@ import 'dart:io';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize window manager for desktop platforms
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    await windowManager.ensureInitialized();
-    WindowOptions windowOptions = const WindowOptions(
+
+  // Initialize window manager for desktop
+  await windowManager.ensureInitialized();
+
+  windowManager.waitUntilReadyToShow(
+    const WindowOptions(
       size: Size(800, 600),
       center: true,
       backgroundColor: Colors.transparent,
-      skipTaskbar: true, // This prevents showing in taskbar
+      skipTaskbar: true,
       titleBarStyle: TitleBarStyle.hidden,
-    );
-
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
+    ),
+    () async {
       await windowManager.show();
       await windowManager.focus();
-      await windowManager.setPreventClose(
-        true,
-      ); // Prevent close to enable hiding to tray
-    });
-  }
+      await windowManager.setPreventClose(true);
+    },
+  );
 
   runApp(const MyApp());
 }
@@ -52,25 +51,19 @@ class _MyAppState extends State<MyApp> with WindowListener {
   }
 
   Future<void> _initSystemTray() async {
-    // NOTE [Copilot]: Create a simple icon programmatically for demo
-    // For production, use proper platform-specific icon files
-
     try {
       // Use platform-appropriate icon files
       String iconPath = Platform.isWindows
-          ? 'assets/icons/app_icon.ico' // Windows ICO format
+          ? 'assets/icons/app_icon.ico'
           : Platform.isMacOS
-          ? 'assets/icons/app_icon.icns' // macOS ICNS format
-          : 'assets/icons/app_icon.png'; // Linux PNG format
+          ? 'assets/icons/app_icon.icns'
+          : 'assets/icons/app_icon.png';
 
-      // Initialize the system tray
       await _systemTray.initSystemTray(
         title: "Custom Launcher",
         iconPath: iconPath,
         toolTip: "Custom Launcher - Click to show/hide",
-      );
-
-      // Create context menu
+      ); // Create context menu
       final Menu menu = Menu();
       await menu.buildFrom([
         MenuItemLabel(
@@ -88,12 +81,11 @@ class _MyAppState extends State<MyApp> with WindowListener {
         ),
       ]);
 
-      // Set context menu
-      await _systemTray.setContextMenu(menu);
-
-      // Register system tray event
+      await _systemTray.setContextMenu(
+        menu,
+      ); // Register system tray event handlers
       _systemTray.registerSystemTrayEventHandler((eventName) {
-        debugPrint("eventName: $eventName");
+        debugPrint("System tray event: $eventName");
         if (eventName == kSystemTrayEventClick) {
           _toggleWindow();
         } else if (eventName == kSystemTrayEventRightClick) {
@@ -130,7 +122,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowClose() async {
-    // Hide window instead of closing when user clicks X
+    // Hide to tray instead of closing when user clicks X
     bool isPreventClose = await windowManager.isPreventClose();
     if (isPreventClose) {
       await _hideWindow();
