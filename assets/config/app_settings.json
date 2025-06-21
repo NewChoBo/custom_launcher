@@ -8,5 +8,38 @@
   "windowLevel": "alwaysBelow",
   "horizontalPosition": "center",
   "verticalPosition": "bottom",
-  "monitorIndex": 1
+  "monitorIndex": 1,
+  "launcherItems": [
+    {
+      "id": "test-notepad",
+      "name": "Notepad",
+      "path": "C:\\Windows\\System32\\notepad.exe",
+      "itemType": "executable",
+      "position": {
+        "x": 50.0,
+        "y": 50.0,
+        "gridRow": 0,
+        "gridColumn": 0
+      },
+      "isVisible": true
+    },
+    {
+      "id": "test-google",
+      "name": "Google",
+      "path": "https://www.google.com",
+      "itemType": "url",
+      "position": {
+        "x": 150.0,
+        "y": 50.0,
+        "gridRow": 0,
+        "gridColumn": 1
+      },
+      "isVisible": true
+    }
+  ],
+  "layoutMode": "grid",
+  "textPosition": "below",
+  "clickBehavior": "singleClick",
+  "showIcons": true,
+  "showText": true
 }

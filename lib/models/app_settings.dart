@@ -1,3 +1,47 @@
+import 'package:custom_launcher/models/launcher_item.dart';
+
+/// Layout mode for launcher items
+enum LauncherLayoutMode {
+  /// Free positioning (drag and drop)
+  freeform,
+
+  /// Grid layout with fixed columns
+  grid,
+
+  /// Horizontal list
+  horizontalList,
+
+  /// Vertical list
+  verticalList,
+}
+
+/// Text position relative to icon
+enum TextPosition {
+  /// Text above icon
+  above,
+
+  /// Text below icon
+  below,
+
+  /// Text to the right of icon
+  right,
+
+  /// Text to the left of icon
+  left,
+
+  /// No text display
+  none,
+}
+
+/// Click behavior for launcher items
+enum ClickBehavior {
+  /// Single click to launch
+  singleClick,
+
+  /// Double click to launch
+  doubleClick,
+}
+
 /// Horizontal position for window placement
 enum HorizontalPosition {
   /// Position window on the left side of screen
@@ -47,6 +91,17 @@ class AppSettings {
   final VerticalPosition verticalPosition;
   final int monitorIndex; // 1, 2, 3, 4... or 0 for auto
 
+  // Launcher-specific settings
+  final List<LauncherItem> launcherItems;
+  final LauncherLayoutMode layoutMode;
+  final TextPosition textPosition;
+  final ClickBehavior clickBehavior;
+  final bool showIcons;
+  final bool showText;
+  final int gridColumns; // For grid layout mode
+  final double itemSpacing; // Spacing between items
+  final double iconSize; // Icon size in pixels
+
   const AppSettings({
     this.backgroundOpacity = 1.0,
     this.appBarOpacity = 1.0,
@@ -58,7 +113,17 @@ class AppSettings {
     this.horizontalPosition = HorizontalPosition.center,
     this.verticalPosition = VerticalPosition.center,
     this.monitorIndex = 1, // Default to first monitor
+    this.launcherItems = const [],
+    this.layoutMode = LauncherLayoutMode.grid,
+    this.textPosition = TextPosition.below,
+    this.clickBehavior = ClickBehavior.singleClick,
+    this.showIcons = true,
+    this.showText = true,
+    this.gridColumns = 4,
+    this.itemSpacing = 16.0,
+    this.iconSize = 48.0,
   });
+
   factory AppSettings.fromMap(Map<String, dynamic> map) {
     // Parse window level from string
     WindowLevel parseWindowLevel(String? value) {
@@ -101,8 +166,9 @@ class AppSettings {
         default:
           return VerticalPosition.center;
       }
-    } // Parse monitor index from string or number
+    }
 
+    // Parse monitor index from string or number
     int parseMonitorIndex(dynamic value) {
       if (value is int) {
         return value.clamp(0, 4); // 0 = auto, 1-4 = monitor numbers
@@ -129,6 +195,75 @@ class AppSettings {
         }
       }
       return 1; // Default to monitor 1
+    }
+
+    // Parse launcher layout mode from string
+    LauncherLayoutMode parseLayoutMode(String? value) {
+      switch (value?.toLowerCase()) {
+        case 'freeform':
+          return LauncherLayoutMode.freeform;
+        case 'grid':
+          return LauncherLayoutMode.grid;
+        case 'horizontallist':
+        case 'horizontal_list':
+          return LauncherLayoutMode.horizontalList;
+        case 'verticallist':
+        case 'vertical_list':
+          return LauncherLayoutMode.verticalList;
+        default:
+          return LauncherLayoutMode.grid;
+      }
+    }
+
+    // Parse text position from string
+    TextPosition parseTextPosition(String? value) {
+      switch (value?.toLowerCase()) {
+        case 'above':
+          return TextPosition.above;
+        case 'below':
+          return TextPosition.below;
+        case 'right':
+          return TextPosition.right;
+        case 'left':
+          return TextPosition.left;
+        case 'none':
+          return TextPosition.none;
+        default:
+          return TextPosition.below;
+      }
+    }
+
+    // Parse click behavior from string
+    ClickBehavior parseClickBehavior(String? value) {
+      switch (value?.toLowerCase()) {
+        case 'singleclick':
+        case 'single_click':
+        case 'single':
+          return ClickBehavior.singleClick;
+        case 'doubleclick':
+        case 'double_click':
+        case 'double':
+          return ClickBehavior.doubleClick;
+        default:
+          return ClickBehavior.singleClick;
+      }
+    } // Parse launcher items from list
+
+    List<LauncherItem> parseLauncherItems(dynamic value) {
+      if (value is! List) return [];
+
+      return value
+          .whereType<Map<String, dynamic>>()
+          .map((item) {
+            try {
+              return LauncherItem.fromJson(item);
+            } catch (e) {
+              // Skip invalid items
+              return null;
+            }
+          })
+          .whereType<LauncherItem>()
+          .toList();
     }
 
     // Parse window size (supports both absolute values and percentages)
@@ -180,8 +315,18 @@ class AppSettings {
       monitorIndex: parseMonitorIndex(
         map['monitorIndex'] ?? map['monitorTarget'],
       ),
+      launcherItems: parseLauncherItems(map['launcherItems']),
+      layoutMode: parseLayoutMode(map['layoutMode'] as String?),
+      textPosition: parseTextPosition(map['textPosition'] as String?),
+      clickBehavior: parseClickBehavior(map['clickBehavior'] as String?),
+      showIcons: map['showIcons'] as bool? ?? true,
+      showText: map['showText'] as bool? ?? true,
+      gridColumns: (map['gridColumns'] as num?)?.toInt() ?? 4,
+      itemSpacing: (map['itemSpacing'] as num?)?.toDouble() ?? 16.0,
+      iconSize: (map['iconSize'] as num?)?.toDouble() ?? 48.0,
     );
   }
+
   Map<String, dynamic> toMap() {
     // Convert window level to string
     String windowLevelToString(WindowLevel level) {
@@ -219,6 +364,46 @@ class AppSettings {
       }
     }
 
+    // Convert layout mode to string
+    String layoutModeToString(LauncherLayoutMode mode) {
+      switch (mode) {
+        case LauncherLayoutMode.freeform:
+          return 'freeform';
+        case LauncherLayoutMode.grid:
+          return 'grid';
+        case LauncherLayoutMode.horizontalList:
+          return 'horizontalList';
+        case LauncherLayoutMode.verticalList:
+          return 'verticalList';
+      }
+    }
+
+    // Convert text position to string
+    String textPositionToString(TextPosition position) {
+      switch (position) {
+        case TextPosition.above:
+          return 'above';
+        case TextPosition.below:
+          return 'below';
+        case TextPosition.right:
+          return 'right';
+        case TextPosition.left:
+          return 'left';
+        case TextPosition.none:
+          return 'none';
+      }
+    }
+
+    // Convert click behavior to string
+    String clickBehaviorToString(ClickBehavior behavior) {
+      switch (behavior) {
+        case ClickBehavior.singleClick:
+          return 'singleClick';
+        case ClickBehavior.doubleClick:
+          return 'doubleClick';
+      }
+    }
+
     return {
       'backgroundOpacity': backgroundOpacity,
       'appBarOpacity': appBarOpacity,
@@ -230,11 +415,20 @@ class AppSettings {
       'horizontalPosition': horizontalPositionToString(horizontalPosition),
       'verticalPosition': verticalPositionToString(verticalPosition),
       'monitorIndex': monitorIndex,
+      'launcherItems': launcherItems.map((item) => item.toJson()).toList(),
+      'layoutMode': layoutModeToString(layoutMode),
+      'textPosition': textPositionToString(textPosition),
+      'clickBehavior': clickBehaviorToString(clickBehavior),
+      'showIcons': showIcons,
+      'showText': showText,
+      'gridColumns': gridColumns,
+      'itemSpacing': itemSpacing,
+      'iconSize': iconSize,
     };
   }
 
   @override
   String toString() {
-    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, showAppBar: $showAppBar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex)';
+    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, showAppBar: $showAppBar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex, launcherItems: ${launcherItems.length} items)';
   }
 }
