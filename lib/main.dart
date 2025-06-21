@@ -7,7 +7,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize settings service
-  final settingsService = SettingsService();
+  final SettingsService settingsService = SettingsService();
   await settingsService.initialize();
 
   // Initialize window with settings
