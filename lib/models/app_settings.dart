@@ -41,6 +41,7 @@ class AppSettings {
   final String windowWidth; // Support both "800" and "80%" formats
   final String windowHeight; // Support both "600" and "50%" formats
   final bool skipTaskbar;
+  final bool showAppBar; // Control AppBar visibility
   final WindowLevel windowLevel;
   final HorizontalPosition horizontalPosition;
   final VerticalPosition verticalPosition;
@@ -52,6 +53,7 @@ class AppSettings {
     this.windowWidth = "800",
     this.windowHeight = "600",
     this.skipTaskbar = true,
+    this.showAppBar = true,
     this.windowLevel = WindowLevel.normal,
     this.horizontalPosition = HorizontalPosition.center,
     this.verticalPosition = VerticalPosition.center,
@@ -167,6 +169,7 @@ class AppSettings {
       windowWidth: parseWindowSize(map['windowWidth'], "800"),
       windowHeight: parseWindowSize(map['windowHeight'], "600"),
       skipTaskbar: map['skipTaskbar'] as bool? ?? true,
+      showAppBar: map['showAppBar'] as bool? ?? false,
       windowLevel: parseWindowLevel(map['windowLevel'] as String?),
       horizontalPosition: parseHorizontalPosition(
         map['horizontalPosition'] as String?,
@@ -222,6 +225,7 @@ class AppSettings {
       'windowWidth': windowWidth,
       'windowHeight': windowHeight,
       'skipTaskbar': skipTaskbar,
+      'showAppBar': showAppBar,
       'windowLevel': windowLevelToString(windowLevel),
       'horizontalPosition': horizontalPositionToString(horizontalPosition),
       'verticalPosition': verticalPositionToString(verticalPosition),
@@ -231,6 +235,6 @@ class AppSettings {
 
   @override
   String toString() {
-    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex)';
+    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, showAppBar: $showAppBar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex)';
   }
 }

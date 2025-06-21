@@ -4,6 +4,7 @@
   "windowWidth": "80%",
   "windowHeight": "40%",
   "skipTaskbar": true,
+  "showAppBar": false,
   "windowLevel": "alwaysBelow",
   "horizontalPosition": "center",
   "verticalPosition": "bottom",

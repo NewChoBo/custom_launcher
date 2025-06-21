@@ -23,38 +23,44 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary
-            .withValues(alpha: widget.settings.appBarOpacity),
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.minimize),
-            onPressed: () async {
-              await widget.onHideToTray();
-            },
-            tooltip: 'Hide to System Tray',
-          ),
-        ],
-      ),
+      appBar: widget.settings.showAppBar
+          ? AppBar(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary
+                  .withValues(alpha: widget.settings.appBarOpacity),
+              title: Text(widget.title),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.minimize),
+                  onPressed: () async {
+                    await widget.onHideToTray();
+                  },
+                  tooltip: 'Hide to System Tray',
+                ),
+              ],
+            )
+          : null,
       backgroundColor: Colors.transparent,
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.rocket_launch, size: 100, color: Colors.deepPurple),
-            SizedBox(height: 20),
-            Text(
+            const Icon(
+              Icons.rocket_launch,
+              size: 100,
+              color: Colors.deepPurple,
+            ),
+            const SizedBox(height: 20),
+            const Text(
               'Custom Launcher',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'Running in System Tray',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            SizedBox(height: 20),
-            Card(
+            const SizedBox(height: 20),
+            const Card(
               margin: EdgeInsets.all(16),
               child: Padding(
                 padding: EdgeInsets.all(16),

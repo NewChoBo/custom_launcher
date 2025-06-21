@@ -36,23 +36,17 @@ class SettingsService {
       final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
       _settings = AppSettings.fromMap(jsonMap);
       return;
-    } // If no local file, load from assets
+    }
+
+    // If no local file, load from assets
     try {
       debugPrint('Loading settings from assets: $_assetsPath');
       final jsonString = await rootBundle.loadString(_assetsPath);
       final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
       _settings = AppSettings.fromMap(jsonMap);
-      // Only create local copy if user doesn't have one yet
-      // This allows users to customize settings locally
-      debugPrint(
-        'Settings loaded from assets. Local file can be created for customization.',
-      );
     } catch (e) {
       debugPrint('Assets settings not found, using defaults: $e');
       _settings = const AppSettings();
-
-      // Create example settings file only if none exists
-      await _createExampleSettingsFile(localFile);
     }
   }
 
@@ -61,26 +55,5 @@ class SettingsService {
     // Use current directory for local settings file
     final currentDir = Directory.current;
     return File('${currentDir.path}/$_localFileName');
-  }
-
-  /// Create example settings file for user reference
-  Future<void> _createExampleSettingsFile(File file) async {
-    try {
-      const exampleSettings = AppSettings(
-        backgroundOpacity: 0.9,
-        appBarOpacity: 0.8,
-        windowWidth: "80%",
-        windowHeight: "60%",
-        skipTaskbar: true,
-      );
-
-      // Create JSON content
-      final jsonContent = jsonEncode(exampleSettings.toMap());
-
-      await file.writeAsString(jsonContent);
-      debugPrint('Example settings file created at: ${file.path}');
-    } catch (e) {
-      debugPrint('Error creating example settings file: $e');
-    }
   }
 }
