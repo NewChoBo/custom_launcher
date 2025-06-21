@@ -1,5 +1,5 @@
 {
-  "showAppBar": true,
+  "showAppBar": false,
   "appBarColor": "#2196F3",
   "appBarOpacity": 0.5,
   "backgroundColor": "#424242",
@@ -10,5 +10,5 @@
   "windowLevel": "alwaysBelow",
   "horizontalPosition": "center",
   "verticalPosition": "bottom",
-  "monitorIndex": 1
+  "monitorIndex": 2
 }

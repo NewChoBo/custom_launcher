@@ -91,47 +91,7 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
       backgroundColor: backgroundColor,
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.rocket_launch, size: 100, color: Colors.deepPurple),
-            SizedBox(height: 20),
-            Text(
-              'Custom Launcher',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Running in System Tray',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            SizedBox(height: 20),
-            Card(
-              margin: EdgeInsets.all(16),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      'System Tray Features:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text('• Left click tray icon to show/hide window'),
-                    Text('• Right click tray icon for context menu'),
-                    Text('• Click minimize button to hide to tray'),
-                    Text('• App continues running in background'),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: const Center(child: Column()),
     );
   }
 }
