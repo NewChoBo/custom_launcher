@@ -40,6 +40,8 @@ dependencies:
   window_manager: ^0.5.0
   # Screen information retrieval for multi-monitor support
   screen_retriever: ^0.2.0
+  # URL launcher for opening URLs and files
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
