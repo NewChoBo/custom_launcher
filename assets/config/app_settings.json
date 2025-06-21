@@ -1,0 +1,8 @@
+{
+  "backgroundOpacity": 0.9,
+  "appBarOpacity": 0.4,
+  "windowWidth": 1000.0,
+  "windowHeight": 500.0,
+  "skipTaskbar": true,
+  "windowLevel": "alwaysBelow"
+}

@@ -1,14 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:yaml/yaml.dart';
 import 'package:custom_launcher/models/app_settings.dart';
 
 /// Settings management service
 /// Loads application settings from assets or local file
 class SettingsService {
-  static const String _assetsPath = 'assets/config/app_settings.yaml';
-  static const String _localFileName = 'app_settings.yaml';
+  static const String _assetsPath = 'assets/config/app_settings.json';
+  static const String _localFileName = 'app_settings.json';
 
   AppSettings _settings = const AppSettings();
 
@@ -30,23 +30,18 @@ class SettingsService {
   Future<void> _loadSettings() async {
     // Try to load local settings file first (user customizations)
     final localFile = await _getLocalSettingsFile();
-
     if (await localFile.exists()) {
       debugPrint('Loading settings from local file: ${localFile.path}');
-      final yamlString = await localFile.readAsString();
-      final yamlMap = loadYaml(yamlString) as Map;
-      final settingsMap = Map<String, dynamic>.from(yamlMap);
-      _settings = AppSettings.fromMap(settingsMap);
+      final jsonString = await localFile.readAsString();
+      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      _settings = AppSettings.fromMap(jsonMap);
       return;
-    }
-
-    // If no local file, load from assets
+    } // If no local file, load from assets
     try {
       debugPrint('Loading settings from assets: $_assetsPath');
-      final yamlString = await rootBundle.loadString(_assetsPath);
-      final yamlMap = loadYaml(yamlString) as Map;
-      final settingsMap = Map<String, dynamic>.from(yamlMap);
-      _settings = AppSettings.fromMap(settingsMap);
+      final jsonString = await rootBundle.loadString(_assetsPath);
+      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      _settings = AppSettings.fromMap(jsonMap);
       // Only create local copy if user doesn't have one yet
       // This allows users to customize settings locally
       debugPrint(
@@ -79,27 +74,10 @@ class SettingsService {
         skipTaskbar: true,
       );
 
-      // Create YAML content
-      final yamlContent =
-          '''# Custom Launcher Settings
-# Configure transparency and window behavior
+      // Create JSON content
+      final jsonContent = jsonEncode(exampleSettings.toMap());
 
-# UI Transparency (0.0 = fully transparent, 1.0 = fully opaque)
-backgroundOpacity: ${exampleSettings.backgroundOpacity}
-appBarOpacity: ${exampleSettings.appBarOpacity}
-
-# Window Size
-windowWidth: ${exampleSettings.windowWidth}
-windowHeight: ${exampleSettings.windowHeight}
-
-# Behavior
-skipTaskbar: ${exampleSettings.skipTaskbar}
-
-# Window Level (normal, alwaysOnTop, alwaysBelow)
-windowLevel: normal
-''';
-
-      await file.writeAsString(yamlContent);
+      await file.writeAsString(jsonContent);
       debugPrint('Example settings file created at: ${file.path}');
     } catch (e) {
       debugPrint('Error creating example settings file: $e');

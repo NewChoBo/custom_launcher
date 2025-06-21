@@ -11,7 +11,6 @@ enum WindowLevel {
 }
 
 /// Application settings model
-/// Contains user-configurable settings loaded from YAML file
 class AppSettings {
   final double backgroundOpacity;
   final double appBarOpacity;
@@ -28,7 +27,6 @@ class AppSettings {
     this.windowLevel = WindowLevel.normal,
   });
 
-  /// Create settings from YAML map
   factory AppSettings.fromMap(Map<String, dynamic> map) {
     // Parse window level from string
     WindowLevel parseWindowLevel(String? value) {
@@ -57,7 +55,6 @@ class AppSettings {
     );
   }
 
-  /// Convert settings to YAML-compatible map
   Map<String, dynamic> toMap() {
     // Convert window level to string
     String windowLevelToString(WindowLevel level) {
