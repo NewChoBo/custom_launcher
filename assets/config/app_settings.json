@@ -1,6 +1,9 @@
 {
-  "backgroundOpacity": 0.9,
-  "appBarOpacity": 0.4,
+  "appBarOpacity": 0.2,
+  "backgroundOpacity": 0.2,
+  "backgroundColorRed": 30,
+  "backgroundColorGreen": 30,
+  "backgroundColorBlue": 60,
   "windowWidth": "80%",
   "windowHeight": "40%",
   "skipTaskbar": true,
@@ -39,7 +42,7 @@
   ],
   "layoutMode": "grid",
   "textPosition": "below",
-  "clickBehavior": "singleClick",
+  "clickBehavior": "doubleClick",
   "showIcons": true,
   "showText": true
 }

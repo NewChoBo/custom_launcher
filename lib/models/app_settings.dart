@@ -82,6 +82,12 @@ enum WindowLevel {
 class AppSettings {
   final double backgroundOpacity;
   final double appBarOpacity;
+
+  // Background color settings (RGB values 0-255)
+  final int backgroundColorRed;
+  final int backgroundColorGreen;
+  final int backgroundColorBlue;
+
   final String windowWidth; // Support both "800" and "80%" formats
   final String windowHeight; // Support both "600" and "50%" formats
   final bool skipTaskbar;
@@ -101,10 +107,12 @@ class AppSettings {
   final int gridColumns; // For grid layout mode
   final double itemSpacing; // Spacing between items
   final double iconSize; // Icon size in pixels
-
   const AppSettings({
     this.backgroundOpacity = 1.0,
     this.appBarOpacity = 1.0,
+    this.backgroundColorRed = 0,
+    this.backgroundColorGreen = 0,
+    this.backgroundColorBlue = 0,
     this.windowWidth = "800",
     this.windowHeight = "600",
     this.skipTaskbar = true,
@@ -301,6 +309,9 @@ class AppSettings {
     return AppSettings(
       backgroundOpacity: (map['backgroundOpacity'] as num?)?.toDouble() ?? 1.0,
       appBarOpacity: (map['appBarOpacity'] as num?)?.toDouble() ?? 1.0,
+      backgroundColorRed: (map['backgroundColorRed'] as num?)?.toInt() ?? 0,
+      backgroundColorGreen: (map['backgroundColorGreen'] as num?)?.toInt() ?? 0,
+      backgroundColorBlue: (map['backgroundColorBlue'] as num?)?.toInt() ?? 0,
       windowWidth: parseWindowSize(map['windowWidth'], "800"),
       windowHeight: parseWindowSize(map['windowHeight'], "600"),
       skipTaskbar: map['skipTaskbar'] as bool? ?? true,
@@ -407,6 +418,9 @@ class AppSettings {
     return {
       'backgroundOpacity': backgroundOpacity,
       'appBarOpacity': appBarOpacity,
+      'backgroundColorRed': backgroundColorRed,
+      'backgroundColorGreen': backgroundColorGreen,
+      'backgroundColorBlue': backgroundColorBlue,
       'windowWidth': windowWidth,
       'windowHeight': windowHeight,
       'skipTaskbar': skipTaskbar,

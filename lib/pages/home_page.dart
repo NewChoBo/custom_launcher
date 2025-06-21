@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:custom_launcher/models/app_settings.dart';
+import 'package:custom_launcher/widgets/launcher_grid.dart';
 
 /// Home page widget for Custom Launcher
 /// Displays main UI with system tray information
@@ -39,51 +40,58 @@ class _HomePageState extends State<HomePage> {
               ],
             )
           : null,
-      backgroundColor: Colors.transparent,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Icon(
-              Icons.rocket_launch,
-              size: 100,
-              color: Colors.deepPurple,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Custom Launcher',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Running in System Tray',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 20),
-            const Card(
-              margin: EdgeInsets.all(16),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Text(
-                      'System Tray Features:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text('• Left click tray icon to show/hide window'),
-                    Text('• Right click tray icon for context menu'),
-                    Text('• Click minimize button to hide to tray'),
-                    Text('• App continues running in background'),
-                  ],
-                ),
+      backgroundColor: Color.fromRGBO(
+        widget.settings.backgroundColorRed,
+        widget.settings.backgroundColorGreen,
+        widget.settings.backgroundColorBlue,
+        widget.settings.backgroundOpacity,
+      ),
+      body: widget.settings.launcherItems.isNotEmpty
+          ? LauncherGrid(
+              items: widget.settings.launcherItems,
+              settings: widget.settings,
+            )
+          : _buildWelcomeScreen(),
+    );
+  }
+
+  Widget _buildWelcomeScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Icon(Icons.rocket_launch, size: 100, color: Colors.deepPurple),
+          const SizedBox(height: 20),
+          const Text(
+            'Custom Launcher',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Running in System Tray',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 20),
+          const Card(
+            margin: EdgeInsets.all(16),
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(
+                    'System Tray Features:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Text('• Left click tray icon to show/hide window'),
+                  Text('• Right click tray icon for context menu'),
+                  Text('• Click minimize button to hide to tray'),
+                  Text('• App continues running in background'),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
