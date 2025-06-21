@@ -69,8 +69,8 @@ class SettingsService {
       const exampleSettings = AppSettings(
         backgroundOpacity: 0.9,
         appBarOpacity: 0.8,
-        windowWidth: 800.0,
-        windowHeight: 600.0,
+        windowWidth: "80%",
+        windowHeight: "60%",
         skipTaskbar: true,
       );
 

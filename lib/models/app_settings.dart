@@ -38,8 +38,8 @@ enum WindowLevel {
 class AppSettings {
   final double backgroundOpacity;
   final double appBarOpacity;
-  final double windowWidth;
-  final double windowHeight;
+  final String windowWidth; // Support both "800" and "80%" formats
+  final String windowHeight; // Support both "600" and "50%" formats
   final bool skipTaskbar;
   final WindowLevel windowLevel;
   final HorizontalPosition horizontalPosition;
@@ -49,8 +49,8 @@ class AppSettings {
   const AppSettings({
     this.backgroundOpacity = 1.0,
     this.appBarOpacity = 1.0,
-    this.windowWidth = 800.0,
-    this.windowHeight = 600.0,
+    this.windowWidth = "800",
+    this.windowHeight = "600",
     this.skipTaskbar = true,
     this.windowLevel = WindowLevel.normal,
     this.horizontalPosition = HorizontalPosition.center,
@@ -126,15 +126,46 @@ class AppSettings {
             return int.tryParse(value)?.clamp(0, 4) ?? 1;
         }
       }
-
       return 1; // Default to monitor 1
+    }
+
+    // Parse window size (supports both absolute values and percentages)
+    String parseWindowSize(dynamic value, String defaultValue) {
+      if (value == null) return defaultValue;
+
+      if (value is String) {
+        // Already a string, validate format
+        final trimmed = value.trim();
+        if (trimmed.endsWith('%')) {
+          // Percentage format: "80%"
+          final percentStr = trimmed.substring(0, trimmed.length - 1);
+          final percent = double.tryParse(percentStr);
+          if (percent != null && percent > 0 && percent <= 100) {
+            return trimmed;
+          }
+        } else {
+          // Absolute value as string: "800"
+          final absoluteValue = double.tryParse(trimmed);
+          if (absoluteValue != null && absoluteValue > 0) {
+            return trimmed;
+          }
+        }
+        return defaultValue; // Invalid format, use default
+      }
+
+      if (value is num) {
+        // Convert number to string
+        return value.toDouble().toString();
+      }
+
+      return defaultValue;
     }
 
     return AppSettings(
       backgroundOpacity: (map['backgroundOpacity'] as num?)?.toDouble() ?? 1.0,
       appBarOpacity: (map['appBarOpacity'] as num?)?.toDouble() ?? 1.0,
-      windowWidth: (map['windowWidth'] as num?)?.toDouble() ?? 800.0,
-      windowHeight: (map['windowHeight'] as num?)?.toDouble() ?? 600.0,
+      windowWidth: parseWindowSize(map['windowWidth'], "800"),
+      windowHeight: parseWindowSize(map['windowHeight'], "600"),
       skipTaskbar: map['skipTaskbar'] as bool? ?? true,
       windowLevel: parseWindowLevel(map['windowLevel'] as String?),
       horizontalPosition: parseHorizontalPosition(

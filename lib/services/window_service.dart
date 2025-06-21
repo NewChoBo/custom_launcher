@@ -12,9 +12,17 @@ class WindowService {
 
     await windowManager.ensureInitialized();
 
+    // Get primary display for initial size calculation
+    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final initialSize = _calculateWindowSize(
+      config.windowWidth,
+      config.windowHeight,
+      primaryDisplay,
+    );
+
     await windowManager.waitUntilReadyToShow(
       WindowOptions(
-        size: Size(config.windowWidth, config.windowHeight),
+        size: initialSize,
         center: false, // We'll set position manually
         backgroundColor: Colors.transparent,
         skipTaskbar: config.skipTaskbar,
@@ -39,12 +47,15 @@ class WindowService {
   /// Apply window position based on settings using window_manager's built-in utilities
   static Future<void> _applyWindowPosition(AppSettings config) async {
     try {
-      // Get window size for position calculation
-      final size = Size(
+      // Get target display first for size calculations
+      final targetDisplay = await _getTargetDisplay(config.monitorIndex);
+
+      // Calculate actual window size (handle percentage values)
+      final size = _calculateWindowSize(
         config.windowWidth,
         config.windowHeight,
-      ); // Get target display based on monitor preference
-      final targetDisplay = await _getTargetDisplay(config.monitorIndex);
+        targetDisplay,
+      );
 
       // Calculate alignment based on position settings
       final alignment = _getAlignmentFromPosition(
@@ -60,10 +71,11 @@ class WindowService {
       );
 
       debugPrint(
-        'Setting window position to: $position (alignment: $alignment, display: ${targetDisplay.size})',
+        'Setting window size to: $size and position to: $position (alignment: $alignment, display: ${targetDisplay.size})',
       );
 
-      // Apply the calculated position
+      // Apply the calculated size and position
+      await windowManager.setSize(size);
       await windowManager.setPosition(position);
     } catch (e) {
       debugPrint('Error applying window position: $e');
@@ -241,5 +253,40 @@ class WindowService {
     } catch (e) {
       debugPrint('Error configuring window level: $e');
     }
+  }
+
+  /// Calculate actual window size from string values (supports percentage)
+  static Size _calculateWindowSize(
+    String widthStr,
+    String heightStr,
+    Display display,
+  ) {
+    final screenSize = display.visibleSize ?? display.size;
+
+    // Parse width
+    double width;
+    if (widthStr.endsWith('%')) {
+      final percentStr = widthStr.substring(0, widthStr.length - 1);
+      final percent = double.tryParse(percentStr) ?? 80.0;
+      width = screenSize.width * (percent / 100.0);
+    } else {
+      width = double.tryParse(widthStr) ?? 800.0;
+    }
+
+    // Parse height
+    double height;
+    if (heightStr.endsWith('%')) {
+      final percentStr = heightStr.substring(0, heightStr.length - 1);
+      final percent = double.tryParse(percentStr) ?? 60.0;
+      height = screenSize.height * (percent / 100.0);
+    } else {
+      height = double.tryParse(heightStr) ?? 600.0;
+    }
+
+    // Ensure minimum size
+    width = width.clamp(200.0, screenSize.width);
+    height = height.clamp(150.0, screenSize.height);
+
+    return Size(width, height);
   }
 }
