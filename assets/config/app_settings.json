@@ -4,5 +4,8 @@
   "windowWidth": 1000.0,
   "windowHeight": 500.0,
   "skipTaskbar": true,
-  "windowLevel": "alwaysBelow"
+  "windowLevel": "alwaysBelow",
+  "horizontalPosition": "center",
+  "verticalPosition": "bottom",
+  "monitorIndex": 1
 }
