@@ -5,7 +5,7 @@
   "backgroundColor": "#424242",
   "backgroundOpacity": 0.1,
   "windowWidth": "80%",
-  "windowHeight": "40%",
+  "windowHeight": "50%",
   "skipTaskbar": true,
   "windowLevel": "alwaysBelow",
   "horizontalPosition": "center",
