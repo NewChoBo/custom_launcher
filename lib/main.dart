@@ -8,13 +8,12 @@ Future<void> main() async {
   // Initialize window manager for desktop platforms
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
-
     WindowOptions windowOptions = const WindowOptions(
       size: Size(800, 600),
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: true, // This prevents showing in taskbar
-      titleBarStyle: TitleBarStyle.normal,
+      titleBarStyle: TitleBarStyle.hidden,
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
