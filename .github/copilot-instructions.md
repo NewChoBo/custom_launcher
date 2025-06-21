@@ -6,81 +6,88 @@
 - 코드 스타일, 포맷, import 방식을 일관되게 유지
 - 작업 전 계획 공유 및 승인 절차 강화
 - **UI에 표시될 텍스트는 영어로 작성**
+- **라이브러리는 가능한 최신 버전으로 사용 및 유지**, 버전별 사용법 차이를 고려하여 공식 문서 자주 확인
 
 ### 2. 코드 작성 전 확인 사항
 
 1. **프로젝트 구조 탐색**
 
-```dart
-// NOTE [Copilot]: lib/ 폴더 구조와 파일 위치를 먼저 확인해주세요.
-```
+   ```dart
+   // NOTE [Copilot]: lib/ 폴더 구조와 파일 위치를 먼저 확인해주세요.
+   ```
 
 2. **코딩 규칙 파악**
    Copilot은 타 코드 파일을 분석하여 네이밍, 들여쓰기, 에러 처리 방식 등 팀의 규칙을 학습해야 합니다.
 
-```text
-Copilot: 프로젝트의 기존 코드 스타일(네이밍, 예외 처리, 주석 등)을 분석했습니다.
-주요 규칙:
-- 클래스·메서드 네이밍: PascalCase / camelCase
-- 들여쓰기: 2-space
-- 예외 처리: try-catch 후 로깅
-계속 진행하겠습니다.
-```
+   ```text
+   Copilot: 프로젝트의 기존 코드 스타일(네이밍, 예외 처리, 주석 등)을 분석했습니다.
+   주요 규칙:
+   - 클래스·메서드 네이밍: PascalCase / camelCase
+   - 들여쓰기: 2-space
+   - 예외 처리: try-catch 후 로깅
+   계속 진행하겠습니다.
+   ```
 
 3. **베스트 프랙티스 조사**
    구현 전 관련 기능의 베스트 프랙티스를 조사하여, 여러 옵션을 제시하세요:
 
-```text
-Copilot: 해당 기능 구현을 위한 몇 가지 베스트 프랙티스:
-1) 간단한 API 호출 방식
-2) 이벤트 기반 아키텍처 방식
-3) 상태 관리 패턴 적용 방식
-어떤 방법이 좋을까요?
-```
+   ```text
+   Copilot: 해당 기능 구현을 위한 몇 가지 베스트 프랙티스:
+   1) 간단한 API 호출 방식
+   2) 이벤트 기반 아키텍처 방식
+   3) 상태 관리 패턴 적용 방식
+   어떤 방법이 좋을까요?
+   ```
 
 ### 3. Copilot 프롬프트 전략
 
 1. **컨텍스트 주석**: 파일 상단에 기능 설명 및 경로 명시
 
-```dart
-/// Window 관리 (features/window_management)
-// Copilot: 이 모듈에 필요한 메서드를 구현해주세요.
-```
+   ```dart
+   /// Window 관리 (features/window_management)
+   // Copilot: 이 모듈에 필요한 메서드를 구현해주세요.
+   ```
 
 2. **DI 등록 요청**: `injection.dart` 로드 후 서비스 등록 지시
 
-```dart
-// TODO [Copilot]: core/di/injection.dart에 MyRepositoryImpl 등록
-```
+   ```dart
+   // TODO [Copilot]: core/di/injection.dart에 MyRepositoryImpl 등록
+   ```
 
 3. **절대 import 강제**: 상대경로 대신 절대 import 사용 유도
 
-```dart
-// FIXME [Copilot]: `package:custom_desktop/...` 절대 import로 수정해주세요
-```
+   ```dart
+   // FIXME [Copilot]: `package:custom_desktop/...` 절대 import로 수정해주세요
+   ```
 
-4. **작업 분할 및 승인 프로세스**
+4. **라이브러리 버전 확인**: 제안된 코드에 사용하는 패키지의 버전을 명시하고, 공식 문서를 참고하여 사용법 차이를 설명하도록 요청하세요.
+
+   ```text
+   Copilot: 이 코드에서는 `window_manager` 최신 버전(v0.5.x)을 사용합니다. 해당 버전의 공식 문서를 참고하여 API 사용법이 달라진 부분이 있는지 확인해주세요.
+   ```
+
+5. **작업 분할 및 승인 프로세스**
    복합 기능은 단계별로 요청하고, 각 변경은 최대 100줄 이하로 유지합니다.
 
-```text
-Copilot: 변경 계획 제안
-1) 수정 파일: features/window_management/usecases.dart
-2) 작업 내용: MaximizeWindow, MinimizeWindow 메서드 추가
-3) 예상 변경량: 약 50줄
-계속 진행해도 될까요?
-```
+   ```text
+   Copilot: 변경 계획 제안
+   1) 수정 파일: features/window_management/usecases.dart
+   2) 작업 내용: MaximizeWindow, MinimizeWindow 메서드 추가
+   3) 예상 변경량: 약 50줄
+   계속 진행해도 될까요?
+   ```
 
-5. **모르는 내용 처리**: 모르면 `잘 모르겠습니다.` 명시
+6. **모르는 내용 처리**: 모르면 `잘 모르겠습니다.` 명시
 
-```dart
-// NOTE [Copilot]: 공식 문서를 참조하거나, 모르면 "잘 모르겠습니다."라고 알려주세요.
-```
+   ```dart
+   // NOTE [Copilot]: 공식 문서를 참조하거나, 모르면 "잘 모르겠습니다."라고 알려주세요.
+   ```
 
-6. **인터넷 참조**: 공식 문서나 StackOverflow 링크 삽입 권장
+7. **인터넷 참조**: 공식 문서나 StackOverflow 링크 삽입 권장
 
-```markdown
-<!-- Copilot: Flutter 공식 문서(https://docs.flutter.dev/) 참고 -->
-```
+   ```markdown
+   <!-- Copilot: Flutter 공식 문서(https://docs.flutter.dev/) 참고 -->
+   ```
 
 ### 4. 주석 & 태그 패턴
 
