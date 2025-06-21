@@ -1,0 +1,13 @@
+# Custom Launcher Settings
+# Configure transparency and window behavior
+
+# UI Transparency (0.0 = fully transparent, 1.0 = fully opaque)
+backgroundOpacity: 0.5
+appBarOpacity: 0.4
+
+# Window Size
+windowWidth: 800.0
+windowHeight: 600.0
+
+# Behavior
+skipTaskbar: true
