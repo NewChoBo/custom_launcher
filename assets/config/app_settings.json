@@ -7,7 +7,7 @@
   "windowWidth": "80%",
   "windowHeight": "50%",
   "skipTaskbar": true,
-  "windowLevel": "alwaysBelow",
+  "windowLevel": "alwaysOnTop",
   "horizontalPosition": "center",
   "verticalPosition": "bottom",
   "monitorIndex": 2

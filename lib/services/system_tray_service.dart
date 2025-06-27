@@ -24,9 +24,9 @@ class SystemTrayService {
     String iconPath = _getPlatformIconPath();
 
     await _systemTray.initSystemTray(
-      title: "Custom Launcher",
+      title: 'Custom Launcher',
       iconPath: iconPath,
-      toolTip: "Custom Launcher - Click to show/hide",
+      toolTip: 'Custom Launcher - Click to show/hide',
     );
   }
 
@@ -42,17 +42,20 @@ class SystemTrayService {
   /// Create and set context menu for system tray
   Future<void> _createContextMenu() async {
     final Menu menu = Menu();
-    await menu.buildFrom([
+    await menu.buildFrom(<MenuItemBase>[
       MenuItemLabel(
         label: 'Show Window',
-        onClicked: (menuItem) => showWindow(),
+        onClicked: (MenuItemBase menuItem) => showWindow(),
       ),
       MenuItemLabel(
         label: 'Hide Window',
-        onClicked: (menuItem) => hideWindow(),
+        onClicked: (MenuItemBase menuItem) => hideWindow(),
       ),
       MenuSeparator(),
-      MenuItemLabel(label: 'Exit', onClicked: (menuItem) => exitApplication()),
+      MenuItemLabel(
+        label: 'Exit',
+        onClicked: (MenuItemBase menuItem) => exitApplication(),
+      ),
     ]);
 
     await _systemTray.setContextMenu(menu);
@@ -60,8 +63,8 @@ class SystemTrayService {
 
   /// Register system tray event handlers
   void _registerEventHandlers() {
-    _systemTray.registerSystemTrayEventHandler((eventName) {
-      debugPrint("System tray event: $eventName");
+    _systemTray.registerSystemTrayEventHandler((String eventName) {
+      debugPrint('System tray event: $eventName');
       if (eventName == kSystemTrayEventClick) {
         toggleWindow();
       } else if (eventName == kSystemTrayEventRightClick) {
@@ -83,7 +86,7 @@ class SystemTrayService {
 
   /// Toggle window visibility
   Future<void> toggleWindow() async {
-    bool isVisible = await windowManager.isVisible();
+    final bool isVisible = await windowManager.isVisible();
     if (isVisible) {
       await hideWindow();
     } else {
