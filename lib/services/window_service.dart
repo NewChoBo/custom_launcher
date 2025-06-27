@@ -8,13 +8,13 @@ import 'package:custom_launcher/models/app_settings.dart';
 class WindowService {
   /// Initialize window manager with settings-based configuration
   static Future<void> initialize([AppSettings? settings]) async {
-    final config = settings ?? const AppSettings();
+    final AppSettings config = settings ?? const AppSettings();
 
     await windowManager.ensureInitialized();
 
     // Get primary display for initial size calculation
-    final primaryDisplay = await screenRetriever.getPrimaryDisplay();
-    final initialSize = _calculateWindowSize(
+    final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
+    final Size initialSize = _calculateWindowSize(
       config.windowWidth,
       config.windowHeight,
       primaryDisplay,
@@ -48,23 +48,25 @@ class WindowService {
   static Future<void> _applyWindowPosition(AppSettings config) async {
     try {
       // Get target display first for size calculations
-      final targetDisplay = await _getTargetDisplay(config.monitorIndex);
+      final Display targetDisplay = await _getTargetDisplay(
+        config.monitorIndex,
+      );
 
       // Calculate actual window size (handle percentage values)
-      final size = _calculateWindowSize(
+      final Size size = _calculateWindowSize(
         config.windowWidth,
         config.windowHeight,
         targetDisplay,
       );
 
       // Calculate alignment based on position settings
-      final alignment = _getAlignmentFromPosition(
+      final Alignment alignment = _getAlignmentFromPosition(
         config.horizontalPosition,
         config.verticalPosition,
       );
 
       // Calculate position using the target display
-      final position = await _calcWindowPositionForDisplay(
+      final Offset position = await _calcWindowPositionForDisplay(
         size,
         alignment,
         targetDisplay,
@@ -87,19 +89,19 @@ class WindowService {
   /// Get target display based on monitor preference
   static Future<Display> _getTargetDisplay(int monitorIndex) async {
     try {
-      final primaryDisplay = await screenRetriever.getPrimaryDisplay();
-      final allDisplays = await screenRetriever.getAllDisplays();
+      final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
+      final List<Display> allDisplays = await screenRetriever.getAllDisplays();
 
       debugPrint('Available displays: ${allDisplays.length}');
       for (int i = 0; i < allDisplays.length; i++) {
-        final display = allDisplays[i];
+        final Display display = allDisplays[i];
         debugPrint('Display $i: ${display.size} at ${display.visiblePosition}');
       } // Handle monitor index (1-based numbering, 0 = auto)
       if (monitorIndex == 0) {
         // Auto mode: Use cursor position to determine current display
-        final cursorPos = await screenRetriever.getCursorScreenPoint();
-        return allDisplays.firstWhere((display) {
-          final displayRect = Rect.fromLTWH(
+        final Offset cursorPos = await screenRetriever.getCursorScreenPoint();
+        return allDisplays.firstWhere((Display display) {
+          final Rect displayRect = Rect.fromLTWH(
             display.visiblePosition?.dx ?? 0,
             display.visiblePosition?.dy ?? 0,
             display.size.width,
@@ -109,7 +111,7 @@ class WindowService {
         }, orElse: () => primaryDisplay);
       } else {
         // Specific monitor (1-based, so subtract 1 for 0-based array index)
-        final displayIndex = monitorIndex - 1;
+        final int displayIndex = monitorIndex - 1;
         if (displayIndex >= 0 && displayIndex < allDisplays.length) {
           return allDisplays[displayIndex];
         } else {
@@ -132,8 +134,8 @@ class WindowService {
     Display display,
   ) async {
     // Use visible size if available (excludes taskbar, etc.)
-    final screenSize = display.visibleSize ?? display.size;
-    final screenOffset = display.visiblePosition ?? const Offset(0, 0);
+    final Size screenSize = display.visibleSize ?? display.size;
+    final Offset screenOffset = display.visiblePosition ?? const Offset(0, 0);
 
     debugPrint('Screen size: $screenSize, offset: $screenOffset');
 
@@ -179,18 +181,26 @@ class WindowService {
     VerticalPosition vertical,
   ) {
     // Create alignment matrix
-    const alignments = [
-      [Alignment.topLeft, Alignment.topCenter, Alignment.topRight],
-      [Alignment.centerLeft, Alignment.center, Alignment.centerRight],
-      [Alignment.bottomLeft, Alignment.bottomCenter, Alignment.bottomRight],
+    const List<List<Alignment>> alignments = <List<Alignment>>[
+      <Alignment>[Alignment.topLeft, Alignment.topCenter, Alignment.topRight],
+      <Alignment>[
+        Alignment.centerLeft,
+        Alignment.center,
+        Alignment.centerRight,
+      ],
+      <Alignment>[
+        Alignment.bottomLeft,
+        Alignment.bottomCenter,
+        Alignment.bottomRight,
+      ],
     ];
 
-    final verticalIndex = vertical == VerticalPosition.top
+    final int verticalIndex = vertical == VerticalPosition.top
         ? 0
         : vertical == VerticalPosition.center
         ? 1
         : 2;
-    final horizontalIndex = horizontal == HorizontalPosition.left
+    final int horizontalIndex = horizontal == HorizontalPosition.left
         ? 0
         : horizontal == HorizontalPosition.center
         ? 1
@@ -261,13 +271,13 @@ class WindowService {
     String heightStr,
     Display display,
   ) {
-    final screenSize = display.visibleSize ?? display.size;
+    final Size screenSize = display.visibleSize ?? display.size;
 
     // Parse width
     double width;
     if (widthStr.endsWith('%')) {
-      final percentStr = widthStr.substring(0, widthStr.length - 1);
-      final percent = double.tryParse(percentStr) ?? 80.0;
+      final String percentStr = widthStr.substring(0, widthStr.length - 1);
+      final double percent = double.tryParse(percentStr) ?? 80.0;
       width = screenSize.width * (percent / 100.0);
     } else {
       width = double.tryParse(widthStr) ?? 800.0;
@@ -276,8 +286,8 @@ class WindowService {
     // Parse height
     double height;
     if (heightStr.endsWith('%')) {
-      final percentStr = heightStr.substring(0, heightStr.length - 1);
-      final percent = double.tryParse(percentStr) ?? 60.0;
+      final String percentStr = heightStr.substring(0, heightStr.length - 1);
+      final double percent = double.tryParse(percentStr) ?? 60.0;
       height = screenSize.height * (percent / 100.0);
     } else {
       height = double.tryParse(heightStr) ?? 600.0;
