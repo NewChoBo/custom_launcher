@@ -3,12 +3,8 @@ import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
 
-/// System Tray management service
-/// Handles system tray initialization, menu creation, and window controls
 class SystemTrayService {
   final SystemTray _systemTray = SystemTray();
-
-  /// Initialize system tray with icon and menu
   Future<void> initialize() async {
     try {
       await _initSystemTray();
@@ -19,7 +15,6 @@ class SystemTrayService {
     }
   }
 
-  /// Initialize system tray with platform-specific icon
   Future<void> _initSystemTray() async {
     String iconPath = _getPlatformIconPath();
 
@@ -30,7 +25,6 @@ class SystemTrayService {
     );
   }
 
-  /// Get platform-appropriate icon file path
   String _getPlatformIconPath() {
     return Platform.isWindows
         ? 'assets/icons/app_icon.ico'
@@ -39,7 +33,6 @@ class SystemTrayService {
         : 'assets/icons/app_icon.png';
   }
 
-  /// Create and set context menu for system tray
   Future<void> _createContextMenu() async {
     final Menu menu = Menu();
     await menu.buildFrom(<MenuItemBase>[
@@ -61,7 +54,6 @@ class SystemTrayService {
     await _systemTray.setContextMenu(menu);
   }
 
-  /// Register system tray event handlers
   void _registerEventHandlers() {
     _systemTray.registerSystemTrayEventHandler((String eventName) {
       debugPrint('System tray event: $eventName');
@@ -73,18 +65,15 @@ class SystemTrayService {
     });
   }
 
-  /// Show application window
   Future<void> showWindow() async {
     await windowManager.show();
     await windowManager.focus();
   }
 
-  /// Hide application window
   Future<void> hideWindow() async {
     await windowManager.hide();
   }
 
-  /// Toggle window visibility
   Future<void> toggleWindow() async {
     final bool isVisible = await windowManager.isVisible();
     if (isVisible) {
@@ -94,13 +83,11 @@ class SystemTrayService {
     }
   }
 
-  /// Exit application and cleanup system tray
   Future<void> exitApplication() async {
     await _systemTray.destroy();
     exit(0);
   }
 
-  /// Cleanup system tray resources
   Future<void> dispose() async {
     await _systemTray.destroy();
   }
