@@ -1,0 +1,24 @@
+{
+  "type": "row",
+  "children": [
+    { "type": "container", "color": "#FF0000" },
+    { "type": "container", "color": "#AAAAAA" },
+    {
+      "type": "column",
+      "flex": 2,
+      "children": [
+        {
+          "type": "row",
+          "children": [
+            { "type": "container", "color": "#FFFF00" },
+            { "type": "container", "color": "#0000FF" },
+            { "type": "container", "color": "#00AA44" },
+            { "type": "container", "color": "#FFFF00" }
+          ]
+        },
+        { "type": "container", "color": "#6699CC" },
+        { "type": "container", "color": "#C0B6E8" }
+      ]
+    }
+  ]
+}

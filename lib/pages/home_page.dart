@@ -46,6 +46,9 @@ class _HomePageState extends State<HomePage> {
         ) ??
         Colors.white;
 
-    return const FrameLayout();
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: const FrameLayout(),
+    );
   }
 }
