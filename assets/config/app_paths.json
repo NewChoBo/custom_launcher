@@ -1,0 +1,77 @@
+{
+  "defaultPaths": {},
+  "searchPaths": {},
+  "customApps": {
+    "calculator": {
+      "name": "Calculator",
+      "displayName": "Calculator",
+      "icon": "calculate",
+      "description": "Windows Calculator",
+      "paths": ["calc.exe"]
+    },
+    "chrome": {
+      "name": "Chrome",
+      "displayName": "Google Chrome",
+      "icon": "web",
+      "description": "Web Browser",
+      "paths": [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Users\\%USERNAME%\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
+      ]
+    },
+    "steam": {
+      "name": "Steam",
+      "displayName": "Steam",
+      "icon": "games",
+      "description": "Gaming Platform",
+      "paths": [
+        "C:\\Program Files (x86)\\Steam\\steam.exe",
+        "C:\\Program Files\\Steam\\steam.exe",
+        "D:\\Steam\\steam.exe",
+        "E:\\Steam\\steam.exe"
+      ]
+    },
+    "notepad": {
+      "name": "Notepad",
+      "displayName": "Notepad",
+      "icon": "edit",
+      "description": "Text Editor",
+      "paths": ["notepad.exe"]
+    },
+    "explorer": {
+      "name": "Explorer",
+      "displayName": "File Explorer",
+      "icon": "folder",
+      "description": "File Manager",
+      "paths": ["explorer.exe"]
+    },
+    "vscode": {
+      "name": "Visual Studio Code",
+      "displayName": "VS Code",
+      "icon": "code",
+      "description": "Code Editor",
+      "paths": [
+        "C:\\Users\\%USERNAME%\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+        "C:\\Program Files\\Microsoft VS Code\\Code.exe"
+      ]
+    },
+    "discord": {
+      "name": "Discord",
+      "displayName": "Discord",
+      "icon": "chat",
+      "description": "Communication",
+      "paths": [
+        "C:\\Users\\%USERNAME%\\AppData\\Local\\Discord\\Update.exe",
+        "C:\\Users\\%USERNAME%\\AppData\\Roaming\\discord\\Discord.exe"
+      ]
+    },
+    "spotify": {
+      "name": "Spotify",
+      "displayName": "Spotify",
+      "icon": "music_note",
+      "description": "Music Streaming",
+      "paths": ["C:\\Users\\%USERNAME%\\AppData\\Roaming\\Spotify\\Spotify.exe"]
+    }
+  }
+}

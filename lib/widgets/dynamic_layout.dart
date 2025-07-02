@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:custom_launcher/models/layout_config.dart';
+import 'package:custom_launcher/widgets/factories/widget_registry.dart';
+import 'package:custom_launcher/widgets/factories/launcher_widget_factory.dart';
 
 /// Dynamic layout widget that builds UI from JSON configuration
 class DynamicLayout extends StatefulWidget {
@@ -19,11 +21,23 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   LayoutConfig? _layoutConfig;
   bool _isLoading = true;
   String? _error;
+  final WidgetRegistry _widgetRegistry = WidgetRegistry();
 
   @override
   void initState() {
     super.initState();
+    _initializeWidgetRegistry();
     _loadLayoutConfig();
+  }
+
+  /// Initialize widget registry with factories
+  void _initializeWidgetRegistry() {
+    // Register custom widget factories
+    _widgetRegistry.registerFactory(LauncherWidgetFactory());
+
+    debugPrint(
+      'Widget registry initialized with ${_widgetRegistry.supportedTypes.length} factories',
+    );
   }
 
   /// Load layout configuration from JSON file
@@ -54,6 +68,13 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
   /// Build widget from layout element
   Widget _buildWidget(LayoutElement element) {
+    // Try widget registry first (for custom widgets)
+    final Widget? customWidget = _widgetRegistry.createWidget(element);
+    if (customWidget != null) {
+      return customWidget;
+    }
+
+    // Fallback to built-in widgets
     switch (element.type.toLowerCase()) {
       case 'column':
         return _buildColumn(element);
@@ -336,6 +357,20 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         return Icons.menu;
       case 'info':
         return Icons.info;
+      case 'calculate':
+        return Icons.calculate;
+      case 'web':
+        return Icons.web;
+      case 'games':
+        return Icons.games;
+      case 'code':
+        return Icons.code;
+      case 'chat':
+        return Icons.chat;
+      case 'music_note':
+        return Icons.music_note;
+      case 'edit':
+        return Icons.edit;
       case 'help':
       default:
         return Icons.help;
