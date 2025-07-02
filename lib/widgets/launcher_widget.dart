@@ -50,7 +50,7 @@ class _LauncherWidgetState extends State<LauncherWidget> {
                 )
               else
                 Icon(
-                  _getIconData(widget.icon ?? 'apps'),
+                  _parseIconFromString(widget.icon ?? 'apps'),
                   size: widget.style?['iconSize']?.toDouble() ?? 32.0,
                   color:
                       _parseColor(widget.style?['iconColor'] as String?) ??
@@ -124,8 +124,15 @@ class _LauncherWidgetState extends State<LauncherWidget> {
     }
   }
 
-  /// Parse icon data from string
-  IconData _getIconData(String iconName) {
+  /// Parse icon from string name to IconData
+  IconData _parseIconFromString(String iconName) {
+    // Create IconData from codePoint if it's a number
+    final int? codePoint = int.tryParse(iconName);
+    if (codePoint != null) {
+      return IconData(codePoint, fontFamily: 'MaterialIcons');
+    }
+
+    // Fallback to predefined icon names for backward compatibility
     switch (iconName.toLowerCase()) {
       case 'calculate':
       case 'calculator':
@@ -137,13 +144,23 @@ class _LauncherWidgetState extends State<LauncherWidget> {
       case 'steam':
         return Icons.games;
       case 'edit':
+      case 'edit_note':
       case 'notepad':
-        return Icons.edit;
+        return Icons.edit_note;
       case 'folder':
+      case 'folder_open':
       case 'explorer':
-        return Icons.folder;
+        return Icons.folder_open;
       case 'settings':
         return Icons.settings;
+      case 'code':
+        return Icons.code;
+      case 'chat':
+      case 'chat_bubble':
+        return Icons.chat_bubble;
+      case 'music_note':
+      case 'library_music':
+        return Icons.library_music;
       case 'apps':
       default:
         return Icons.apps;

@@ -342,13 +342,21 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
   /// Parse IconData from string
   IconData _parseIconData(String iconName) {
+    // Create IconData from codePoint if it's a number
+    final int? codePoint = int.tryParse(iconName);
+    if (codePoint != null) {
+      return IconData(codePoint, fontFamily: 'MaterialIcons');
+    }
+
+    // Fallback to predefined icon names
     switch (iconName.toLowerCase()) {
       case 'settings':
         return Icons.settings;
       case 'apps':
         return Icons.apps;
       case 'folder':
-        return Icons.folder;
+      case 'folder_open':
+        return Icons.folder_open;
       case 'home':
         return Icons.home;
       case 'search':
@@ -366,11 +374,14 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       case 'code':
         return Icons.code;
       case 'chat':
-        return Icons.chat;
+      case 'chat_bubble':
+        return Icons.chat_bubble;
       case 'music_note':
-        return Icons.music_note;
+      case 'library_music':
+        return Icons.library_music;
       case 'edit':
-        return Icons.edit;
+      case 'edit_note':
+        return Icons.edit_note;
       case 'help':
       default:
         return Icons.help;
