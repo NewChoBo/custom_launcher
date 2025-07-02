@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:custom_launcher/models/app_settings.dart';
-import 'package:custom_launcher/widgets/dashboard_layout.dart';
+import 'package:custom_launcher/widgets/dynamic_layout.dart';
 
 /// Home page widget for Custom Launcher
 /// Displays main UI with system tray information
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
       backgroundColor: backgroundColor,
-      body: const DashboardLayout(),
+      body: const DynamicLayout(),
     );
   }
 }

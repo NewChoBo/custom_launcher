@@ -1,0 +1,205 @@
+{
+  "layout": {
+    "type": "column",
+    "mainAxisAlignment": "center",
+    "crossAxisAlignment": "center",
+    "padding": {
+      "top": 20,
+      "bottom": 20,
+      "left": 16,
+      "right": 16
+    },
+    "children": [
+      {
+        "type": "container",
+        "width": "fill",
+        "height": 60,
+        "decoration": {
+          "color": "#E3F2FD",
+          "borderRadius": 8
+        },
+        "padding": {
+          "all": 16
+        },
+        "child": {
+          "type": "text",
+          "text": "Custom Launcher Dashboard",
+          "style": {
+            "fontSize": 18,
+            "fontWeight": "bold",
+            "color": "#1976D2"
+          },
+          "textAlign": "center"
+        }
+      },
+      {
+        "type": "sizedBox",
+        "height": 20
+      },
+      {
+        "type": "row",
+        "mainAxisAlignment": "spaceEvenly",
+        "children": [
+          {
+            "type": "card",
+            "elevation": 4,
+            "child": {
+              "type": "container",
+              "width": 120,
+              "height": 100,
+              "padding": {
+                "all": 12
+              },
+              "child": {
+                "type": "column",
+                "mainAxisAlignment": "center",
+                "children": [
+                  {
+                    "type": "icon",
+                    "icon": "settings",
+                    "size": 32,
+                    "color": "#2196F3"
+                  },
+                  {
+                    "type": "sizedBox",
+                    "height": 8
+                  },
+                  {
+                    "type": "text",
+                    "text": "Settings",
+                    "style": {
+                      "fontSize": 12,
+                      "fontWeight": "w500"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "card",
+            "elevation": 4,
+            "child": {
+              "type": "container",
+              "width": 120,
+              "height": 100,
+              "padding": {
+                "all": 12
+              },
+              "child": {
+                "type": "column",
+                "mainAxisAlignment": "center",
+                "children": [
+                  {
+                    "type": "icon",
+                    "icon": "apps",
+                    "size": 32,
+                    "color": "#4CAF50"
+                  },
+                  {
+                    "type": "sizedBox",
+                    "height": 8
+                  },
+                  {
+                    "type": "text",
+                    "text": "Apps",
+                    "style": {
+                      "fontSize": 12,
+                      "fontWeight": "w500"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "card",
+            "elevation": 4,
+            "child": {
+              "type": "container",
+              "width": 120,
+              "height": 100,
+              "padding": {
+                "all": 12
+              },
+              "child": {
+                "type": "column",
+                "mainAxisAlignment": "center",
+                "children": [
+                  {
+                    "type": "icon",
+                    "icon": "folder",
+                    "size": 32,
+                    "color": "#FF9800"
+                  },
+                  {
+                    "type": "sizedBox",
+                    "height": 8
+                  },
+                  {
+                    "type": "text",
+                    "text": "Files",
+                    "style": {
+                      "fontSize": 12,
+                      "fontWeight": "w500"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "sizedBox",
+        "height": 20
+      },
+      {
+        "type": "container",
+        "width": "fill",
+        "decoration": {
+          "color": "#F5F5F5",
+          "borderRadius": 8
+        },
+        "padding": {
+          "all": 16
+        },
+        "child": {
+          "type": "column",
+          "crossAxisAlignment": "start",
+          "children": [
+            {
+              "type": "text",
+              "text": "System Information",
+              "style": {
+                "fontSize": 14,
+                "fontWeight": "bold",
+                "color": "#424242"
+              }
+            },
+            {
+              "type": "sizedBox",
+              "height": 8
+            },
+            {
+              "type": "text",
+              "text": "Status: Running",
+              "style": {
+                "fontSize": 12,
+                "color": "#666666"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Memory: 128 MB",
+              "style": {
+                "fontSize": 12,
+                "color": "#666666"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
