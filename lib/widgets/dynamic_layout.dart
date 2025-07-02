@@ -347,45 +347,7 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     if (codePoint != null) {
       return IconData(codePoint, fontFamily: 'MaterialIcons');
     }
-
-    // Fallback to predefined icon names
-    switch (iconName.toLowerCase()) {
-      case 'settings':
-        return Icons.settings;
-      case 'apps':
-        return Icons.apps;
-      case 'folder':
-      case 'folder_open':
-        return Icons.folder_open;
-      case 'home':
-        return Icons.home;
-      case 'search':
-        return Icons.search;
-      case 'menu':
-        return Icons.menu;
-      case 'info':
-        return Icons.info;
-      case 'calculate':
-        return Icons.calculate;
-      case 'web':
-        return Icons.web;
-      case 'games':
-        return Icons.games;
-      case 'code':
-        return Icons.code;
-      case 'chat':
-      case 'chat_bubble':
-        return Icons.chat_bubble;
-      case 'music_note':
-      case 'library_music':
-        return Icons.library_music;
-      case 'edit':
-      case 'edit_note':
-        return Icons.edit_note;
-      case 'help':
-      default:
-        return Icons.help;
-    }
+    return Icons.help;
   }
 
   @override

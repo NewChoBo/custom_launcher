@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// Configuration model for application paths
-class AppPathsConfig {
+/// Configuration model for application assets
+class AppAssetsConfig {
   final Map<String, CustomAppInfo> apps;
 
-  const AppPathsConfig({required this.apps});
+  const AppAssetsConfig({required this.apps});
 
-  factory AppPathsConfig.fromMap(Map<String, dynamic> map) {
-    return AppPathsConfig(
+  factory AppAssetsConfig.fromMap(Map<String, dynamic> map) {
+    return AppAssetsConfig(
       apps: (map['apps'] as Map<String, dynamic>? ?? <String, dynamic>{}).map(
         (String key, value) =>
             MapEntry(key, CustomAppInfo.fromMap(value as Map<String, dynamic>)),
@@ -16,8 +16,8 @@ class AppPathsConfig {
     );
   }
 
-  factory AppPathsConfig.fromJson(String source) {
-    return AppPathsConfig.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AppAssetsConfig.fromJson(String source) {
+    return AppAssetsConfig.fromMap(json.decode(source) as Map<String, dynamic>);
   }
 
   /// Get executable path for an app

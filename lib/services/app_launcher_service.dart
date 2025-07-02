@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:custom_launcher/models/app_paths_config.dart';
+import 'package:custom_launcher/models/app_assets_config.dart';
 
 /// Service for launching external applications
 class AppLauncherService {
@@ -9,27 +9,25 @@ class AppLauncherService {
   factory AppLauncherService() => _instance;
   AppLauncherService._internal();
 
-  AppPathsConfig? _pathsConfig;
+  AppAssetsConfig? _assetsConfig;
   bool _isConfigLoaded = false;
 
-  /// Load application paths configuration
-  Future<void> _loadPathsConfig() async {
+  /// Load application assets configuration
+  Future<void> _loadAssetsConfig() async {
     if (_isConfigLoaded) return;
 
     try {
       final String jsonString = await rootBundle.loadString(
-        'assets/config/app_paths.json',
+        'assets/config/app_assets.json',
       );
-      _pathsConfig = AppPathsConfig.fromJson(jsonString);
+      _assetsConfig = AppAssetsConfig.fromJson(jsonString);
       _isConfigLoaded = true;
-      debugPrint('App paths config loaded successfully');
+      debugPrint('App assets config loaded successfully');
     } catch (e) {
-      debugPrint('Failed to load app paths config: $e');
+      debugPrint('Failed to load app assets config: $e');
       // Use empty configuration if loading fails
-      _pathsConfig = const AppPathsConfig(
-        defaultPaths: <String, String>{},
-        searchPaths: <String, List<String>>{},
-        customApps: <String, CustomAppInfo>{},
+      _assetsConfig = const AppAssetsConfig(
+        apps: <String, CustomAppInfo>{},
       );
       _isConfigLoaded = true;
     }
@@ -38,7 +36,7 @@ class AppLauncherService {
   /// Launch an application by name
   Future<bool> launchApp(String appName) async {
     try {
-      await _loadPathsConfig();
+      await _loadAssetsConfig();
       debugPrint('Attempting to launch: $appName');
 
       final String? executablePath = _getExecutablePath(appName);
@@ -66,7 +64,7 @@ class AppLauncherService {
     }
   }
 
-  /// Get executable path for known applications
+  /// Get executable path for an application
   String? _getExecutablePath(String appName) {
     if (!Platform.isWindows) {
       debugPrint('Currently only Windows is supported');
@@ -74,19 +72,19 @@ class AppLauncherService {
     }
 
     // Use JSON configuration
-    return _pathsConfig?.getExecutablePath(appName);
+    return _assetsConfig?.getExecutablePath(appName);
   }
 
   /// Get list of supported applications
   Future<List<AppInfo>> getSupportedApps() async {
-    await _loadPathsConfig();
+    await _loadAssetsConfig();
 
     final List<AppInfo> apps = <AppInfo>[];
 
-    if (_pathsConfig != null) {
-      // All apps are now in customApps section
+    if (_assetsConfig != null) {
+      // All apps are now in apps section
       for (final MapEntry<String, CustomAppInfo> entry
-          in _pathsConfig!.customApps.entries) {
+          in _assetsConfig!.apps.entries) {
         apps.add(
           AppInfo(
             name: entry.key,
