@@ -1,73 +1,77 @@
 import 'package:flutter/foundation.dart';
-import 'package:system_tray/system_tray.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
 
 /// System Tray management service
 /// Handles system tray initialization, menu creation, and window controls
-class SystemTrayService {
-  final SystemTray _systemTray = SystemTray();
+
+/// System Tray management service (tray_manager 기반)
+/// Handles system tray initialization, menu creation, and window controls
+class SystemTrayService with TrayListener {
+  bool _isInitialized = false;
 
   /// Initialize system tray with icon and menu
   Future<void> initialize() async {
     try {
-      await _initSystemTray();
-      await _createContextMenu();
-      _registerEventHandlers();
+      await trayManager.setIcon(_getPlatformIconPath());
+      await _setContextMenu();
+      trayManager.addListener(this);
+      _isInitialized = true;
     } catch (e) {
       debugPrint('Error initializing system tray: $e');
     }
   }
 
-  /// Initialize system tray with platform-specific icon
-  Future<void> _initSystemTray() async {
-    String iconPath = _getPlatformIconPath();
-
-    await _systemTray.initSystemTray(
-      title: "Custom Launcher",
-      iconPath: iconPath,
-      toolTip: "Custom Launcher - Click to show/hide",
-    );
-  }
-
   /// Get platform-appropriate icon file path
+
   String _getPlatformIconPath() {
-    return Platform.isWindows
-        ? 'assets/icons/app_icon.ico'
-        : Platform.isMacOS
-        ? 'assets/icons/app_icon.icns'
-        : 'assets/icons/app_icon.png';
+    if (Platform.isWindows) {
+      return 'assets/icons/app_icon.ico';
+    } else if (Platform.isMacOS) {
+      return 'assets/icons/app_icon.icns';
+    } else {
+      return 'assets/icons/app_icon.png';
+    }
   }
 
-  /// Create and set context menu for system tray
-  Future<void> _createContextMenu() async {
-    final Menu menu = Menu();
-    await menu.buildFrom([
-      MenuItemLabel(
-        label: 'Show Window',
-        onClicked: (menuItem) => showWindow(),
-      ),
-      MenuItemLabel(
-        label: 'Hide Window',
-        onClicked: (menuItem) => hideWindow(),
-      ),
-      MenuSeparator(),
-      MenuItemLabel(label: 'Exit', onClicked: (menuItem) => exitApplication()),
-    ]);
-
-    await _systemTray.setContextMenu(menu);
+  /// Create and set context menu for system tray (tray_manager)
+  Future<void> _setContextMenu() async {
+    final Menu menu = Menu(
+      items: <MenuItem>[
+        MenuItem(key: 'show', label: 'Show Window'),
+        MenuItem(key: 'hide', label: 'Hide Window'),
+        MenuItem.separator(),
+        MenuItem(key: 'exit', label: 'Exit'),
+      ],
+    );
+    await trayManager.setContextMenu(menu);
   }
 
-  /// Register system tray event handlers
-  void _registerEventHandlers() {
-    _systemTray.registerSystemTrayEventHandler((eventName) {
-      debugPrint("System tray event: $eventName");
-      if (eventName == kSystemTrayEventClick) {
-        toggleWindow();
-      } else if (eventName == kSystemTrayEventRightClick) {
-        _systemTray.popUpContextMenu();
-      }
-    });
+  /// Tray event handler (tray_manager)
+  @override
+  void onTrayIconMouseDown() {
+    toggleWindow();
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    switch (menuItem.key) {
+      case 'show':
+        showWindow();
+        break;
+      case 'hide':
+        hideWindow();
+        break;
+      case 'exit':
+        exitApplication();
+        break;
+    }
   }
 
   /// Show application window
@@ -83,7 +87,7 @@ class SystemTrayService {
 
   /// Toggle window visibility
   Future<void> toggleWindow() async {
-    bool isVisible = await windowManager.isVisible();
+    final bool isVisible = await windowManager.isVisible();
     if (isVisible) {
       await hideWindow();
     } else {
@@ -93,12 +97,16 @@ class SystemTrayService {
 
   /// Exit application and cleanup system tray
   Future<void> exitApplication() async {
-    await _systemTray.destroy();
+    if (_isInitialized) {
+      await trayManager.destroy();
+    }
     exit(0);
   }
 
   /// Cleanup system tray resources
   Future<void> dispose() async {
-    await _systemTray.destroy();
+    if (_isInitialized) {
+      await trayManager.destroy();
+    }
   }
 }

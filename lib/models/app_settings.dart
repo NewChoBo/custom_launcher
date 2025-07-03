@@ -46,18 +46,22 @@ class AppSettings {
   final HorizontalPosition horizontalPosition;
   final VerticalPosition verticalPosition;
   final int monitorIndex; // 1, 2, 3, 4... or 0 for auto
+  final String appBarColor;
+  final String backgroundColor;
 
   const AppSettings({
     this.backgroundOpacity = 1.0,
     this.appBarOpacity = 1.0,
-    this.windowWidth = "800",
-    this.windowHeight = "600",
+    this.windowWidth = '800',
+    this.windowHeight = '600',
     this.skipTaskbar = true,
     this.showAppBar = true,
     this.windowLevel = WindowLevel.normal,
     this.horizontalPosition = HorizontalPosition.center,
     this.verticalPosition = VerticalPosition.center,
-    this.monitorIndex = 1, // Default to first monitor
+    this.monitorIndex = 1,
+    this.backgroundColor = '#00000000',
+    this.appBarColor = '', // Default to empty (use theme color)
   });
   factory AppSettings.fromMap(Map<String, dynamic> map) {
     // Parse window level from string
@@ -137,17 +141,17 @@ class AppSettings {
 
       if (value is String) {
         // Already a string, validate format
-        final trimmed = value.trim();
+        final String trimmed = value.trim();
         if (trimmed.endsWith('%')) {
           // Percentage format: "80%"
-          final percentStr = trimmed.substring(0, trimmed.length - 1);
-          final percent = double.tryParse(percentStr);
+          final String percentStr = trimmed.substring(0, trimmed.length - 1);
+          final double? percent = double.tryParse(percentStr);
           if (percent != null && percent > 0 && percent <= 100) {
             return trimmed;
           }
         } else {
           // Absolute value as string: "800"
-          final absoluteValue = double.tryParse(trimmed);
+          final double? absoluteValue = double.tryParse(trimmed);
           if (absoluteValue != null && absoluteValue > 0) {
             return trimmed;
           }
@@ -159,26 +163,89 @@ class AppSettings {
         // Convert number to string
         return value.toDouble().toString();
       }
-
       return defaultValue;
+    } // Parse background color from string (hex format)
+
+    String parseBackgroundColor(dynamic value) {
+      if (value == null) return '#00000000'; // Default transparent
+
+      if (value is String) {
+        final String trimmed = value.trim();
+        // Validate hex color format
+        if (RegExp(r'^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{8}$').hasMatch(trimmed)) {
+          return trimmed;
+        }
+      }
+
+      return '#00000000'; // Fallback to transparent
     }
 
+    // Parse AppBar color from string (hex format)
+    String parseAppBarColor(dynamic value) {
+      if (value == null) return ''; // Default to empty (use theme color)
+
+      if (value is String) {
+        final String trimmed = value.trim();
+        if (trimmed.isEmpty) return ''; // Empty means use theme color
+        // Validate hex color format
+        if (RegExp(r'^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{8}$').hasMatch(trimmed)) {
+          return trimmed;
+        }
+      }
+
+      return ''; // Fallback to theme color
+    }
+
+    // Extract nested sections
+    final Map<String, dynamic> ui =
+        map['ui'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final Map<String, dynamic> window =
+        map['window'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final Map<String, dynamic> system =
+        map['system'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
+    // Extract UI subsections
+    final Map<String, dynamic> colors =
+        ui['colors'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final Map<String, dynamic> opacity =
+        ui['opacity'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
+    // Extract Window subsections
+    final Map<String, dynamic> size =
+        window['size'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final Map<String, dynamic> position =
+        window['position'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final Map<String, dynamic> behavior =
+        window['behavior'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
     return AppSettings(
-      backgroundOpacity: (map['backgroundOpacity'] as num?)?.toDouble() ?? 1.0,
-      appBarOpacity: (map['appBarOpacity'] as num?)?.toDouble() ?? 1.0,
-      windowWidth: parseWindowSize(map['windowWidth'], "800"),
-      windowHeight: parseWindowSize(map['windowHeight'], "600"),
-      skipTaskbar: map['skipTaskbar'] as bool? ?? true,
-      showAppBar: map['showAppBar'] as bool? ?? false,
-      windowLevel: parseWindowLevel(map['windowLevel'] as String?),
+      // UI settings
+      showAppBar: ui['showAppBar'] as bool? ?? false,
+      appBarColor: parseAppBarColor(colors['appBarColor']),
+      backgroundColor: parseBackgroundColor(colors['backgroundColor']),
+      appBarOpacity: (opacity['appBarOpacity'] as num?)?.toDouble() ?? 1.0,
+      backgroundOpacity:
+          (opacity['backgroundOpacity'] as num?)?.toDouble() ?? 1.0,
+
+      // Window size settings
+      windowWidth: parseWindowSize(size['windowWidth'], '800'),
+      windowHeight: parseWindowSize(size['windowHeight'], '600'),
+
+      // Window position settings
       horizontalPosition: parseHorizontalPosition(
-        map['horizontalPosition'] as String?,
+        position['horizontalPosition'] as String?,
       ),
       verticalPosition: parseVerticalPosition(
-        map['verticalPosition'] as String?,
+        position['verticalPosition'] as String?,
       ),
+
+      // Window behavior settings
+      windowLevel: parseWindowLevel(behavior['windowLevel'] as String?),
+      skipTaskbar: behavior['skipTaskbar'] as bool? ?? true,
+
+      // System settings
       monitorIndex: parseMonitorIndex(
-        map['monitorIndex'] ?? map['monitorTarget'],
+        system['monitorIndex'] ?? map['monitorTarget'],
       ),
     );
   }
@@ -219,22 +286,38 @@ class AppSettings {
       }
     }
 
-    return {
-      'backgroundOpacity': backgroundOpacity,
-      'appBarOpacity': appBarOpacity,
-      'windowWidth': windowWidth,
-      'windowHeight': windowHeight,
-      'skipTaskbar': skipTaskbar,
-      'showAppBar': showAppBar,
-      'windowLevel': windowLevelToString(windowLevel),
-      'horizontalPosition': horizontalPositionToString(horizontalPosition),
-      'verticalPosition': verticalPositionToString(verticalPosition),
-      'monitorIndex': monitorIndex,
+    return <String, dynamic>{
+      'ui': <String, Object>{
+        'showAppBar': showAppBar,
+        'colors': <String, String>{
+          'appBarColor': appBarColor,
+          'backgroundColor': backgroundColor,
+        },
+        'opacity': <String, double>{
+          'appBarOpacity': appBarOpacity,
+          'backgroundOpacity': backgroundOpacity,
+        },
+      },
+      'window': <String, Map<String, Object>>{
+        'size': <String, String>{
+          'windowWidth': windowWidth,
+          'windowHeight': windowHeight,
+        },
+        'position': <String, String>{
+          'horizontalPosition': horizontalPositionToString(horizontalPosition),
+          'verticalPosition': verticalPositionToString(verticalPosition),
+        },
+        'behavior': <String, Object>{
+          'windowLevel': windowLevelToString(windowLevel),
+          'skipTaskbar': skipTaskbar,
+        },
+      },
+      'system': <String, int>{'monitorIndex': monitorIndex},
     };
   }
 
   @override
   String toString() {
-    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, showAppBar: $showAppBar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex)';
+    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, showAppBar: $showAppBar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex, backgroundColor: $backgroundColor, appBarColor: $appBarColor)';
   }
 }
