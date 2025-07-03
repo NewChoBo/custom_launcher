@@ -1,0 +1,220 @@
+{
+  "templates": [
+    {
+      "id": "default_card",
+      "name": "Default Card",
+      "type": "card",
+      "description": "Standard card layout with icon and text",
+      "defaultStyle": {
+        "width": 120,
+        "height": 120,
+        "elevation": 4,
+        "borderRadius": 12,
+        "padding": 16,
+        "iconSize": 48,
+        "fontSize": 12,
+        "fontWeight": "medium",
+        "iconTextSpacing": 8,
+        "maxLines": 2,
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2",
+        "textColor": "#424242"
+      },
+      "layout": {
+        "direction": "column",
+        "alignment": "center"
+      }
+    },
+    {
+      "id": "compact_card",
+      "name": "Compact Card",
+      "type": "card",
+      "description": "Smaller card layout for grid layouts",
+      "defaultStyle": {
+        "width": 80,
+        "height": 80,
+        "elevation": 2,
+        "borderRadius": 8,
+        "padding": 8,
+        "iconSize": 32,
+        "fontSize": 10,
+        "fontWeight": "medium",
+        "iconTextSpacing": 4,
+        "maxLines": 1,
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2",
+        "textColor": "#424242"
+      },
+      "layout": {
+        "direction": "column",
+        "alignment": "center"
+      }
+    },
+    {
+      "id": "large_card",
+      "name": "Large Card",
+      "type": "card",
+      "description": "Bigger card layout for featured apps",
+      "defaultStyle": {
+        "width": 160,
+        "height": 140,
+        "elevation": 6,
+        "borderRadius": 16,
+        "padding": 20,
+        "iconSize": 64,
+        "fontSize": 14,
+        "fontWeight": "semibold",
+        "iconTextSpacing": 12,
+        "maxLines": 2,
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2",
+        "textColor": "#212121"
+      },
+      "layout": {
+        "direction": "column",
+        "alignment": "center"
+      }
+    },
+    {
+      "id": "simple_icon",
+      "name": "Simple Icon",
+      "type": "icon",
+      "description": "Clean icon-only layout",
+      "defaultStyle": {
+        "iconSize": 56,
+        "borderRadius": 8,
+        "hoverColor": "#F5F5F5",
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2"
+      },
+      "layout": {
+        "showTooltip": true
+      }
+    },
+    {
+      "id": "small_icon",
+      "name": "Small Icon",
+      "type": "icon",
+      "description": "Compact icon layout for toolbars",
+      "defaultStyle": {
+        "iconSize": 32,
+        "borderRadius": 6,
+        "hoverColor": "#F0F0F0",
+        "primaryColor": "#666666",
+        "iconColor": "#666666"
+      },
+      "layout": {
+        "showTooltip": true
+      }
+    },
+    {
+      "id": "large_icon",
+      "name": "Large Icon",
+      "type": "icon",
+      "description": "Big icon layout for desktop shortcuts",
+      "defaultStyle": {
+        "iconSize": 72,
+        "borderRadius": 12,
+        "hoverColor": "#E3F2FD",
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2"
+      },
+      "layout": {
+        "showTooltip": true
+      }
+    },
+    {
+      "id": "list_item",
+      "name": "List Item",
+      "type": "list",
+      "description": "Horizontal list layout with icon and text",
+      "defaultStyle": {
+        "width": 200,
+        "height": 60,
+        "borderRadius": 8,
+        "padding": 12,
+        "iconSize": 32,
+        "titleFontSize": 14,
+        "titleFontWeight": "semibold",
+        "iconTextSpacing": 12,
+        "showBorder": false,
+        "showTrailingIcon": true,
+        "trailingIconSize": 16,
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2",
+        "titleColor": "#212121",
+        "hoverColor": "#F5F5F5"
+      },
+      "layout": {
+        "direction": "row",
+        "alignment": "center"
+      }
+    },
+    {
+      "id": "detailed_list",
+      "name": "Detailed List",
+      "type": "list",
+      "description": "List layout with subtitle support",
+      "defaultStyle": {
+        "width": 280,
+        "height": 80,
+        "borderRadius": 8,
+        "padding": 16,
+        "iconSize": 40,
+        "titleFontSize": 16,
+        "titleFontWeight": "semibold",
+        "subtitleFontSize": 12,
+        "subtitleFontWeight": "normal",
+        "iconTextSpacing": 16,
+        "showBorder": true,
+        "showSubtitle": true,
+        "showTrailingIcon": true,
+        "trailingIconSize": 18,
+        "borderColor": "#E0E0E0",
+        "borderWidth": 1,
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2",
+        "titleColor": "#212121",
+        "subtitleColor": "#757575",
+        "hoverColor": "#F8F9FA"
+      },
+      "layout": {
+        "direction": "row",
+        "alignment": "center"
+      }
+    },
+    {
+      "id": "compact_list",
+      "name": "Compact List",
+      "type": "list",
+      "description": "Smaller list layout for sidebar menus",
+      "defaultStyle": {
+        "width": 180,
+        "height": 48,
+        "borderRadius": 6,
+        "padding": 8,
+        "iconSize": 24,
+        "titleFontSize": 13,
+        "titleFontWeight": "medium",
+        "iconTextSpacing": 10,
+        "showBorder": false,
+        "showTrailingIcon": false,
+        "primaryColor": "#1976D2",
+        "iconColor": "#1976D2",
+        "titleColor": "#424242",
+        "hoverColor": "#F0F0F0"
+      },
+      "layout": {
+        "direction": "row",
+        "alignment": "center"
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "description": "Launcher template configurations for Custom Launcher",
+    "author": "Custom Launcher",
+    "createdAt": "2025-07-03T00:00:00.000Z",
+    "updatedAt": "2025-07-03T00:00:00.000Z"
+  }
+}

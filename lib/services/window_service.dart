@@ -225,7 +225,7 @@ class WindowService {
           }
 
           // Add small delay to ensure previous setting is applied
-          await Future.delayed(const Duration(milliseconds: 50));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
 
           // Then enable top
           await windowManager.setAlwaysOnTop(true);
@@ -238,7 +238,7 @@ class WindowService {
           await windowManager.setAlwaysOnTop(false);
 
           // Add small delay
-          await Future.delayed(const Duration(milliseconds: 50));
+          await Future<void>.delayed(const Duration(milliseconds: 50));
 
           try {
             await windowManager.setAlwaysOnBottom(true);
