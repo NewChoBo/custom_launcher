@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:custom_launcher/models/app_assets_config.dart';
+import 'package:custom_launcher/models/app_paths_config.dart';
 
 /// Service for launching external applications
 class AppLauncherService {
@@ -9,26 +9,23 @@ class AppLauncherService {
   factory AppLauncherService() => _instance;
   AppLauncherService._internal();
 
-  AppAssetsConfig? _assetsConfig;
+  AppPathsConfig? _config;
   bool _isConfigLoaded = false;
 
-  /// Load application assets configuration
-  Future<void> _loadAssetsConfig() async {
+  /// Load application configuration
+  Future<void> _loadConfig() async {
     if (_isConfigLoaded) return;
 
     try {
       final String jsonString = await rootBundle.loadString(
-        'assets/config/app_assets.json',
+        'assets/config/app_paths.json',
       );
-      _assetsConfig = AppAssetsConfig.fromJson(jsonString);
+      _config = AppPathsConfig.fromJson(jsonString);
       _isConfigLoaded = true;
-      debugPrint('App assets config loaded successfully');
+      debugPrint('App config loaded successfully');
     } catch (e) {
-      debugPrint('Failed to load app assets config: $e');
-      // Use empty configuration if loading fails
-      _assetsConfig = const AppAssetsConfig(
-        apps: <String, CustomAppInfo>{},
-      );
+      debugPrint('Failed to load app config: $e');
+      _config = const AppPathsConfig(apps: <String, CustomAppInfo>{});
       _isConfigLoaded = true;
     }
   }
@@ -36,7 +33,7 @@ class AppLauncherService {
   /// Launch an application by name
   Future<bool> launchApp(String appName) async {
     try {
-      await _loadAssetsConfig();
+      await _loadConfig();
       debugPrint('Attempting to launch: $appName');
 
       final String? executablePath = _getExecutablePath(appName);
@@ -71,20 +68,18 @@ class AppLauncherService {
       return null;
     }
 
-    // Use JSON configuration
-    return _assetsConfig?.getExecutablePath(appName);
+    return _config?.getExecutablePath(appName);
   }
 
   /// Get list of supported applications
   Future<List<AppInfo>> getSupportedApps() async {
-    await _loadAssetsConfig();
+    await _loadConfig();
 
     final List<AppInfo> apps = <AppInfo>[];
 
-    if (_assetsConfig != null) {
-      // All apps are now in apps section
+    if (_config != null) {
       for (final MapEntry<String, CustomAppInfo> entry
-          in _assetsConfig!.apps.entries) {
+          in _config!.apps.entries) {
         apps.add(
           AppInfo(
             name: entry.key,
