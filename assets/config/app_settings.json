@@ -1,14 +1,30 @@
 {
-  "showAppBar": false,
-  "appBarColor": "#2196F3",
-  "appBarOpacity": 0.5,
-  "backgroundColor": "#424242",
-  "backgroundOpacity": 0.1,
-  "windowWidth": "80%",
-  "windowHeight": "50%",
-  "skipTaskbar": true,
-  "windowLevel": "alwaysBelow",
-  "horizontalPosition": "center",
-  "verticalPosition": "bottom",
-  "monitorIndex": 2
+  "ui": {
+    "showAppBar": false,
+    "colors": {
+      "appBarColor": "#2196F3",
+      "backgroundColor": "#424242"
+    },
+    "opacity": {
+      "appBarOpacity": 0.5,
+      "backgroundOpacity": 0.1
+    }
+  },
+  "window": {
+    "size": {
+      "windowWidth": "80%",
+      "windowHeight": "50%"
+    },
+    "position": {
+      "horizontalPosition": "center",
+      "verticalPosition": "bottom"
+    },
+    "behavior": {
+      "windowLevel": "alwaysOnTop",
+      "skipTaskbar": true
+    }
+  },
+  "system": {
+    "monitorIndex": 2
+  }
 }

@@ -29,11 +29,12 @@ class SettingsService {
   /// Load settings from assets first, then local file if exists
   Future<void> _loadSettings() async {
     // Try to load local settings file first (user customizations)
-    final localFile = await _getLocalSettingsFile();
+    final File localFile = await _getLocalSettingsFile();
     if (await localFile.exists()) {
       debugPrint('Loading settings from local file: ${localFile.path}');
-      final jsonString = await localFile.readAsString();
-      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      final String jsonString = await localFile.readAsString();
+      final Map<String, dynamic> jsonMap =
+          jsonDecode(jsonString) as Map<String, dynamic>;
       _settings = AppSettings.fromMap(jsonMap);
       return;
     }
@@ -41,8 +42,9 @@ class SettingsService {
     // If no local file, load from assets
     try {
       debugPrint('Loading settings from assets: $_assetsPath');
-      final jsonString = await rootBundle.loadString(_assetsPath);
-      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      final String jsonString = await rootBundle.loadString(_assetsPath);
+      final Map<String, dynamic> jsonMap =
+          jsonDecode(jsonString) as Map<String, dynamic>;
       _settings = AppSettings.fromMap(jsonMap);
     } catch (e) {
       debugPrint('Assets settings not found, using defaults: $e');
@@ -53,7 +55,7 @@ class SettingsService {
   /// Get local settings file reference
   Future<File> _getLocalSettingsFile() async {
     // Use current directory for local settings file
-    final currentDir = Directory.current;
+    final Directory currentDir = Directory.current;
     return File('${currentDir.path}/$_localFileName');
   }
 }
