@@ -54,6 +54,36 @@
         "created": "2025-07-04",
         "tags": ["work", "productivity"]
     },
+    "frame": {
+        "ui": {
+            "showAppBar": false,
+            "colors": {
+                "appBarColor": "#2196F3",
+                "backgroundColor": "#424242"
+            },
+            "opacity": {
+                "appBarOpacity": 0.5,
+                "backgroundOpacity": 0.1
+            }
+        },
+        "window": {
+            "size": {
+                "windowWidth": "80%",
+                "windowHeight": "50%"
+            },
+            "position": {
+                "horizontalPosition": "center",
+                "verticalPosition": "bottom"
+            },
+            "behavior": {
+                "windowLevel": "alwaysOnTop",
+                "skipTaskbar": true
+            }
+        },
+        "system": {
+            "monitorIndex": 2
+        }
+    },
     "layout": {
         "type": "column",
         "spacing": 8,
@@ -127,6 +157,49 @@
 
 **기본 원리**: 모든 액션은 `default` 설정을 먼저 상속받은 후, 명시된 속성만 덮어씌웁니다.
 
+### 통합된 프레임 설정
+
+**Frame 섹션**: 기존 `app_settings.json`의 모든 기능을 레이아웃별로 설정 가능
+
+```json
+"frame": {
+    "ui": {
+        "showAppBar": false,              // 앱바 표시 여부
+        "colors": {
+            "appBarColor": "#2196F3",     // 앱바 색상
+            "backgroundColor": "#424242"   // 배경 색상
+        },
+        "opacity": {
+            "appBarOpacity": 0.5,         // 앱바 투명도
+            "backgroundOpacity": 0.1      // 배경 투명도
+        }
+    },
+    "window": {
+        "size": {
+            "windowWidth": "80%",         // 창 너비 (px 또는 %)
+            "windowHeight": "50%"         // 창 높이 (px 또는 %)
+        },
+        "position": {
+            "horizontalPosition": "center", // left, center, right
+            "verticalPosition": "bottom"    // top, center, bottom
+        },
+        "behavior": {
+            "windowLevel": "alwaysOnTop",   // normal, alwaysOnTop, alwaysOnBottom
+            "skipTaskbar": true             // 작업표시줄에서 숨김
+        }
+    },
+    "system": {
+        "monitorIndex": 2                 // 다중 모니터 지원 (0부터 시작)
+    }
+}
+```
+
+**레이아웃별 개별 설정**: 각 레이아웃마다 다른 창 설정 가능
+
+- 작업 모드: 큰 창, 중앙 정렬
+- 게임 모드: 작은 창, 우측 하단
+- 미디어 모드: 투명 배경, 항상 위에
+
 **예시 - 위 Steam 설정에서**:
 
 ```json
@@ -184,7 +257,29 @@
 - 구조화된 설정 분리
 - 일관된 네이밍 규칙
 
-## 4. 추가 고려사항
+## 4. 통합된 설정 구조
+
+### Frame 설정으로 app_settings.json 대체
+
+기존의 `app_settings.json` 파일 기능이 레이아웃 설정의 `frame` 섹션으로 통합되었습니다:
+
+**장점:**
+
+- **레이아웃별 맞춤 설정**: 각 레이아웃마다 다른 창 동작
+- **설정 통합**: 별도 파일 관리 불필요
+- **컨텍스트 기반**: 레이아웃 용도에 맞는 UI 설정
+
+**마이그레이션 가이드:**
+
+```json
+// 기존 app_settings.json → 새로운 layout의 frame 섹션
+{
+  "window": {"size": {"windowWidth": "80%"}} 
+  → "frame": {"window": {"size": {"windowWidth": "80%"}}}
+}
+```
+
+## 5. 추가 고려사항
 
 1. **조건부 표시**: 특정 앱이 설치된 경우에만 표시
 2. **동적 경로**: 환경변수나 레지스트리 기반 경로 해석
