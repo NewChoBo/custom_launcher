@@ -220,32 +220,21 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       return widget;
     }
 
-    // Check for explicit width/height that should override flex behavior
-    final dynamic width = element.getProperty<dynamic>('width');
-    final dynamic height = element.getProperty<dynamic>('height');
-    final Map<String, dynamic>? position = element
-        .getProperty<Map<String, dynamic>>('position');
+    // If flex properties are explicitly set, use them regardless of position
+    if (flex != null || flexFitStr != null) {
+      final FlexFit flexFit = _parseFlexFit(flexFitStr);
+      final int flexValue = flex?.toInt() ?? 1;
 
-    // If explicit size is set and no flex properties, don't wrap
-    if ((width != null || height != null || position != null) &&
-        flex == null &&
-        flexFitStr == null) {
-      return widget;
+      if (flexFit == FlexFit.tight || flex != null) {
+        return Expanded(flex: flexValue, child: widget);
+      } else {
+        return Flexible(flex: flexValue, fit: flexFit, child: widget);
+      }
     }
 
-    // If no flex property is specified, use Flexible(loose) by default to avoid infinite constraint issues
-    if (flex == null && flexFitStr == null) {
-      return Flexible(fit: FlexFit.loose, child: widget);
-    }
-
-    final FlexFit flexFit = _parseFlexFit(flexFitStr);
-    final int flexValue = flex?.toInt() ?? 1;
-
-    if (flexFit == FlexFit.tight) {
-      return Expanded(flex: flexValue, child: widget);
-    } else {
-      return Flexible(flex: flexValue, fit: flexFit, child: widget);
-    }
+    // If no flex properties are specified, use Flexible(loose) by default
+    // This allows widgets to size themselves appropriately without infinite constraint issues
+    return Flexible(fit: FlexFit.loose, child: widget);
   }
 
   /// Parse FlexFit from string
