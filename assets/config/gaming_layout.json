@@ -118,6 +118,7 @@
                   "type": "launcher",
                   "id": "steam_gaming",
                   "launcherRef": "steam",
+                  "flex": 2,
                   "overrides": {
                     "displayName": "Steam",
                     "imageType": "small",
@@ -125,8 +126,7 @@
                   },
                   "position": {
                     "width": 70,
-                    "height": 70,
-                    "flex": 1
+                    "height": 70
                   },
                   "style": {
                     "gradient": "linear-gradient(45deg, #1e3a8a 0%, #3b82f6 100%)",
@@ -154,6 +154,7 @@
                   "type": "launcher",
                   "id": "discord_gaming",
                   "launcherRef": "discord",
+                  "flex": 1,
                   "overrides": {
                     "displayName": "Discord",
                     "imageType": "small",
@@ -161,8 +162,7 @@
                   },
                   "position": {
                     "width": 70,
-                    "height": 70,
-                    "flex": 1
+                    "height": 70
                   },
                   "style": {
                     "gradient": "linear-gradient(45deg, #5865F2 0%, #7289da 100%)",
@@ -196,6 +196,7 @@
                   "type": "launcher",
                   "id": "explorer_gaming",
                   "launcherRef": "explorer",
+                  "flexFit": "loose",
                   "overrides": {
                     "displayName": "Files",
                     "imageType": "small",
@@ -203,8 +204,7 @@
                   },
                   "position": {
                     "width": 70,
-                    "height": 70,
-                    "flex": 1
+                    "height": 70
                   },
                   "style": {
                     "gradient": "linear-gradient(45deg, #4CAF50 0%, #8bc34a 100%)",
@@ -239,8 +239,7 @@
                   },
                   "position": {
                     "width": 70,
-                    "height": 70,
-                    "flex": 1
+                    "height": 70
                   },
                   "style": {
                     "gradient": "linear-gradient(45deg, #FF9800 0%, #ffeb3b 100%)",

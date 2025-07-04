@@ -128,30 +128,135 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     }
   }
 
-  /// Build Column widget
-  Widget _buildColumn(LayoutElement element) {
-    return Column(
-      mainAxisAlignment: _parseMainAxisAlignment(
-        element.getProperty<String>('mainAxisAlignment'),
-      ),
-      crossAxisAlignment: _parseCrossAxisAlignment(
-        element.getProperty<String>('crossAxisAlignment'),
-      ),
-      children: element.children?.map(_buildWidget).toList() ?? <Widget>[],
+  /// Build Row widget
+  Widget _buildRow(LayoutElement element) {
+    final MainAxisAlignment mainAlignment = _parseMainAxisAlignment(
+      element.getProperty<String>('mainAxisAlignment'),
+    );
+    final CrossAxisAlignment crossAlignment = _parseCrossAxisAlignment(
+      element.getProperty<String>('crossAxisAlignment'),
+    );
+    final MainAxisSize mainAxisSize = _parseMainAxisSize(
+      element.getProperty<String>('mainAxisSize'),
+    );
+    final num? spacing = element.getProperty<num>('spacing');
+
+    List<Widget> children = <Widget>[];
+
+    if (element.children != null) {
+      for (int i = 0; i < element.children!.length; i++) {
+        final LayoutElement child = element.children![i];
+        final Widget widget = _buildWidget(child);
+        final Widget wrappedWidget = _applyFlexWrapper(widget, child);
+
+        children.add(wrappedWidget);
+
+        // Add spacing between children (but not after the last one)
+        if (spacing != null &&
+            spacing > 0 &&
+            i < element.children!.length - 1) {
+          children.add(SizedBox(width: spacing.toDouble()));
+        }
+      }
+    }
+
+    return Row(
+      mainAxisAlignment: mainAlignment,
+      crossAxisAlignment: crossAlignment,
+      mainAxisSize: mainAxisSize,
+      children: children,
     );
   }
 
-  /// Build Row widget
-  Widget _buildRow(LayoutElement element) {
-    return Row(
-      mainAxisAlignment: _parseMainAxisAlignment(
-        element.getProperty<String>('mainAxisAlignment'),
-      ),
-      crossAxisAlignment: _parseCrossAxisAlignment(
-        element.getProperty<String>('crossAxisAlignment'),
-      ),
-      children: element.children?.map(_buildWidget).toList() ?? <Widget>[],
+  /// Build Column widget
+  Widget _buildColumn(LayoutElement element) {
+    final MainAxisAlignment mainAlignment = _parseMainAxisAlignment(
+      element.getProperty<String>('mainAxisAlignment'),
     );
+    final CrossAxisAlignment crossAlignment = _parseCrossAxisAlignment(
+      element.getProperty<String>('crossAxisAlignment'),
+    );
+    final MainAxisSize mainAxisSize = _parseMainAxisSize(
+      element.getProperty<String>('mainAxisSize'),
+    );
+    final num? spacing = element.getProperty<num>('spacing');
+
+    List<Widget> children = <Widget>[];
+
+    if (element.children != null) {
+      for (int i = 0; i < element.children!.length; i++) {
+        final LayoutElement child = element.children![i];
+        final Widget widget = _buildWidget(child);
+        final Widget wrappedWidget = _applyFlexWrapper(widget, child);
+
+        children.add(wrappedWidget);
+
+        // Add spacing between children (but not after the last one)
+        if (spacing != null &&
+            spacing > 0 &&
+            i < element.children!.length - 1) {
+          children.add(SizedBox(height: spacing.toDouble()));
+        }
+      }
+    }
+
+    return Column(
+      mainAxisAlignment: mainAlignment,
+      crossAxisAlignment: crossAlignment,
+      mainAxisSize: mainAxisSize,
+      children: children,
+    );
+  }
+
+  /// Apply flex wrapper (Expanded/Flexible) to widget based on element properties
+  Widget _applyFlexWrapper(Widget widget, LayoutElement element) {
+    // Check for flex property
+    final num? flex = element.getProperty<num>('flex');
+    final String? flexFitStr = element.getProperty<String>('flexFit');
+
+    // Check if this element explicitly opts out of flex wrapping
+    final bool? noFlex = element.getProperty<bool>('noFlex');
+    if (noFlex == true) {
+      return widget;
+    }
+
+    // Check for explicit width/height that should override flex behavior
+    final dynamic width = element.getProperty<dynamic>('width');
+    final dynamic height = element.getProperty<dynamic>('height');
+    final Map<String, dynamic>? position = element
+        .getProperty<Map<String, dynamic>>('position');
+
+    // If explicit size is set and no flex properties, don't wrap
+    if ((width != null || height != null || position != null) &&
+        flex == null &&
+        flexFitStr == null) {
+      return widget;
+    }
+
+    // If no flex property is specified, use Flexible(loose) by default to avoid infinite constraint issues
+    if (flex == null && flexFitStr == null) {
+      return Flexible(fit: FlexFit.loose, child: widget);
+    }
+
+    final FlexFit flexFit = _parseFlexFit(flexFitStr);
+    final int flexValue = flex?.toInt() ?? 1;
+
+    if (flexFit == FlexFit.tight) {
+      return Expanded(flex: flexValue, child: widget);
+    } else {
+      return Flexible(flex: flexValue, fit: flexFit, child: widget);
+    }
+  }
+
+  /// Parse FlexFit from string
+  FlexFit _parseFlexFit(String? flexFitStr) {
+    switch (flexFitStr?.toLowerCase()) {
+      case 'loose':
+        return FlexFit.loose;
+      case 'tight':
+      default:
+        return FlexFit.tight; // Default to tight for Expanded behavior
+    }
   }
 
   /// Build Container widget
@@ -494,6 +599,19 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     }
   }
 
+  /// Parse MainAxisSize
+  MainAxisSize _parseMainAxisSize(String? value) {
+    switch (value?.toLowerCase()) {
+      case 'min':
+        return MainAxisSize.min;
+      case 'max':
+        return MainAxisSize.max;
+      default:
+        return MainAxisSize
+            .min; // Changed default to min to avoid infinite constraint issues
+    }
+  }
+
   /// Parse FontWeight
   FontWeight? _parseFontWeight(String? value) {
     switch (value?.toLowerCase()) {
@@ -589,11 +707,9 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       return const Center(child: Text('No layout configuration available'));
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _buildWidget(_layoutConfig!.layout),
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: _buildWidget(_layoutConfig!.layout),
     );
   }
 }
