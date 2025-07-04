@@ -1,0 +1,156 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "title": "Gaming Mode",
+    "description": "Compact gaming focused layout",
+    "author": "User",
+    "created": "2025-07-04",
+    "tags": ["gaming", "compact", "overlay"]
+  },
+  "frame": {
+    "ui": {
+      "showAppBar": false,
+      "colors": {
+        "appBarColor": "#1e3a8a",
+        "backgroundColor": "#1a1a1a"
+      },
+      "opacity": {
+        "appBarOpacity": 0.8,
+        "backgroundOpacity": 0.2
+      }
+    },
+    "window": {
+      "size": {
+        "windowWidth": "400px",
+        "windowHeight": "300px"
+      },
+      "position": {
+        "horizontalPosition": "right",
+        "verticalPosition": "bottom"
+      },
+      "behavior": {
+        "windowLevel": "alwaysOnTop",
+        "skipTaskbar": true
+      }
+    },
+    "system": {
+      "monitorIndex": 0
+    }
+  },
+  "layout": {
+    "type": "column",
+    "spacing": 8,
+    "padding": { "top": 12, "bottom": 12, "left": 12, "right": 12 },
+    "children": [
+      {
+        "type": "text",
+        "text": "Gaming Quick Access",
+        "style": {
+          "fontSize": 14,
+          "fontWeight": "bold",
+          "color": "#FFFFFF"
+        },
+        "textAlign": "center"
+      },
+      {
+        "type": "row",
+        "spacing": 8,
+        "children": [
+          {
+            "type": "launcher",
+            "id": "steam_gaming",
+            "launcherRef": "steam",
+            "overrides": {
+              "displayName": "Steam",
+              "imageType": "small",
+              "action": "bigpicture"
+            },
+            "position": {
+              "width": 60,
+              "height": 60,
+              "flex": 1
+            },
+            "style": {
+              "backgroundColor": "#1e3a8a",
+              "borderRadius": 6,
+              "elevation": 3
+            }
+          },
+          {
+            "type": "launcher",
+            "id": "discord_gaming",
+            "launcherRef": "discord",
+            "overrides": {
+              "displayName": "Discord",
+              "imageType": "small",
+              "action": "default"
+            },
+            "position": {
+              "width": 60,
+              "height": 60,
+              "flex": 1
+            },
+            "style": {
+              "backgroundColor": "#5865F2",
+              "borderRadius": 6,
+              "elevation": 3
+            }
+          }
+        ]
+      },
+      {
+        "type": "row",
+        "spacing": 8,
+        "children": [
+          {
+            "type": "launcher",
+            "id": "explorer_gaming",
+            "launcherRef": "explorer",
+            "overrides": {
+              "displayName": "Files",
+              "imageType": "small",
+              "action": "downloads"
+            },
+            "position": {
+              "width": 60,
+              "height": 60,
+              "flex": 1
+            },
+            "style": {
+              "backgroundColor": "#4CAF50",
+              "borderRadius": 6,
+              "elevation": 3
+            }
+          },
+          {
+            "type": "launcher",
+            "id": "calculator_gaming",
+            "launcherRef": "calculator",
+            "overrides": {
+              "displayName": "Calc",
+              "imageType": "small",
+              "action": "default"
+            },
+            "position": {
+              "width": 60,
+              "height": 60,
+              "flex": 1
+            },
+            "style": {
+              "backgroundColor": "#FF9800",
+              "borderRadius": 6,
+              "elevation": 3
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "globalSettings": {
+    "theme": "dark",
+    "animations": true,
+    "autoHide": true,
+    "defaultImageType": "small",
+    "defaultActionType": "default"
+  }
+}

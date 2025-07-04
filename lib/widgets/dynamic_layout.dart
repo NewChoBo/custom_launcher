@@ -1,16 +1,19 @@
+import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:custom_launcher/models/layout_config.dart';
+import 'package:custom_launcher/services/launcher_config_service.dart';
 import 'package:custom_launcher/widgets/factories/widget_registry.dart';
 import 'package:custom_launcher/widgets/factories/launcher_widget_factory.dart';
 
 /// Dynamic layout widget that builds UI from JSON configuration
 class DynamicLayout extends StatefulWidget {
-  final String configPath;
+  final LauncherConfigService configService;
+  final String? layoutName;
 
   const DynamicLayout({
     super.key,
-    this.configPath = 'assets/config/layout_config.json',
+    required this.configService,
+    this.layoutName,
   });
 
   @override
@@ -33,14 +36,16 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   /// Initialize widget registry with factories
   void _initializeWidgetRegistry() {
     // Register custom widget factories
-    _widgetRegistry.registerFactory(LauncherWidgetFactory());
+    _widgetRegistry.registerFactory(
+      LauncherWidgetFactory(configService: widget.configService),
+    );
 
     debugPrint(
       'Widget registry initialized with ${_widgetRegistry.supportedTypes.length} factories',
     );
   }
 
-  /// Load layout configuration from JSON file
+  /// Load layout configuration from service
   Future<void> _loadLayoutConfig() async {
     try {
       setState(() {
@@ -48,8 +53,13 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         _error = null;
       });
 
-      final String jsonString = await rootBundle.loadString(widget.configPath);
-      final LayoutConfig config = LayoutConfig.fromJson(jsonString);
+      final LayoutConfig? config = widget.layoutName != null
+          ? widget.configService.getLayout(widget.layoutName!)
+          : widget.configService.getCurrentLayout();
+
+      if (config == null) {
+        throw Exception('Layout not found: ${widget.layoutName ?? 'current'}');
+      }
 
       setState(() {
         _layoutConfig = config;
@@ -68,27 +78,37 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
   /// Build widget from layout element
   Widget _buildWidget(LayoutElement element) {
+    debugPrint('Building widget for type: ${element.type}');
+
     // Try widget registry first (for custom widgets)
     final Widget? customWidget = _widgetRegistry.createWidget(element);
     if (customWidget != null) {
+      debugPrint('Created custom widget for type: ${element.type}');
       return customWidget;
     }
 
     // Fallback to built-in widgets
     switch (element.type.toLowerCase()) {
       case 'column':
+        debugPrint('Building Column widget');
         return _buildColumn(element);
       case 'row':
+        debugPrint('Building Row widget');
         return _buildRow(element);
       case 'container':
+        debugPrint('Building Container widget');
         return _buildContainer(element);
       case 'text':
+        debugPrint('Building Text widget');
         return _buildText(element);
       case 'icon':
+        debugPrint('Building Icon widget');
         return _buildIcon(element);
       case 'card':
+        debugPrint('Building Card widget');
         return _buildCard(element);
       case 'sizedbox':
+        debugPrint('Building SizedBox widget');
         return _buildSizedBox(element);
       default:
         debugPrint('Unknown widget type: ${element.type}');
@@ -99,8 +119,9 @@ class _DynamicLayoutState extends State<DynamicLayout> {
             border: Border.all(color: Colors.red),
           ),
           child: Text(
-            'Unknown: ${element.type}',
-            style: const TextStyle(color: Colors.red),
+            'Error\nUnknown: ${element.type}',
+            style: const TextStyle(color: Colors.red, fontSize: 12),
+            textAlign: TextAlign.center,
           ),
         );
     }
@@ -141,30 +162,28 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
     EdgeInsetsGeometry? padding;
     if (paddingMap != null) {
-      final LayoutPadding layoutPadding = LayoutPadding.fromMap(paddingMap);
-      if (layoutPadding.all != null) {
-        padding = EdgeInsets.all(layoutPadding.all!);
+      final num? all = paddingMap['all'] as num?;
+      if (all != null) {
+        padding = EdgeInsets.all(all.toDouble());
       } else {
         padding = EdgeInsets.only(
-          top: layoutPadding.top ?? 0,
-          bottom: layoutPadding.bottom ?? 0,
-          left: layoutPadding.left ?? 0,
-          right: layoutPadding.right ?? 0,
+          top: (paddingMap['top'] as num?)?.toDouble() ?? 0,
+          bottom: (paddingMap['bottom'] as num?)?.toDouble() ?? 0,
+          left: (paddingMap['left'] as num?)?.toDouble() ?? 0,
+          right: (paddingMap['right'] as num?)?.toDouble() ?? 0,
         );
       }
     }
 
     Decoration? decoration;
     if (decorationMap != null) {
-      final LayoutDecoration layoutDecoration = LayoutDecoration.fromMap(
-        decorationMap,
-      );
+      final String? colorString = decorationMap['color'] as String?;
+      final num? borderRadius = decorationMap['borderRadius'] as num?;
+
       decoration = BoxDecoration(
-        color: layoutDecoration.color != null
-            ? _parseColor(layoutDecoration.color!)
-            : null,
-        borderRadius: layoutDecoration.borderRadius != null
-            ? BorderRadius.circular(layoutDecoration.borderRadius!)
+        color: colorString != null ? _parseColor(colorString) : null,
+        borderRadius: borderRadius != null
+            ? BorderRadius.circular(borderRadius.toDouble())
             : null,
       );
     }
@@ -173,8 +192,8 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     final height = element.getProperty<dynamic>('height');
 
     return Container(
-      width: _parseDimension(width),
-      height: _parseDimension(height),
+      width: _parseDimension(width)?.toDouble(),
+      height: _parseDimension(height)?.toDouble(),
       padding: padding,
       decoration: decoration,
       child: element.child != null ? _buildWidget(element.child!) : null,
@@ -190,13 +209,14 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
     TextStyle? style;
     if (styleMap != null) {
-      final LayoutStyle layoutStyle = LayoutStyle.fromMap(styleMap);
+      final num? fontSize = styleMap['fontSize'] as num?;
+      final String? fontWeight = styleMap['fontWeight'] as String?;
+      final String? colorString = styleMap['color'] as String?;
+
       style = TextStyle(
-        fontSize: layoutStyle.fontSize,
-        fontWeight: _parseFontWeight(layoutStyle.fontWeight),
-        color: layoutStyle.color != null
-            ? _parseColor(layoutStyle.color!)
-            : null,
+        fontSize: fontSize?.toDouble(),
+        fontWeight: _parseFontWeight(fontWeight),
+        color: colorString != null ? _parseColor(colorString) : null,
       );
     }
 
@@ -206,34 +226,32 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   /// Build Icon widget
   Widget _buildIcon(LayoutElement element) {
     final String iconName = element.getProperty<String>('icon') ?? 'help';
-    final double? size = element.getProperty<num>('size', 24)?.toDouble();
+    final num? size = element.getProperty<num>('size', 24);
     final String? colorString = element.getProperty<String>('color');
 
     return Icon(
       _parseIconData(iconName),
-      size: size,
+      size: size?.toDouble(),
       color: colorString != null ? _parseColor(colorString) : null,
     );
   }
 
   /// Build Card widget
   Widget _buildCard(LayoutElement element) {
-    final double? elevation = element
-        .getProperty<num>('elevation', 1)
-        ?.toDouble();
+    final num? elevation = element.getProperty<num>('elevation', 1);
 
     return Card(
-      elevation: elevation,
+      elevation: elevation?.toDouble(),
       child: element.child != null ? _buildWidget(element.child!) : null,
     );
   }
 
   /// Build SizedBox widget
   Widget _buildSizedBox(LayoutElement element) {
-    final double? width = element.getProperty<num>('width')?.toDouble();
-    final double? height = element.getProperty<num>('height')?.toDouble();
+    final num? width = element.getProperty<num>('width');
+    final num? height = element.getProperty<num>('height');
 
-    return SizedBox(width: width, height: height);
+    return SizedBox(width: width?.toDouble(), height: height?.toDouble());
   }
 
   /// Parse color from hex string
@@ -251,11 +269,11 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   }
 
   /// Parse dimension (supports 'fill' for double.infinity)
-  double? _parseDimension(dynamic value) {
+  num? _parseDimension(dynamic value) {
     if (value == null) return null;
-    if (value is num) return value.toDouble();
+    if (value is num) return value;
     if (value is String && value.toLowerCase() == 'fill') {
-      return double.infinity;
+      return 1.0 / 0.0; // double.infinity equivalent
     }
     return null;
   }

@@ -1,31 +1,97 @@
 import 'package:window_manager/window_manager.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/app_settings.dart';
+import 'package:custom_launcher/services/launcher_config_service.dart';
+import 'package:custom_launcher/models/layout_config.dart';
 
 /// Window management service for desktop applications
 /// Handles window initialization, configuration, and lifecycle
 class WindowService {
-  /// Initialize window manager with settings-based configuration
-  static Future<void> initialize([AppSettings? settings]) async {
-    final AppSettings config = settings ?? const AppSettings();
+  /// Initialize window manager with layout configuration
+  static Future<void> initializeWithConfig(
+    LauncherConfigService configService,
+  ) async {
+    await windowManager.ensureInitialized();
 
+    // Get layout configuration
+    final LayoutConfig? layout = configService.getCurrentLayout();
+    final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
+
+    // Calculate window size from layout config or use defaults
+    Size windowSize;
+    if (layout?.frame.window.size != null) {
+      final SizeConfig frameSize = layout!.frame.window.size;
+      windowSize = Size(
+        _parseSize(frameSize.windowWidth, primaryDisplay.size.width),
+        _parseSize(frameSize.windowHeight, primaryDisplay.size.height),
+      );
+    } else {
+      windowSize = Size(
+        primaryDisplay.size.width * 0.8,
+        primaryDisplay.size.height * 0.6,
+      );
+    }
+
+    // Get window behavior settings
+    final bool skipTaskbar = layout?.frame.window.behavior.skipTaskbar ?? true;
+
+    // Calculate window position
+    final String horizontalPos =
+        layout?.frame.window.position.horizontalPosition ?? 'center';
+    final String verticalPos =
+        layout?.frame.window.position.verticalPosition ?? 'center';
+    final bool centerWindow =
+        horizontalPos == 'center' && verticalPos == 'center';
+
+    await windowManager.waitUntilReadyToShow(
+      WindowOptions(
+        size: windowSize,
+        center: centerWindow,
+        backgroundColor: Colors.transparent,
+        skipTaskbar: skipTaskbar,
+        titleBarStyle: TitleBarStyle.hidden,
+      ),
+      () async {
+        await windowManager.show();
+
+        // Set custom position if not centered
+        if (!centerWindow) {
+          await _setCustomPosition(
+            windowSize,
+            horizontalPos,
+            verticalPos,
+            primaryDisplay,
+            layout,
+          );
+        }
+
+        await windowManager.focus();
+        await windowManager.setPreventClose(true);
+
+        debugPrint(
+          'Window initialized with layout config: ${layout?.metadata.title ?? 'default'}',
+        );
+      },
+    );
+  }
+
+  /// Initialize window manager with default configuration (legacy method)
+  static Future<void> initialize() async {
     await windowManager.ensureInitialized();
 
     // Get primary display for initial size calculation
     final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
-    final Size initialSize = _calculateWindowSize(
-      config.windowWidth,
-      config.windowHeight,
-      primaryDisplay,
+    final Size initialSize = Size(
+      primaryDisplay.size.width * 0.8,
+      primaryDisplay.size.height * 0.6,
     );
 
     await windowManager.waitUntilReadyToShow(
       WindowOptions(
         size: initialSize,
-        center: false, // We'll set position manually
+        center: true,
         backgroundColor: Colors.transparent,
-        skipTaskbar: config.skipTaskbar,
+        skipTaskbar: true,
         titleBarStyle: TitleBarStyle.hidden,
       ),
       () async {
@@ -33,270 +99,75 @@ class WindowService {
         await windowManager.focus();
         await windowManager.setPreventClose(true);
 
-        // Set position based on settings
-        await _applyWindowPosition(config);
-
-        // Configure window level based on settings
-        await _configureWindowLevel(config.windowLevel);
-
-        debugPrint('Window initialized with settings: $config');
+        debugPrint('Window initialized with default settings');
       },
     );
   }
 
-  /// Apply window position based on settings using window_manager's built-in utilities
-  static Future<void> _applyWindowPosition(AppSettings config) async {
-    try {
-      // Get target display first for size calculations
-      final Display targetDisplay = await _getTargetDisplay(
-        config.monitorIndex,
-      );
-
-      // Calculate actual window size (handle percentage values)
-      final Size size = _calculateWindowSize(
-        config.windowWidth,
-        config.windowHeight,
-        targetDisplay,
-      );
-
-      // Calculate alignment based on position settings
-      final Alignment alignment = _getAlignmentFromPosition(
-        config.horizontalPosition,
-        config.verticalPosition,
-      );
-
-      // Calculate position using the target display
-      final Offset position = await _calcWindowPositionForDisplay(
-        size,
-        alignment,
-        targetDisplay,
-      );
-
-      debugPrint(
-        'Setting window size to: $size and position to: $position (alignment: $alignment, display: ${targetDisplay.size})',
-      );
-
-      // Apply the calculated size and position
-      await windowManager.setSize(size);
-      await windowManager.setPosition(position);
-    } catch (e) {
-      debugPrint('Error applying window position: $e');
-      // Fallback to center positioning
-      await windowManager.center();
-    }
-  }
-
-  /// Get target display based on monitor preference
-  static Future<Display> _getTargetDisplay(int monitorIndex) async {
-    try {
-      final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
-      final List<Display> allDisplays = await screenRetriever.getAllDisplays();
-
-      debugPrint('Available displays: ${allDisplays.length}');
-      for (int i = 0; i < allDisplays.length; i++) {
-        final Display display = allDisplays[i];
-        debugPrint('Display $i: ${display.size} at ${display.visiblePosition}');
-      } // Handle monitor index (1-based numbering, 0 = auto)
-      if (monitorIndex == 0) {
-        // Auto mode: Use cursor position to determine current display
-        final Offset cursorPos = await screenRetriever.getCursorScreenPoint();
-        return allDisplays.firstWhere((Display display) {
-          final Rect displayRect = Rect.fromLTWH(
-            display.visiblePosition?.dx ?? 0,
-            display.visiblePosition?.dy ?? 0,
-            display.size.width,
-            display.size.height,
-          );
-          return displayRect.contains(cursorPos);
-        }, orElse: () => primaryDisplay);
-      } else {
-        // Specific monitor (1-based, so subtract 1 for 0-based array index)
-        final int displayIndex = monitorIndex - 1;
-        if (displayIndex >= 0 && displayIndex < allDisplays.length) {
-          return allDisplays[displayIndex];
-        } else {
-          debugPrint(
-            'Monitor $monitorIndex not available (only ${allDisplays.length} displays), falling back to Monitor 1',
-          );
-          return allDisplays.isNotEmpty ? allDisplays[0] : primaryDisplay;
-        }
-      }
-    } catch (e) {
-      debugPrint('Error getting target display: $e');
-      return await screenRetriever.getPrimaryDisplay();
-    }
-  }
-
-  /// Calculate window position for specific display
-  static Future<Offset> _calcWindowPositionForDisplay(
+  /// Set custom window position based on layout configuration
+  static Future<void> _setCustomPosition(
     Size windowSize,
-    Alignment alignment,
-    Display display,
+    String horizontalPos,
+    String verticalPos,
+    Display primaryDisplay,
+    LayoutConfig? layout,
   ) async {
-    // Use visible size if available (excludes taskbar, etc.)
-    final Size screenSize = display.visibleSize ?? display.size;
-    final Offset screenOffset = display.visiblePosition ?? const Offset(0, 0);
+    double x = 0;
+    double y = 0;
 
-    debugPrint('Screen size: $screenSize, offset: $screenOffset');
+    // Get margin from layout config or use default
+    double horizontalMargin = 20.0;
+    double verticalMargin = 20.0;
 
-    double x = screenOffset.dx;
-    double y = screenOffset.dy;
-
-    // Calculate position based on alignment
-    if (alignment == Alignment.topLeft) {
-      x += 0;
-      y += 0;
-    } else if (alignment == Alignment.topCenter) {
-      x += (screenSize.width - windowSize.width) / 2;
-      y += 0;
-    } else if (alignment == Alignment.topRight) {
-      x += screenSize.width - windowSize.width;
-      y += 0;
-    } else if (alignment == Alignment.centerLeft) {
-      x += 0;
-      y += (screenSize.height - windowSize.height) / 2;
-    } else if (alignment == Alignment.center) {
-      x += (screenSize.width - windowSize.width) / 2;
-      y += (screenSize.height - windowSize.height) / 2;
-    } else if (alignment == Alignment.centerRight) {
-      x += screenSize.width - windowSize.width;
-      y += (screenSize.height - windowSize.height) / 2;
-    } else if (alignment == Alignment.bottomLeft) {
-      x += 0;
-      y += screenSize.height - windowSize.height;
-    } else if (alignment == Alignment.bottomCenter) {
-      x += (screenSize.width - windowSize.width) / 2;
-      y += screenSize.height - windowSize.height;
-    } else if (alignment == Alignment.bottomRight) {
-      x += screenSize.width - windowSize.width;
-      y += screenSize.height - windowSize.height;
+    if (layout?.frame.window.position.margin != null) {
+      horizontalMargin = layout!.frame.window.position.margin!.horizontal;
+      verticalMargin = layout.frame.window.position.margin!.vertical;
     }
 
-    return Offset(x, y);
-  }
-
-  /// Convert position settings to Flutter Alignment
-  static Alignment _getAlignmentFromPosition(
-    HorizontalPosition horizontal,
-    VerticalPosition vertical,
-  ) {
-    // Create alignment matrix
-    const List<List<Alignment>> alignments = <List<Alignment>>[
-      <Alignment>[Alignment.topLeft, Alignment.topCenter, Alignment.topRight],
-      <Alignment>[
-        Alignment.centerLeft,
-        Alignment.center,
-        Alignment.centerRight,
-      ],
-      <Alignment>[
-        Alignment.bottomLeft,
-        Alignment.bottomCenter,
-        Alignment.bottomRight,
-      ],
-    ];
-
-    final int verticalIndex = vertical == VerticalPosition.top
-        ? 0
-        : vertical == VerticalPosition.center
-        ? 1
-        : 2;
-    final int horizontalIndex = horizontal == HorizontalPosition.left
-        ? 0
-        : horizontal == HorizontalPosition.center
-        ? 1
-        : 2;
-
-    return alignments[verticalIndex][horizontalIndex];
-  }
-
-  /// Configure window level (z-order) based on settings
-  static Future<void> _configureWindowLevel(WindowLevel level) async {
-    try {
-      debugPrint('Configuring window level: $level');
-
-      switch (level) {
-        case WindowLevel.alwaysOnTop:
-          debugPrint('Setting window to always on top');
-          // First disable bottom if available
-          try {
-            await windowManager.setAlwaysOnBottom(false);
-          } catch (e) {
-            debugPrint('setAlwaysOnBottom not available or failed: $e');
-          }
-
-          // Add small delay to ensure previous setting is applied
-          await Future.delayed(const Duration(milliseconds: 50));
-
-          // Then enable top
-          await windowManager.setAlwaysOnTop(true);
-          debugPrint('Always on top enabled');
-          break;
-
-        case WindowLevel.alwaysBelow:
-          debugPrint('Setting window to always below');
-          // First disable top
-          await windowManager.setAlwaysOnTop(false);
-
-          // Add small delay
-          await Future.delayed(const Duration(milliseconds: 50));
-
-          try {
-            await windowManager.setAlwaysOnBottom(true);
-            debugPrint('Always below enabled');
-          } catch (e) {
-            debugPrint('setAlwaysOnBottom not supported on this platform: $e');
-          }
-          break;
-
-        case WindowLevel.normal:
-          debugPrint('Setting window to normal level');
-          // Disable both
-          await windowManager.setAlwaysOnTop(false);
-          try {
-            await windowManager.setAlwaysOnBottom(false);
-          } catch (e) {
-            debugPrint('setAlwaysOnBottom not available: $e');
-          }
-          debugPrint('Normal window level set');
-          break;
-      }
-    } catch (e) {
-      debugPrint('Error configuring window level: $e');
+    // Calculate horizontal position
+    switch (horizontalPos.toLowerCase()) {
+      case 'left':
+        x = horizontalMargin;
+        break;
+      case 'right':
+        x = primaryDisplay.size.width - windowSize.width - horizontalMargin;
+        break;
+      case 'center':
+      default:
+        x = (primaryDisplay.size.width - windowSize.width) / 2;
+        break;
     }
+
+    // Calculate vertical position
+    switch (verticalPos.toLowerCase()) {
+      case 'top':
+        y = verticalMargin;
+        break;
+      case 'bottom':
+        y = primaryDisplay.size.height - windowSize.height - verticalMargin;
+        break;
+      case 'center':
+      default:
+        y = (primaryDisplay.size.height - windowSize.height) / 2;
+        break;
+    }
+
+    await windowManager.setPosition(Offset(x, y));
+    debugPrint(
+      'Window positioned at: ($x, $y) - ${horizontalPos}_${verticalPos} with margin: (${horizontalMargin}, ${verticalMargin})',
+    );
   }
 
-  /// Calculate actual window size from string values (supports percentage)
-  static Size _calculateWindowSize(
-    String widthStr,
-    String heightStr,
-    Display display,
-  ) {
-    final Size screenSize = display.visibleSize ?? display.size;
-
-    // Parse width
-    double width;
-    if (widthStr.endsWith('%')) {
-      final String percentStr = widthStr.substring(0, widthStr.length - 1);
-      final double percent = double.tryParse(percentStr) ?? 80.0;
-      width = screenSize.width * (percent / 100.0);
+  /// Parse size string (e.g., "80%", "1024", "fill") to pixel value
+  static double _parseSize(String sizeStr, double referenceSize) {
+    if (sizeStr.endsWith('%')) {
+      final double percent =
+          double.tryParse(sizeStr.substring(0, sizeStr.length - 1)) ?? 80;
+      return referenceSize * (percent / 100);
+    } else if (sizeStr.toLowerCase() == 'fill') {
+      return referenceSize;
     } else {
-      width = double.tryParse(widthStr) ?? 800.0;
+      return double.tryParse(sizeStr) ?? referenceSize * 0.8;
     }
-
-    // Parse height
-    double height;
-    if (heightStr.endsWith('%')) {
-      final String percentStr = heightStr.substring(0, heightStr.length - 1);
-      final double percent = double.tryParse(percentStr) ?? 60.0;
-      height = screenSize.height * (percent / 100.0);
-    } else {
-      height = double.tryParse(heightStr) ?? 600.0;
-    }
-
-    // Ensure minimum size
-    width = width.clamp(200.0, screenSize.width);
-    height = height.clamp(150.0, screenSize.height);
-
-    return Size(width, height);
   }
 }

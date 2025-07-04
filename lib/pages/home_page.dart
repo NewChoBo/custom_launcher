@@ -1,5 +1,6 @@
+import 'package:custom_launcher/models/layout_config.dart';
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/app_settings.dart';
+import 'package:custom_launcher/services/launcher_config_service.dart';
 import 'package:custom_launcher/widgets/dynamic_layout.dart';
 
 /// Home page widget for Custom Launcher
@@ -9,21 +10,95 @@ class HomePage extends StatefulWidget {
     super.key,
     required this.title,
     required this.onHideToTray,
-    required this.settings,
+    required this.configService,
   });
 
   final String title;
   final Future<void> Function() onHideToTray;
-  final AppSettings settings;
+  final LauncherConfigService configService;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  /// Parse hex color string with opacity
-  /// Returns null for invalid colors (will use defaults)
-  Color? _parseColor(String hexString, double opacity) {
+  @override
+  Widget build(BuildContext context) {
+    final LayoutConfig? currentLayout = widget.configService.getCurrentLayout();
+
+    if (currentLayout == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.minimize),
+              onPressed: widget.onHideToTray,
+              tooltip: 'Hide to System Tray',
+            ),
+          ],
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.error, color: Colors.red, size: 48.0),
+              SizedBox(height: 16.0),
+              Text(
+                'No layout configuration available',
+                style: TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Get colors from frame config
+    final FrameConfig frame = currentLayout.frame;
+    final UIConfig ui = frame.ui;
+
+    Color? backgroundColor;
+    if (ui.colors.backgroundColor.isNotEmpty) {
+      backgroundColor = _parseColor(ui.colors.backgroundColor);
+      if (backgroundColor != null) {
+        backgroundColor = backgroundColor.withValues(
+          alpha: ui.opacity.backgroundOpacity,
+        );
+      }
+    }
+
+    Color? appBarColor;
+    if (ui.colors.appBarColor.isNotEmpty) {
+      appBarColor = _parseColor(ui.colors.appBarColor);
+      if (appBarColor != null) {
+        appBarColor = appBarColor.withValues(alpha: ui.opacity.appBarOpacity);
+      }
+    }
+
+    return Scaffold(
+      appBar: ui.showAppBar
+          ? AppBar(
+              backgroundColor:
+                  appBarColor ?? Theme.of(context).colorScheme.inversePrimary,
+              title: Text(widget.title),
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.minimize),
+                  onPressed: widget.onHideToTray,
+                  tooltip: 'Hide to System Tray',
+                ),
+              ],
+            )
+          : null,
+      backgroundColor: backgroundColor ?? Colors.transparent,
+      body: DynamicLayout(configService: widget.configService),
+    );
+  }
+
+  /// Parse hex color string
+  Color? _parseColor(String hexString) {
     try {
       if (hexString.isEmpty) return null;
 
@@ -38,61 +113,10 @@ class _HomePageState extends State<HomePage> {
         hex = 'FF$hex'; // Add full alpha for RGB
       }
 
-      final Color baseColor = Color(int.parse(hex, radix: 16));
-
-      // Apply the opacity setting directly (ignore hex alpha)
-      final Color finalColor = baseColor.withValues(alpha: opacity);
-
-      debugPrint(
-        'Parsing $hexString -> Base: ${baseColor.toString()}, Final: ${finalColor.toString()} (opacity: $opacity)',
-      );
-
-      return finalColor;
+      return Color(int.parse(hex, radix: 16));
     } catch (e) {
       debugPrint('Error parsing color "$hexString": $e');
       return null;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final Color backgroundColor =
-        _parseColor(
-          widget.settings.backgroundColor,
-          widget.settings.backgroundOpacity,
-        ) ??
-        Colors.transparent;
-
-    final Color? appBarColor = _parseColor(
-      widget.settings.appBarColor,
-      widget.settings.appBarOpacity,
-    );
-
-    debugPrint(
-      'Background: ${widget.settings.backgroundColor} -> $backgroundColor',
-    );
-    debugPrint('AppBar: ${widget.settings.appBarColor} -> $appBarColor');
-
-    return Scaffold(
-      appBar: widget.settings.showAppBar
-          ? AppBar(
-              backgroundColor:
-                  appBarColor ??
-                  Theme.of(context).colorScheme.inversePrimary.withValues(
-                    alpha: widget.settings.appBarOpacity,
-                  ),
-              title: Text(widget.title),
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.minimize),
-                  onPressed: widget.onHideToTray,
-                  tooltip: 'Hide to System Tray',
-                ),
-              ],
-            )
-          : null,
-      backgroundColor: backgroundColor,
-      body: const DynamicLayout(),
-    );
   }
 }

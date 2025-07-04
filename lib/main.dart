@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:custom_launcher/services/window_service.dart';
-import 'package:custom_launcher/services/settings_service.dart';
+import 'package:custom_launcher/services/launcher_config_service.dart';
 import 'package:custom_launcher/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize settings service
-  final SettingsService settingsService = SettingsService();
-  await settingsService.initialize();
+  // Initialize launcher configuration service
+  final LauncherConfigService launcherConfigService = LauncherConfigService();
+  await launcherConfigService.initialize();
 
-  // Initialize window with settings
-  await WindowService.initialize(settingsService.settings);
+  // Initialize window with layout configuration
+  await WindowService.initializeWithConfig(launcherConfigService);
 
-  runApp(MyApp(settings: settingsService.settings));
+  runApp(MyApp(launcherConfigService: launcherConfigService));
 }

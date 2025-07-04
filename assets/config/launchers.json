@@ -1,0 +1,136 @@
+{
+  "version": "1.0",
+  "launchers": {
+    "steam": {
+      "id": "steam",
+      "displayName": "Steam",
+      "description": "Gaming Platform",
+      "category": "gaming",
+      "images": {
+        "default": "@/icons/steam.png",
+        "large": "@/icons/steam_large.png",
+        "small": "@/icons/steam_small.png"
+      },
+      "actions": {
+        "default": {
+          "type": "execute",
+          "target": "C:/Program Files (x86)/Steam/steam.exe",
+          "arguments": [],
+          "workingDirectory": ""
+        },
+        "bigpicture": {
+          "arguments": ["-bigpicture"]
+        },
+        "library": {
+          "arguments": ["-silent"]
+        }
+      }
+    },
+    "chrome": {
+      "id": "chrome",
+      "displayName": "Google Chrome",
+      "description": "Web Browser",
+      "category": "productivity",
+      "images": {
+        "default": "@/icons/chrome.png",
+        "large": "@/icons/chrome_large.png"
+      },
+      "actions": {
+        "default": {
+          "type": "execute",
+          "target": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+          "arguments": [],
+          "workingDirectory": ""
+        },
+        "incognito": {
+          "arguments": ["--incognito"]
+        },
+        "newwindow": {
+          "arguments": ["--new-window"]
+        }
+      }
+    },
+    "vscode": {
+      "id": "vscode",
+      "displayName": "VS Code",
+      "description": "Code Editor",
+      "category": "development",
+      "images": {
+        "default": "@/icons/vscode.png",
+        "large": "@/icons/vscode_large.png"
+      },
+      "actions": {
+        "default": {
+          "type": "execute",
+          "target": "C:/Users/%USERNAME%/AppData/Local/Programs/Microsoft VS Code/Code.exe",
+          "arguments": [],
+          "workingDirectory": ""
+        },
+        "newwindow": {
+          "arguments": ["--new-window"]
+        },
+        "extensions": {
+          "arguments": ["--show-extensions"]
+        }
+      }
+    },
+    "discord": {
+      "id": "discord",
+      "displayName": "Discord",
+      "description": "Communication",
+      "category": "social",
+      "images": {
+        "default": "@/icons/discord.png",
+        "large": "@/icons/discord_large.png"
+      },
+      "actions": {
+        "default": {
+          "type": "execute",
+          "target": "C:/Users/%USERNAME%/AppData/Local/Discord/Update.exe",
+          "arguments": ["--processStart", "Discord.exe"],
+          "workingDirectory": ""
+        }
+      }
+    },
+    "calculator": {
+      "id": "calculator",
+      "displayName": "Calculator",
+      "description": "Windows Calculator",
+      "category": "utility",
+      "images": {
+        "default": "@/icons/calculator.png"
+      },
+      "actions": {
+        "default": {
+          "type": "execute",
+          "target": "calc.exe",
+          "arguments": [],
+          "workingDirectory": ""
+        }
+      }
+    },
+    "explorer": {
+      "id": "explorer",
+      "displayName": "File Explorer",
+      "description": "File Manager",
+      "category": "utility",
+      "images": {
+        "default": "@/icons/explorer.png"
+      },
+      "actions": {
+        "default": {
+          "type": "execute",
+          "target": "explorer.exe",
+          "arguments": [],
+          "workingDirectory": ""
+        },
+        "documents": {
+          "arguments": ["%USERPROFILE%/Documents"]
+        },
+        "downloads": {
+          "arguments": ["%USERPROFILE%/Downloads"]
+        }
+      }
+    }
+  }
+}
