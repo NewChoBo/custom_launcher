@@ -1,32 +1,42 @@
 {
   "version": "1.0",
   "metadata": {
-    "title": "Gaming Mode",
-    "description": "Compact gaming focused layout",
+    "title": "🎮 Cyberpunk Gaming Hub",
+    "description": "Neon-style gaming overlay with futuristic design",
     "author": "User",
     "created": "2025-07-04",
-    "tags": ["gaming", "compact", "overlay"]
+    "tags": ["gaming", "cyberpunk", "neon", "overlay", "futuristic"]
   },
   "frame": {
     "ui": {
       "showAppBar": false,
       "colors": {
-        "appBarColor": "#1e3a8a",
-        "backgroundColor": "#1a1a1a"
+        "appBarColor": "linear-gradient(45deg, #ff00ff 0%, #00ffff 100%)",
+        "backgroundColor": "linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(16, 0, 32, 0.85) 50%, rgba(0, 16, 32, 0.9) 100%)"
       },
       "opacity": {
-        "appBarOpacity": 0.8,
-        "backgroundOpacity": 0.2
+        "appBarOpacity": 0.95,
+        "backgroundOpacity": 0.15
+      },
+      "effects": {
+        "blur": 15,
+        "brightness": 1.1,
+        "saturation": 1.4,
+        "neonGlow": true
       }
     },
     "window": {
       "size": {
-        "windowWidth": "400px",
-        "windowHeight": "300px"
+        "windowWidth": "450px",
+        "windowHeight": "350px"
       },
       "position": {
         "horizontalPosition": "right",
-        "verticalPosition": "bottom"
+        "verticalPosition": "bottom",
+        "margin": {
+          "horizontal": 20,
+          "vertical": 20
+        }
       },
       "behavior": {
         "windowLevel": "alwaysOnTop",
@@ -39,118 +49,240 @@
   },
   "layout": {
     "type": "column",
-    "spacing": 8,
-    "padding": { "top": 12, "bottom": 12, "left": 12, "right": 12 },
+    "spacing": 12,
+    "padding": { "top": 16, "bottom": 16, "left": 16, "right": 16 },
     "children": [
       {
-        "type": "text",
-        "text": "Gaming Quick Access",
-        "style": {
-          "fontSize": 14,
-          "fontWeight": "bold",
-          "color": "#FFFFFF"
+        "type": "container",
+        "width": "fill",
+        "height": 50,
+        "decoration": {
+          "gradient": "linear-gradient(90deg, rgba(255, 0, 255, 0.3) 0%, rgba(0, 255, 255, 0.3) 100%)",
+          "borderRadius": 12,
+          "border": {
+            "width": 2,
+            "color": "rgba(0, 255, 255, 0.8)"
+          },
+          "glow": {
+            "color": "#00ffff",
+            "blur": 10,
+            "spread": 2
+          }
         },
-        "textAlign": "center"
+        "padding": { "all": 12 },
+        "child": {
+          "type": "text",
+          "text": "🎮 GAMING HUB",
+          "style": {
+            "fontSize": 16,
+            "fontWeight": "w700",
+            "color": "#00ffff",
+            "letterSpacing": 2,
+            "shadows": [
+              {
+                "color": "#00ffff",
+                "offset": { "x": 0, "y": 0 },
+                "blur": 8
+              }
+            ]
+          },
+          "textAlign": "center"
+        }
       },
       {
-        "type": "row",
-        "spacing": 8,
-        "children": [
-          {
-            "type": "launcher",
-            "id": "steam_gaming",
-            "launcherRef": "steam",
-            "overrides": {
-              "displayName": "Steam",
-              "imageType": "small",
-              "action": "bigpicture"
-            },
-            "position": {
-              "width": 60,
-              "height": 60,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#1e3a8a",
-              "borderRadius": 6,
-              "elevation": 3
-            }
+        "type": "container",
+        "width": "fill",
+        "decoration": {
+          "gradient": "linear-gradient(135deg, rgba(255, 0, 255, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%)",
+          "borderRadius": 16,
+          "border": {
+            "width": 1,
+            "color": "rgba(255, 0, 255, 0.5)"
           },
-          {
-            "type": "launcher",
-            "id": "discord_gaming",
-            "launcherRef": "discord",
-            "overrides": {
-              "displayName": "Discord",
-              "imageType": "small",
-              "action": "default"
-            },
-            "position": {
-              "width": 60,
-              "height": 60,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#5865F2",
-              "borderRadius": 6,
-              "elevation": 3
-            }
+          "glow": {
+            "color": "#ff00ff",
+            "blur": 8,
+            "spread": 1
           }
-        ]
-      },
-      {
-        "type": "row",
-        "spacing": 8,
-        "children": [
-          {
-            "type": "launcher",
-            "id": "explorer_gaming",
-            "launcherRef": "explorer",
-            "overrides": {
-              "displayName": "Files",
-              "imageType": "small",
-              "action": "downloads"
+        },
+        "padding": { "all": 16 },
+        "child": {
+          "type": "column",
+          "spacing": 12,
+          "children": [
+            {
+              "type": "row",
+              "spacing": 12,
+              "children": [
+                {
+                  "type": "launcher",
+                  "id": "steam_gaming",
+                  "launcherRef": "steam",
+                  "overrides": {
+                    "displayName": "Steam",
+                    "imageType": "small",
+                    "action": "bigpicture"
+                  },
+                  "position": {
+                    "width": 70,
+                    "height": 70,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(45deg, #1e3a8a 0%, #3b82f6 100%)",
+                    "borderRadius": 12,
+                    "border": {
+                      "width": 2,
+                      "color": "#00ffff"
+                    },
+                    "glow": {
+                      "color": "#1e3a8a",
+                      "blur": 12,
+                      "spread": 2
+                    },
+                    "hover": {
+                      "glow": {
+                        "color": "#00ffff",
+                        "blur": 16,
+                        "spread": 4
+                      },
+                      "transform": "scale(1.1)"
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "discord_gaming",
+                  "launcherRef": "discord",
+                  "overrides": {
+                    "displayName": "Discord",
+                    "imageType": "small",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 70,
+                    "height": 70,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(45deg, #5865F2 0%, #7289da 100%)",
+                    "borderRadius": 12,
+                    "border": {
+                      "width": 2,
+                      "color": "#ff00ff"
+                    },
+                    "glow": {
+                      "color": "#5865F2",
+                      "blur": 12,
+                      "spread": 2
+                    },
+                    "hover": {
+                      "glow": {
+                        "color": "#ff00ff",
+                        "blur": 16,
+                        "spread": 4
+                      },
+                      "transform": "scale(1.1)"
+                    }
+                  }
+                }
+              ]
             },
-            "position": {
-              "width": 60,
-              "height": 60,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#4CAF50",
-              "borderRadius": 6,
-              "elevation": 3
+            {
+              "type": "row",
+              "spacing": 12,
+              "children": [
+                {
+                  "type": "launcher",
+                  "id": "explorer_gaming",
+                  "launcherRef": "explorer",
+                  "overrides": {
+                    "displayName": "Files",
+                    "imageType": "small",
+                    "action": "downloads"
+                  },
+                  "position": {
+                    "width": 70,
+                    "height": 70,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(45deg, #4CAF50 0%, #8bc34a 100%)",
+                    "borderRadius": 12,
+                    "border": {
+                      "width": 2,
+                      "color": "#00ff88"
+                    },
+                    "glow": {
+                      "color": "#4CAF50",
+                      "blur": 12,
+                      "spread": 2
+                    },
+                    "hover": {
+                      "glow": {
+                        "color": "#00ff88",
+                        "blur": 16,
+                        "spread": 4
+                      },
+                      "transform": "scale(1.1)"
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "calculator_gaming",
+                  "launcherRef": "calculator",
+                  "overrides": {
+                    "displayName": "Calc",
+                    "imageType": "small",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 70,
+                    "height": 70,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(45deg, #FF9800 0%, #ffeb3b 100%)",
+                    "borderRadius": 12,
+                    "border": {
+                      "width": 2,
+                      "color": "#ffff00"
+                    },
+                    "glow": {
+                      "color": "#FF9800",
+                      "blur": 12,
+                      "spread": 2
+                    },
+                    "hover": {
+                      "glow": {
+                        "color": "#ffff00",
+                        "blur": 16,
+                        "spread": 4
+                      },
+                      "transform": "scale(1.1)"
+                    }
+                  }
+                }
+              ]
             }
-          },
-          {
-            "type": "launcher",
-            "id": "calculator_gaming",
-            "launcherRef": "calculator",
-            "overrides": {
-              "displayName": "Calc",
-              "imageType": "small",
-              "action": "default"
-            },
-            "position": {
-              "width": 60,
-              "height": 60,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#FF9800",
-              "borderRadius": 6,
-              "elevation": 3
-            }
-          }
-        ]
+          ]
+        }
       }
     ]
   },
   "globalSettings": {
-    "theme": "dark",
+    "theme": "cyberpunk",
     "animations": true,
     "autoHide": true,
-    "defaultImageType": "small",
-    "defaultActionType": "default"
+    "defaultImageType": "neon",
+    "defaultActionType": "quick",
+    "effects": {
+      "enableNeonGlow": true,
+      "enablePulseAnimation": true,
+      "enableHoverEffects": true,
+      "transitionDuration": 200,
+      "glowIntensity": 1.5
+    }
   }
 }

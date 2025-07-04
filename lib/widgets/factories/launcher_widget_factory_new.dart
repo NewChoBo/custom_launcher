@@ -272,17 +272,11 @@ class LauncherWidgetFactory extends WidgetFactory {
       return;
     }
 
-    // Convert overrides to String map
-    final Map<String, String> stringOverrides = <String, String>{};
-    overrides.forEach((String key, value) {
-      stringOverrides[key] = value.toString();
-    });
-
-    // Execute launcher action
+    // Execute launcher action based on type
     configService?.executeLauncher(
       launcherRef,
-      actionType,
-      overrides: stringOverrides,
+      actionType: actionType,
+      overrides: overrides,
     );
   }
 

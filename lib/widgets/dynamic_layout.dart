@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:custom_launcher/models/layout_config.dart';
 import 'package:custom_launcher/services/launcher_config_service.dart';
@@ -177,26 +178,155 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
     Decoration? decoration;
     if (decorationMap != null) {
-      final String? colorString = decorationMap['color'] as String?;
-      final num? borderRadius = decorationMap['borderRadius'] as num?;
-
-      decoration = BoxDecoration(
-        color: colorString != null ? _parseColor(colorString) : null,
-        borderRadius: borderRadius != null
-            ? BorderRadius.circular(borderRadius.toDouble())
-            : null,
-      );
+      decoration = _buildAdvancedDecoration(decorationMap);
     }
 
     final width = element.getProperty<dynamic>('width');
     final height = element.getProperty<dynamic>('height');
 
-    return Container(
+    Widget container = Container(
       width: _parseDimension(width)?.toDouble(),
       height: _parseDimension(height)?.toDouble(),
       padding: padding,
       decoration: decoration,
       child: element.child != null ? _buildWidget(element.child!) : null,
+    );
+
+    // Apply blur effect if specified
+    final num? blur = decorationMap?['blur'] as num?;
+    if (blur != null && blur > 0) {
+      container = ClipRRect(
+        borderRadius: BorderRadius.circular(
+          (decorationMap?['borderRadius'] as num?)?.toDouble() ?? 0,
+        ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: blur.toDouble(),
+            sigmaY: blur.toDouble(),
+          ),
+          child: container,
+        ),
+      );
+    }
+
+    return container;
+  }
+
+  /// Build advanced decoration with gradients, borders, and shadows
+  BoxDecoration _buildAdvancedDecoration(Map<String, dynamic> decorationMap) {
+    // Parse gradient or solid color
+    Gradient? gradient;
+    Color? color;
+
+    final String? gradientString = decorationMap['gradient'] as String?;
+    final String? colorString = decorationMap['color'] as String?;
+
+    if (gradientString != null) {
+      gradient = _parseGradient(gradientString);
+    } else if (colorString != null) {
+      color = _parseColor(colorString);
+    }
+
+    // Parse border radius
+    BorderRadius? borderRadius;
+    final num? borderRadiusValue = decorationMap['borderRadius'] as num?;
+    if (borderRadiusValue != null) {
+      borderRadius = BorderRadius.circular(borderRadiusValue.toDouble());
+    }
+
+    // Parse border
+    Border? border;
+    final Map<String, dynamic>? borderMap =
+        decorationMap['border'] as Map<String, dynamic>?;
+    if (borderMap != null) {
+      final num? width = borderMap['width'] as num?;
+      final String? borderColor = borderMap['color'] as String?;
+      if (width != null && borderColor != null) {
+        border = Border.all(
+          width: width.toDouble(),
+          color: _parseColor(borderColor),
+        );
+      }
+    }
+
+    // Parse box shadow
+    List<BoxShadow>? boxShadow;
+    final Map<String, dynamic>? shadowMap =
+        decorationMap['shadow'] as Map<String, dynamic>?;
+    if (shadowMap != null) {
+      boxShadow = <BoxShadow>[_parseBoxShadow(shadowMap)];
+    }
+
+    return BoxDecoration(
+      color: color,
+      gradient: gradient,
+      borderRadius: borderRadius,
+      border: border,
+      boxShadow: boxShadow,
+    );
+  }
+
+  /// Parse gradient from CSS-like string
+  Gradient? _parseGradient(String gradientString) {
+    // Simple linear gradient parser for "linear-gradient(135deg, #color1 0%, #color2 100%)"
+    final RegExp gradientRegex = RegExp(
+      r'linear-gradient\((\d+)deg,\s*([^,]+)\s+(\d+)%,\s*([^,)]+)\s+(\d+)%\)',
+    );
+
+    final Match? match = gradientRegex.firstMatch(gradientString);
+    if (match != null) {
+      final double angle = double.parse(match.group(1)!);
+      final String color1 = match.group(2)!.trim();
+      final String color2 = match.group(4)!.trim();
+
+      // Convert CSS angle to Flutter alignment
+      Alignment begin = Alignment.topLeft;
+      Alignment end = Alignment.bottomRight;
+
+      if (angle == 0) {
+        begin = Alignment.centerLeft;
+        end = Alignment.centerRight;
+      } else if (angle == 45) {
+        begin = Alignment.topLeft;
+        end = Alignment.bottomRight;
+      } else if (angle == 90) {
+        begin = Alignment.topCenter;
+        end = Alignment.bottomCenter;
+      } else if (angle == 135) {
+        begin = Alignment.topRight;
+        end = Alignment.bottomLeft;
+      }
+
+      return LinearGradient(
+        begin: begin,
+        end: end,
+        colors: <Color>[_parseColor(color1), _parseColor(color2)],
+      );
+    }
+
+    return null;
+  }
+
+  /// Parse box shadow from map
+  BoxShadow _parseBoxShadow(Map<String, dynamic> shadowMap) {
+    final String? colorString = shadowMap['color'] as String?;
+    final Map<String, dynamic>? offsetMap =
+        shadowMap['offset'] as Map<String, dynamic>?;
+    final num? blur = shadowMap['blur'] as num?;
+    final num? spread = shadowMap['spread'] as num?;
+
+    Offset offset = Offset.zero;
+    if (offsetMap != null) {
+      final num? x = offsetMap['x'] as num?;
+      final num? y = offsetMap['y'] as num?;
+      offset = Offset(x?.toDouble() ?? 0, y?.toDouble() ?? 0);
+    }
+
+    return BoxShadow(
+      color: colorString != null ? _parseColor(colorString) : Colors.black26,
+      offset: offset,
+      blurRadius: blur?.toDouble() ?? 0,
+      spreadRadius: spread?.toDouble() ?? 0,
     );
   }
 
@@ -212,11 +342,43 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       final num? fontSize = styleMap['fontSize'] as num?;
       final String? fontWeight = styleMap['fontWeight'] as String?;
       final String? colorString = styleMap['color'] as String?;
+      final num? letterSpacing = styleMap['letterSpacing'] as num?;
+
+      // Parse text shadows
+      List<Shadow>? shadows;
+      final List<dynamic>? shadowsList = styleMap['shadows'] as List<dynamic>?;
+      if (shadowsList != null) {
+        shadows = shadowsList.map((shadowData) {
+          final Map<String, dynamic> shadowMap =
+              shadowData as Map<String, dynamic>;
+          final String? shadowColor = shadowMap['color'] as String?;
+          final Map<String, dynamic>? offsetMap =
+              shadowMap['offset'] as Map<String, dynamic>?;
+          final num? blur = shadowMap['blur'] as num?;
+
+          Offset offset = Offset.zero;
+          if (offsetMap != null) {
+            final num? x = offsetMap['x'] as num?;
+            final num? y = offsetMap['y'] as num?;
+            offset = Offset(x?.toDouble() ?? 0, y?.toDouble() ?? 0);
+          }
+
+          return Shadow(
+            color: shadowColor != null
+                ? _parseColor(shadowColor)
+                : Colors.black26,
+            offset: offset,
+            blurRadius: blur?.toDouble() ?? 0,
+          );
+        }).toList();
+      }
 
       style = TextStyle(
         fontSize: fontSize?.toDouble(),
         fontWeight: _parseFontWeight(fontWeight),
         color: colorString != null ? _parseColor(colorString) : null,
+        letterSpacing: letterSpacing?.toDouble(),
+        shadows: shadows,
       );
     }
 
@@ -254,9 +416,27 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     return SizedBox(width: width?.toDouble(), height: height?.toDouble());
   }
 
-  /// Parse color from hex string
+  /// Parse color from hex string or rgba
   Color _parseColor(String colorString) {
     try {
+      colorString = colorString.trim();
+
+      // Handle rgba format: rgba(255, 255, 255, 0.5)
+      if (colorString.startsWith('rgba(')) {
+        final RegExp rgbaRegex = RegExp(
+          r'rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)',
+        );
+        final Match? match = rgbaRegex.firstMatch(colorString);
+        if (match != null) {
+          final int r = int.parse(match.group(1)!);
+          final int g = int.parse(match.group(2)!);
+          final int b = int.parse(match.group(3)!);
+          final double a = double.parse(match.group(4)!);
+          return Color.fromRGBO(r, g, b, a);
+        }
+      }
+
+      // Handle hex format: #RRGGBB or #AARRGGBB
       String hex = colorString.replaceFirst('#', '');
       if (hex.length == 6) {
         hex = 'FF$hex';

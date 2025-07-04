@@ -1,35 +1,40 @@
 {
   "version": "1.0",
   "metadata": {
-    "title": "Custom Launcher Dashboard",
-    "description": "Main launcher layout with app grid",
+    "title": "✨ Modern Glass Dashboard",
+    "description": "Beautiful glassmorphism launcher with smooth animations",
     "author": "User",
     "created": "2025-07-04",
-    "tags": ["dashboard", "main", "grid"]
+    "tags": ["dashboard", "modern", "glassmorphism", "beautiful"]
   },
   "frame": {
     "ui": {
       "showAppBar": false,
       "colors": {
-        "appBarColor": "#2196F3",
-        "backgroundColor": "#1a1a1a"
+        "appBarColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        "backgroundColor": "linear-gradient(135deg, rgba(30, 60, 114, 0.1) 0%, rgba(42, 39, 218, 0.1) 35%, rgba(20, 30, 48, 0.1) 100%)"
       },
       "opacity": {
-        "appBarOpacity": 0.9,
-        "backgroundOpacity": 0.85
+        "appBarOpacity": 0.95,
+        "backgroundOpacity": 0.75
+      },
+      "effects": {
+        "blur": 20,
+        "brightness": 1.05,
+        "saturation": 1.2
       }
     },
     "window": {
       "size": {
-        "windowWidth": "80%",
-        "windowHeight": "50%"
+        "windowWidth": "85%",
+        "windowHeight": "55%"
       },
       "position": {
         "horizontalPosition": "center",
         "verticalPosition": "bottom",
         "margin": {
-          "horizontal": 30,
-          "vertical": 50
+          "horizontal": 40,
+          "vertical": 60
         }
       },
       "behavior": {
@@ -43,168 +48,325 @@
   },
   "layout": {
     "type": "column",
-    "spacing": 8,
-    "padding": { "top": 12, "bottom": 12, "left": 12, "right": 12 },
+    "spacing": 16,
+    "padding": { "top": 20, "bottom": 20, "left": 20, "right": 20 },
     "children": [
       {
         "type": "container",
         "width": "fill",
-        "height": 45,
+        "height": 60,
         "decoration": {
-          "color": "#2d3748",
-          "borderRadius": 8
+          "gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
+          "borderRadius": 16,
+          "border": {
+            "width": 1,
+            "color": "rgba(255, 255, 255, 0.2)"
+          },
+          "shadow": {
+            "color": "rgba(0, 0, 0, 0.1)",
+            "offset": { "x": 0, "y": 8 },
+            "blur": 32,
+            "spread": 0
+          }
         },
-        "padding": { "all": 12 },
+        "padding": { "all": 16 },
         "child": {
           "type": "text",
           "text": "🚀 Quick Launcher",
           "style": {
-            "fontSize": 14,
-            "fontWeight": "bold",
-            "color": "#ffffff"
+            "fontSize": 18,
+            "fontWeight": "w600",
+            "color": "#ffffff",
+            "letterSpacing": 0.5,
+            "shadows": [
+              {
+                "color": "rgba(0, 0, 0, 0.3)",
+                "offset": { "x": 0, "y": 2 },
+                "blur": 4
+              }
+            ]
           },
           "textAlign": "center"
         }
       },
       {
-        "type": "row",
-        "spacing": 12,
-        "children": [
-          {
-            "type": "launcher",
-            "id": "steam_main",
-            "launcherRef": "steam",
-            "overrides": {
-              "displayName": "Steam",
-              "imageType": "large",
-              "action": "default"
-            },
-            "position": {
-              "width": 65,
-              "height": 65,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#1e3a8a",
-              "borderRadius": 12,
-              "elevation": 3
-            }
+        "type": "container",
+        "width": "fill",
+        "decoration": {
+          "gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)",
+          "borderRadius": 20,
+          "border": {
+            "width": 1,
+            "color": "rgba(255, 255, 255, 0.15)"
           },
-          {
-            "type": "launcher",
-            "id": "chrome_main",
-            "launcherRef": "chrome",
-            "overrides": {
-              "displayName": "Chrome",
-              "imageType": "large",
-              "action": "default"
-            },
-            "position": {
-              "width": 65,
-              "height": 65,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#4285f4",
-              "borderRadius": 12,
-              "elevation": 3
-            }
-          },
-          {
-            "type": "launcher",
-            "id": "vscode_main",
-            "launcherRef": "vscode",
-            "overrides": {
-              "displayName": "VS Code",
-              "imageType": "large",
-              "action": "default"
-            },
-            "position": {
-              "width": 65,
-              "height": 65,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#007ACC",
-              "borderRadius": 12,
-              "elevation": 3
-            }
+          "shadow": {
+            "color": "rgba(0, 0, 0, 0.1)",
+            "offset": { "x": 0, "y": 12 },
+            "blur": 40,
+            "spread": 0
           }
-        ]
-      },
-      {
-        "type": "row",
-        "spacing": 12,
-        "children": [
-          {
-            "type": "launcher",
-            "id": "discord_main",
-            "launcherRef": "discord",
-            "overrides": {
-              "displayName": "Discord",
-              "imageType": "default",
-              "action": "default"
+        },
+        "padding": { "all": 20 },
+        "child": {
+          "type": "column",
+          "spacing": 16,
+          "children": [
+            {
+              "type": "row",
+              "spacing": 16,
+              "children": [
+                {
+                  "type": "launcher",
+                  "id": "steam_main",
+                  "launcherRef": "steam",
+                  "overrides": {
+                    "displayName": "Steam",
+                    "imageType": "large",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 80,
+                    "height": 80,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
+                    "borderRadius": 20,
+                    "border": {
+                      "width": 1.5,
+                      "color": "rgba(59, 130, 246, 0.3)"
+                    },
+                    "shadow": {
+                      "color": "rgba(30, 58, 138, 0.4)",
+                      "offset": { "x": 0, "y": 8 },
+                      "blur": 24,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "scale(1.05)",
+                      "shadow": {
+                        "color": "rgba(30, 58, 138, 0.6)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 32,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "chrome_main",
+                  "launcherRef": "chrome",
+                  "overrides": {
+                    "displayName": "Chrome",
+                    "imageType": "large",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 80,
+                    "height": 80,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #4285f4 0%, #34a853 100%)",
+                    "borderRadius": 20,
+                    "border": {
+                      "width": 1.5,
+                      "color": "rgba(66, 133, 244, 0.3)"
+                    },
+                    "shadow": {
+                      "color": "rgba(66, 133, 244, 0.4)",
+                      "offset": { "x": 0, "y": 8 },
+                      "blur": 24,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "scale(1.05)",
+                      "shadow": {
+                        "color": "rgba(66, 133, 244, 0.6)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 32,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "vscode_main",
+                  "launcherRef": "vscode",
+                  "overrides": {
+                    "displayName": "VS Code",
+                    "imageType": "large",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 80,
+                    "height": 80,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #007ACC 0%, #0099e5 100%)",
+                    "borderRadius": 20,
+                    "border": {
+                      "width": 1.5,
+                      "color": "rgba(0, 122, 204, 0.3)"
+                    },
+                    "shadow": {
+                      "color": "rgba(0, 122, 204, 0.4)",
+                      "offset": { "x": 0, "y": 8 },
+                      "blur": 24,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "scale(1.05)",
+                      "shadow": {
+                        "color": "rgba(0, 122, 204, 0.6)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 32,
+                        "spread": 0
+                      }
+                    }
+                  }
+                }
+              ]
             },
-            "position": {
-              "width": 65,
-              "height": 65,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#5865F2",
-              "borderRadius": 12,
-              "elevation": 3
+            {
+              "type": "row",
+              "spacing": 16,
+              "children": [
+                {
+                  "type": "launcher",
+                  "id": "discord_main",
+                  "launcherRef": "discord",
+                  "overrides": {
+                    "displayName": "Discord",
+                    "imageType": "default",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 80,
+                    "height": 80,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #5865F2 0%, #7289da 100%)",
+                    "borderRadius": 20,
+                    "border": {
+                      "width": 1.5,
+                      "color": "rgba(88, 101, 242, 0.3)"
+                    },
+                    "shadow": {
+                      "color": "rgba(88, 101, 242, 0.4)",
+                      "offset": { "x": 0, "y": 8 },
+                      "blur": 24,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "scale(1.05)",
+                      "shadow": {
+                        "color": "rgba(88, 101, 242, 0.6)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 32,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "calculator_main",
+                  "launcherRef": "calculator",
+                  "overrides": {
+                    "displayName": "Calculator",
+                    "imageType": "default",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 80,
+                    "height": 80,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #FF9800 0%, #ff6b35 100%)",
+                    "borderRadius": 20,
+                    "border": {
+                      "width": 1.5,
+                      "color": "rgba(255, 152, 0, 0.3)"
+                    },
+                    "shadow": {
+                      "color": "rgba(255, 152, 0, 0.4)",
+                      "offset": { "x": 0, "y": 8 },
+                      "blur": 24,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "scale(1.05)",
+                      "shadow": {
+                        "color": "rgba(255, 152, 0, 0.6)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 32,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "explorer_main",
+                  "launcherRef": "explorer",
+                  "overrides": {
+                    "displayName": "Explorer",
+                    "imageType": "default",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 80,
+                    "height": 80,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #4CAF50 0%, #8bc34a 100%)",
+                    "borderRadius": 20,
+                    "border": {
+                      "width": 1.5,
+                      "color": "rgba(76, 175, 80, 0.3)"
+                    },
+                    "shadow": {
+                      "color": "rgba(76, 175, 80, 0.4)",
+                      "offset": { "x": 0, "y": 8 },
+                      "blur": 24,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "scale(1.05)",
+                      "shadow": {
+                        "color": "rgba(76, 175, 80, 0.6)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 32,
+                        "spread": 0
+                      }
+                    }
+                  }
+                }
+              ]
             }
-          },
-          {
-            "type": "launcher",
-            "id": "calculator_main",
-            "launcherRef": "calculator",
-            "overrides": {
-              "displayName": "Calculator",
-              "imageType": "default",
-              "action": "default"
-            },
-            "position": {
-              "width": 65,
-              "height": 65,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#FF9800",
-              "borderRadius": 12,
-              "elevation": 3
-            }
-          },
-          {
-            "type": "launcher",
-            "id": "explorer_main",
-            "launcherRef": "explorer",
-            "overrides": {
-              "displayName": "Explorer",
-              "imageType": "default",
-              "action": "default"
-            },
-            "position": {
-              "width": 65,
-              "height": 65,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#4CAF50",
-              "borderRadius": 12,
-              "elevation": 3
-            }
-          }
-        ]
+          ]
+        }
       }
     ]
   },
   "globalSettings": {
-    "theme": "light",
+    "theme": "glassmorphism",
     "animations": true,
     "autoHide": false,
-    "defaultImageType": "default",
-    "defaultActionType": "default"
+    "defaultImageType": "large",
+    "defaultActionType": "smooth",
+    "effects": {
+      "enableBlur": true,
+      "enableShadows": true,
+      "enableHoverAnimations": true,
+      "transitionDuration": 300
+    }
   }
 }

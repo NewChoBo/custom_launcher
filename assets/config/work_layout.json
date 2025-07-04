@@ -1,32 +1,41 @@
 {
   "version": "1.0",
   "metadata": {
-    "title": "Work Mode",
-    "description": "Productivity focused layout with development tools",
+    "title": "💼 Professional Workspace",
+    "description": "Clean minimal layout for maximum productivity",
     "author": "User",
     "created": "2025-07-04",
-    "tags": ["work", "productivity", "development"]
+    "tags": ["work", "productivity", "minimal", "professional", "clean"]
   },
   "frame": {
     "ui": {
       "showAppBar": true,
       "colors": {
-        "appBarColor": "#2196F3",
-        "backgroundColor": "#f5f5f5"
+        "appBarColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        "backgroundColor": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
       },
       "opacity": {
-        "appBarOpacity": 0.9,
+        "appBarOpacity": 0.98,
         "backgroundOpacity": 0.95
+      },
+      "effects": {
+        "blur": 5,
+        "brightness": 1.02,
+        "saturation": 0.95
       }
     },
     "window": {
       "size": {
-        "windowWidth": "90%",
-        "windowHeight": "70%"
+        "windowWidth": "95%",
+        "windowHeight": "75%"
       },
       "position": {
         "horizontalPosition": "center",
-        "verticalPosition": "center"
+        "verticalPosition": "center",
+        "margin": {
+          "horizontal": 20,
+          "vertical": 20
+        }
       },
       "behavior": {
         "windowLevel": "normal",
@@ -39,148 +48,281 @@
   },
   "layout": {
     "type": "column",
-    "spacing": 20,
-    "padding": { "top": 24, "bottom": 24, "left": 24, "right": 24 },
+    "spacing": 24,
+    "padding": { "top": 32, "bottom": 32, "left": 32, "right": 32 },
     "children": [
       {
         "type": "container",
         "width": "fill",
-        "height": 80,
+        "height": 90,
         "decoration": {
-          "color": "#E8F5E8",
-          "borderRadius": 12
+          "gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)",
+          "borderRadius": 16,
+          "border": {
+            "width": 1,
+            "color": "rgba(148, 163, 184, 0.2)"
+          },
+          "shadow": {
+            "color": "rgba(0, 0, 0, 0.05)",
+            "offset": { "x": 0, "y": 4 },
+            "blur": 20,
+            "spread": 0
+          }
         },
-        "padding": { "all": 20 },
+        "padding": { "all": 24 },
         "child": {
           "type": "text",
-          "text": "Productivity Workspace",
+          "text": "💼 Productivity Workspace",
           "style": {
-            "fontSize": 20,
-            "fontWeight": "bold",
-            "color": "#2E7D32"
+            "fontSize": 24,
+            "fontWeight": "w600",
+            "color": "#334155",
+            "letterSpacing": 0.3
           },
           "textAlign": "center"
         }
       },
       {
-        "type": "row",
-        "spacing": 16,
-        "children": [
-          {
-            "type": "launcher",
-            "id": "vscode_work",
-            "launcherRef": "vscode",
-            "overrides": {
-              "displayName": "VS Code",
-              "imageType": "large",
-              "action": "newwindow"
-            },
-            "position": {
-              "width": 100,
-              "height": 100,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#007ACC",
-              "borderRadius": 12,
-              "elevation": 4
-            }
+        "type": "container",
+        "width": "fill",
+        "decoration": {
+          "gradient": "linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%)",
+          "borderRadius": 20,
+          "border": {
+            "width": 1,
+            "color": "rgba(148, 163, 184, 0.15)"
           },
-          {
-            "type": "launcher",
-            "id": "chrome_work",
-            "launcherRef": "chrome",
-            "overrides": {
-              "displayName": "Chrome",
-              "imageType": "large",
-              "action": "newwindow"
-            },
-            "position": {
-              "width": 100,
-              "height": 100,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#4285f4",
-              "borderRadius": 12,
-              "elevation": 4
-            }
-          },
-          {
-            "type": "launcher",
-            "id": "explorer_work",
-            "launcherRef": "explorer",
-            "overrides": {
-              "displayName": "Explorer",
-              "imageType": "large",
-              "action": "documents"
-            },
-            "position": {
-              "width": 100,
-              "height": 100,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#4CAF50",
-              "borderRadius": 12,
-              "elevation": 4
-            }
+          "shadow": {
+            "color": "rgba(0, 0, 0, 0.08)",
+            "offset": { "x": 0, "y": 8 },
+            "blur": 32,
+            "spread": 0
           }
-        ]
-      },
-      {
-        "type": "row",
-        "spacing": 16,
-        "children": [
-          {
-            "type": "launcher",
-            "id": "discord_work",
-            "launcherRef": "discord",
-            "overrides": {
-              "displayName": "Discord",
-              "imageType": "default",
-              "action": "default"
+        },
+        "padding": { "all": 28 },
+        "child": {
+          "type": "column",
+          "spacing": 20,
+          "children": [
+            {
+              "type": "row",
+              "spacing": 20,
+              "children": [
+                {
+                  "type": "launcher",
+                  "id": "vscode_work",
+                  "launcherRef": "vscode",
+                  "overrides": {
+                    "displayName": "VS Code",
+                    "imageType": "large",
+                    "action": "newwindow"
+                  },
+                  "position": {
+                    "width": 110,
+                    "height": 110,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #007ACC 0%, #0066a3 100%)",
+                    "borderRadius": 18,
+                    "border": {
+                      "width": 1,
+                      "color": "rgba(0, 122, 204, 0.2)"
+                    },
+                    "shadow": {
+                      "color": "rgba(0, 122, 204, 0.25)",
+                      "offset": { "x": 0, "y": 6 },
+                      "blur": 20,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "translateY(-2px)",
+                      "shadow": {
+                        "color": "rgba(0, 122, 204, 0.4)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 28,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "chrome_work",
+                  "launcherRef": "chrome",
+                  "overrides": {
+                    "displayName": "Chrome",
+                    "imageType": "large",
+                    "action": "newwindow"
+                  },
+                  "position": {
+                    "width": 110,
+                    "height": 110,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #4285f4 0%, #3367d6 100%)",
+                    "borderRadius": 18,
+                    "border": {
+                      "width": 1,
+                      "color": "rgba(66, 133, 244, 0.2)"
+                    },
+                    "shadow": {
+                      "color": "rgba(66, 133, 244, 0.25)",
+                      "offset": { "x": 0, "y": 6 },
+                      "blur": 20,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "translateY(-2px)",
+                      "shadow": {
+                        "color": "rgba(66, 133, 244, 0.4)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 28,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "explorer_work",
+                  "launcherRef": "explorer",
+                  "overrides": {
+                    "displayName": "Explorer",
+                    "imageType": "large",
+                    "action": "documents"
+                  },
+                  "position": {
+                    "width": 110,
+                    "height": 110,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #4CAF50 0%, #388e3c 100%)",
+                    "borderRadius": 18,
+                    "border": {
+                      "width": 1,
+                      "color": "rgba(76, 175, 80, 0.2)"
+                    },
+                    "shadow": {
+                      "color": "rgba(76, 175, 80, 0.25)",
+                      "offset": { "x": 0, "y": 6 },
+                      "blur": 20,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "translateY(-2px)",
+                      "shadow": {
+                        "color": "rgba(76, 175, 80, 0.4)",
+                        "offset": { "x": 0, "y": 12 },
+                        "blur": 28,
+                        "spread": 0
+                      }
+                    }
+                  }
+                }
+              ]
             },
-            "position": {
-              "width": 80,
-              "height": 80,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#5865F2",
-              "borderRadius": 10,
-              "elevation": 3
+            {
+              "type": "row",
+              "spacing": 20,
+              "children": [
+                {
+                  "type": "launcher",
+                  "id": "discord_work",
+                  "launcherRef": "discord",
+                  "overrides": {
+                    "displayName": "Discord",
+                    "imageType": "default",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 90,
+                    "height": 90,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #5865F2 0%, #4752c4 100%)",
+                    "borderRadius": 16,
+                    "border": {
+                      "width": 1,
+                      "color": "rgba(88, 101, 242, 0.2)"
+                    },
+                    "shadow": {
+                      "color": "rgba(88, 101, 242, 0.2)",
+                      "offset": { "x": 0, "y": 4 },
+                      "blur": 16,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "translateY(-1px)",
+                      "shadow": {
+                        "color": "rgba(88, 101, 242, 0.3)",
+                        "offset": { "x": 0, "y": 8 },
+                        "blur": 20,
+                        "spread": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "launcher",
+                  "id": "calculator_work",
+                  "launcherRef": "calculator",
+                  "overrides": {
+                    "displayName": "Calculator",
+                    "imageType": "default",
+                    "action": "default"
+                  },
+                  "position": {
+                    "width": 90,
+                    "height": 90,
+                    "flex": 1
+                  },
+                  "style": {
+                    "gradient": "linear-gradient(135deg, #FF9800 0%, #f57c00 100%)",
+                    "borderRadius": 16,
+                    "border": {
+                      "width": 1,
+                      "color": "rgba(255, 152, 0, 0.2)"
+                    },
+                    "shadow": {
+                      "color": "rgba(255, 152, 0, 0.2)",
+                      "offset": { "x": 0, "y": 4 },
+                      "blur": 16,
+                      "spread": 0
+                    },
+                    "hover": {
+                      "transform": "translateY(-1px)",
+                      "shadow": {
+                        "color": "rgba(255, 152, 0, 0.3)",
+                        "offset": { "x": 0, "y": 8 },
+                        "blur": 20,
+                        "spread": 0
+                      }
+                    }
+                  }
+                }
+              ]
             }
-          },
-          {
-            "type": "launcher",
-            "id": "calculator_work",
-            "launcherRef": "calculator",
-            "overrides": {
-              "displayName": "Calculator",
-              "imageType": "default",
-              "action": "default"
-            },
-            "position": {
-              "width": 80,
-              "height": 80,
-              "flex": 1
-            },
-            "style": {
-              "backgroundColor": "#FF9800",
-              "borderRadius": 10,
-              "elevation": 3
-            }
-          }
-        ]
+          ]
+        }
       }
     ]
   },
   "globalSettings": {
-    "theme": "light",
+    "theme": "minimal",
     "animations": true,
     "autoHide": false,
-    "defaultImageType": "large",
-    "defaultActionType": "default"
+    "defaultImageType": "crisp",
+    "defaultActionType": "precise",
+    "effects": {
+      "enableSoftShadows": true,
+      "enableSubtleAnimations": true,
+      "enableHoverEffects": true,
+      "transitionDuration": 250,
+      "shadowIntensity": 0.6
+    }
   }
 }
