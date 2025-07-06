@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: widget.settings.mode == 'test'
+      home: widget.settings.mode == 'demo'
           ? const DemoPage()
           : HomePage(
               title: 'Custom Launcher',

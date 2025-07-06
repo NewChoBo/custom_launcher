@@ -51,7 +51,7 @@ class AppSettings {
   final String backgroundColor;
 
   const AppSettings({
-    this.mode = 'test',
+    this.mode = 'demo',
     this.backgroundOpacity = 1.0,
     this.appBarOpacity = 1.0,
     this.windowWidth = '800',

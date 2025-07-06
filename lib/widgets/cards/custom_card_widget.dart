@@ -8,7 +8,7 @@ class CustomCard extends StatelessWidget {
     this.title = 'title',
     this.subtitle = '',
     this.imageOpacity = 0.8,
-    this.executablePath = r'C:\Users\whwjd\AppData\Local\Discord\Update.exe',
+    this.executablePath = 'calc.exe',
     this.arguments = const <String>['--processStart', 'Discord.exe'],
   });
 

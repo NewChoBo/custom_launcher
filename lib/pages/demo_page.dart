@@ -30,15 +30,11 @@ class DemoPage extends StatelessWidget {
                           imagePath: 'assets/images/Steam_icon_logo.png',
                           executablePath: 'D:/Games/Steam/steam.exe',
                         ),
-                        CustomCard(
+                        const CustomCard(
                           title: 'Epic Games',
                           subtitle: 'Epic Games / Unreal Engine',
                           imagePath:
                               'assets/images/Unreal-Engine-Splash-Screen.jpg',
-                          executablePath:
-                              r'C:\Users\' +
-                              Platform.environment['USERNAME']! +
-                              r'\AppData\Local\Discord\Update.exe',
                         ),
                         CustomCard(
                           title: 'Discord',
