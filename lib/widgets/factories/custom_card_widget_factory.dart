@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:custom_launcher/models/layout_config.dart';
-import 'package:custom_launcher/widgets/factories/widget_factory.dart';
 import 'package:custom_launcher/widgets/cards/custom_card_widget.dart';
 
 /// Factory for creating CustomCard widgets from layout configuration
-class CustomCardWidgetFactory extends WidgetFactory {
-  @override
-  String get widgetType => 'custom_card';
-
-  @override
-  Widget createWidget(LayoutElement element) {
+class CustomCardWidgetFactory {
+  /// Create CustomCard widget from layout element
+  Widget? createWidget(LayoutElement element) {
+    // Only handle custom_card type
+    if (element.type.toLowerCase() != 'custom_card') {
+      return null;
+    }
     final String title = element.getProperty<String>('title') ?? 'title';
     final String subtitle = element.getProperty<String>('subtitle') ?? '';
     final String imagePath =

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:custom_launcher/models/layout_config.dart';
-import 'package:custom_launcher/widgets/factories/widget_registry.dart';
-import 'package:custom_launcher/widgets/factories/launcher_widget_factory.dart';
 import 'package:custom_launcher/widgets/factories/custom_card_widget_factory.dart';
 
 /// Dynamic layout widget that builds UI from JSON configuration
@@ -22,24 +20,12 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   LayoutConfig? _layoutConfig;
   bool _isLoading = true;
   String? _error;
-  final WidgetRegistry _widgetRegistry = WidgetRegistry();
+  final CustomCardWidgetFactory _customCardFactory = CustomCardWidgetFactory();
 
   @override
   void initState() {
     super.initState();
-    _initializeWidgetRegistry();
     _loadLayoutConfig();
-  }
-
-  /// Initialize widget registry with factories
-  void _initializeWidgetRegistry() {
-    // Register custom widget factories
-    _widgetRegistry.registerFactory(LauncherWidgetFactory());
-    _widgetRegistry.registerFactory(CustomCardWidgetFactory());
-
-    debugPrint(
-      'Widget registry initialized with ${_widgetRegistry.supportedTypes.length} factories',
-    );
   }
 
   /// Load layout configuration from JSON file
@@ -70,10 +56,12 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
   /// Build widget from layout element
   Widget _buildWidget(LayoutElement element) {
-    // Try widget registry first (for custom widgets)
-    final Widget? customWidget = _widgetRegistry.createWidget(element);
-    if (customWidget != null) {
-      return customWidget;
+    // Try custom card widget first
+    if (element.type.toLowerCase() == 'custom_card') {
+      final Widget? customWidget = _customCardFactory.createWidget(element);
+      if (customWidget != null) {
+        return customWidget;
+      }
     }
 
     // Fallback to built-in widgets
