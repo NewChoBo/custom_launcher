@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({super.key});
+  const CustomCard({
+    super.key,
+    this.imagePath = 'assets/images/discord-logo.png',
+    this.title = 'title',
+    this.subtitle = '',
+    this.imageOpacity = 0.8,
+  });
+
+  final String imagePath;
+  final String title;
+  final String subtitle;
+  final double imageOpacity;
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +27,14 @@ class CustomCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF1F2123).withValues(alpha: 0.5),
             borderRadius: BorderRadius.zero,
-            image: const DecorationImage(
-              image: AssetImage('assets/images/discord-logo.png'),
+            image: DecorationImage(
+              image: AssetImage(imagePath),
               fit: BoxFit.cover,
-              opacity: 0.3,
+              opacity: imageOpacity,
             ),
           ),
-          child: const Padding(
-            padding: EdgeInsets.all(30),
+          child: Padding(
+            padding: const EdgeInsets.all(30),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -31,21 +42,24 @@ class CustomCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Euro',
-                      style: TextStyle(
+                      title,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       children: <Widget>[
                         Text(
-                          '6 428 ',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                          subtitle,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                       ],
                     ),
                   ],
