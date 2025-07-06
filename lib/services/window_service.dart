@@ -27,11 +27,14 @@ class WindowService {
         backgroundColor: Colors.transparent,
         skipTaskbar: config.skipTaskbar,
         titleBarStyle: TitleBarStyle.hidden,
+        windowButtonVisibility: false,
+        alwaysOnTop: config.windowLevel == WindowLevel.alwaysOnTop,
       ),
       () async {
         await windowManager.show();
         await windowManager.focus();
         await windowManager.setPreventClose(true);
+        await windowManager.setAsFrameless();
 
         // Set position based on settings
         await _applyWindowPosition(config);

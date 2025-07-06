@@ -3,6 +3,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:custom_launcher/services/system_tray_service.dart';
 import 'package:custom_launcher/models/app_settings.dart';
 import 'package:custom_launcher/pages/home_page.dart';
+import 'package:custom_launcher/pages/demo_page.dart';
 
 /// Main application widget
 /// Manages app lifecycle, theme, and system tray integration
@@ -49,16 +50,14 @@ class _MyAppState extends State<MyApp> with WindowListener {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Container(
-        color: Colors.white.withValues(
-          alpha: widget.settings.backgroundOpacity,
-        ),
-        child: HomePage(
-          title: 'Custom Launcher',
-          onHideToTray: _systemTrayService.hideWindow,
-          settings: widget.settings,
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
+      home: widget.settings.mode == 'test'
+          ? const DemoPage()
+          : HomePage(
+              title: 'Custom Launcher',
+              onHideToTray: _systemTrayService.hideWindow,
+              settings: widget.settings,
+            ),
     );
   }
 }

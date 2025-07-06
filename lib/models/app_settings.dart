@@ -36,6 +36,7 @@ enum WindowLevel {
 
 /// Application settings model
 class AppSettings {
+  final String mode;
   final double backgroundOpacity;
   final double appBarOpacity;
   final String windowWidth; // Support both "800" and "80%" formats
@@ -50,6 +51,7 @@ class AppSettings {
   final String backgroundColor;
 
   const AppSettings({
+    this.mode = 'test',
     this.backgroundOpacity = 1.0,
     this.appBarOpacity = 1.0,
     this.windowWidth = '800',
