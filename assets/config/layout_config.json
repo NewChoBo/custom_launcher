@@ -1,222 +1,85 @@
 {
   "layout": {
-    "type": "column",
-    "mainAxisAlignment": "center",
-    "crossAxisAlignment": "center",
-    "padding": {
-      "top": 20,
-      "bottom": 20,
-      "left": 16,
-      "right": 16
-    },
+    "type": "row",
+    "mainAxisAlignment": "start",
+    "crossAxisAlignment": "start",
     "children": [
       {
-        "type": "container",
-        "width": "fill",
-        "height": 60,
-        "decoration": {
-          "color": "#E3F2FD",
-          "borderRadius": 8
-        },
-        "padding": {
-          "all": 16
-        },
-        "child": {
-          "type": "text",
-          "text": "Custom Launcher Dashboard",
-          "style": {
-            "fontSize": 18,
-            "fontWeight": "bold",
-            "color": "#1976D2"
-          },
-          "textAlign": "center"
-        }
-      },
-      {
-        "type": "sizedBox",
-        "height": 20
-      },
-      {
-        "type": "container",
-        "width": "fill",
-        "decoration": {
-          "color": "#FFF3E0",
-          "borderRadius": 8
-        },
-        "padding": {
-          "all": 16
-        },
+        "type": "expanded",
         "child": {
           "type": "column",
+          "mainAxisAlignment": "start",
           "crossAxisAlignment": "start",
+          "spacing": 2,
           "children": [
             {
-              "type": "text",
-              "text": "Quick Launch",
-              "style": {
-                "fontSize": 14,
-                "fontWeight": "bold",
-                "color": "#E65100"
+              "type": "expanded",
+              "child": {
+                "type": "row",
+                "spacing": 2,
+                "children": [
+                  {
+                    "type": "custom_card",
+                    "title": "Epic Games",
+                    "subtitle": "Epic Games / Unreal Engine",
+                    "imagePath": "assets/images/Unreal-Engine-Splash-Screen.jpg"
+                  },
+                  {
+                    "type": "custom_card",
+                    "title": "Steam",
+                    "subtitle": "Steam Games Launcher",
+                    "imagePath": "assets/images/Steam_icon_logo.png",
+                    "executablePath": "D:/Games/Steam/steam.exe"
+                  },
+                  {
+                    "type": "custom_card",
+                    "title": "Discord",
+                    "subtitle": "Discord Launcher",
+                    "imagePath": "assets/images/discord-logo.png",
+                    "executablePath": "C:\\Users\\%USERNAME%\\AppData\\Local\\Discord\\Update.exe",
+                    "arguments": ["--processStart", "Discord.exe"]
+                  }
+                ]
               }
             },
             {
-              "type": "sizedBox",
-              "height": 12
-            },
-            {
-              "type": "row",
-              "mainAxisAlignment": "spaceEvenly",
-              "children": [
-                {
-                  "type": "launcher",
-                  "appName": "calculator",
-                  "displayName": "Calculator",
-                  "icon": "calculate",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#FF9800",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
+              "type": "expanded",
+              "flex": 2,
+              "child": {
+                "type": "row",
+                "spacing": 2,
+                "children": [
+                  {
+                    "type": "custom_card",
+                    "title": "Rainbow Six",
+                    "subtitle": "Rainbow Six Siege",
+                    "imagePath": "assets/images/IQ_-_Full_Body.webp"
+                  },
+                  {
+                    "type": "custom_card",
+                    "title": "Dying Light 2",
+                    "subtitle": "Dying Light 2",
+                    "imagePath": "assets/images/dyinglight2.jpg"
+                  },
+                  {
+                    "type": "custom_card",
+                    "title": "Half-Life Alyx",
+                    "subtitle": "Half-Life Alyx",
+                    "imagePath": "assets/images/alyx_feature2.jpg"
+                  },
+                  {
+                    "type": "custom_card",
+                    "title": "Palworld",
+                    "subtitle": "Palworld",
+                    "imagePath": "assets/images/palworld.jpg"
+                  },
+                  {
+                    "type": "custom_card",
+                    "title": "Cyberpunk 2077",
+                    "subtitle": "Cyberpunk 2077",
+                    "imagePath": "assets/images/cyberpunk.webp"
                   }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "chrome",
-                  "displayName": "Chrome",
-                  "icon": "web",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#4285F4",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "steam",
-                  "displayName": "Steam",
-                  "icon": "games",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#1B2838",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                }
-              ]
-            },
-            {
-              "type": "sizedBox",
-              "height": 12
-            },
-            {
-              "type": "row",
-              "mainAxisAlignment": "spaceEvenly",
-              "children": [
-                {
-                  "type": "launcher",
-                  "appName": "vscode",
-                  "displayName": "VS Code",
-                  "icon": "code",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#007ACC",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "discord",
-                  "displayName": "Discord",
-                  "icon": "chat",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#5865F2",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "spotify",
-                  "displayName": "Spotify",
-                  "icon": "music_note",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#1DB954",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "type": "sizedBox",
-        "height": 20
-      },
-      {
-        "type": "container",
-        "width": "fill",
-        "decoration": {
-          "color": "#F5F5F5",
-          "borderRadius": 8
-        },
-        "padding": {
-          "all": 16
-        },
-        "child": {
-          "type": "column",
-          "crossAxisAlignment": "start",
-          "children": [
-            {
-              "type": "text",
-              "text": "System Information",
-              "style": {
-                "fontSize": 14,
-                "fontWeight": "bold",
-                "color": "#424242"
-              }
-            },
-            {
-              "type": "sizedBox",
-              "height": 8
-            },
-            {
-              "type": "text",
-              "text": "Status: Running",
-              "style": {
-                "fontSize": 12,
-                "color": "#666666"
-              }
-            },
-            {
-              "type": "text",
-              "text": "Memory: 128 MB",
-              "style": {
-                "fontSize": 12,
-                "color": "#666666"
+                ]
               }
             }
           ]

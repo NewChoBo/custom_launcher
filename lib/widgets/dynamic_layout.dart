@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:custom_launcher/models/layout_config.dart';
 import 'package:custom_launcher/widgets/factories/widget_registry.dart';
 import 'package:custom_launcher/widgets/factories/launcher_widget_factory.dart';
+import 'package:custom_launcher/widgets/factories/custom_card_widget_factory.dart';
 
 /// Dynamic layout widget that builds UI from JSON configuration
 class DynamicLayout extends StatefulWidget {
@@ -34,6 +35,7 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   void _initializeWidgetRegistry() {
     // Register custom widget factories
     _widgetRegistry.registerFactory(LauncherWidgetFactory());
+    _widgetRegistry.registerFactory(CustomCardWidgetFactory());
 
     debugPrint(
       'Widget registry initialized with ${_widgetRegistry.supportedTypes.length} factories',
@@ -80,6 +82,8 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         return _buildColumn(element);
       case 'row':
         return _buildRow(element);
+      case 'expanded':
+        return _buildExpanded(element);
       case 'container':
         return _buildContainer(element);
       case 'text':
@@ -108,19 +112,41 @@ class _DynamicLayoutState extends State<DynamicLayout> {
 
   /// Build Column widget
   Widget _buildColumn(LayoutElement element) {
+    final double? spacing =
+        element.getProperty<double>('spacing') ??
+        element.getProperty<int>('spacing')?.toDouble();
+
+    final String? mainAxisSize = element.getProperty<String>('mainAxisSize');
+    final String? mainAlignment = element.getProperty<String>(
+      'mainAxisAlignment',
+    );
+
+    final List<Widget> children =
+        element.children?.map(_buildWidget).toList() ?? <Widget>[];
+
     return Column(
-      mainAxisAlignment: _parseMainAxisAlignment(
-        element.getProperty<String>('mainAxisAlignment'),
-      ),
+      mainAxisSize: mainAxisSize == 'max' || mainAlignment == 'start'
+          ? MainAxisSize.max
+          : MainAxisSize.min,
+      mainAxisAlignment: _parseMainAxisAlignment(mainAlignment),
       crossAxisAlignment: _parseCrossAxisAlignment(
         element.getProperty<String>('crossAxisAlignment'),
       ),
-      children: element.children?.map(_buildWidget).toList() ?? <Widget>[],
+      children: spacing != null
+          ? _addSpacing(children, spacing, true)
+          : children,
     );
   }
 
   /// Build Row widget
   Widget _buildRow(LayoutElement element) {
+    final double? spacing =
+        element.getProperty<double>('spacing') ??
+        element.getProperty<int>('spacing')?.toDouble();
+
+    final List<Widget> children =
+        element.children?.map(_buildWidget).toList() ?? <Widget>[];
+
     return Row(
       mainAxisAlignment: _parseMainAxisAlignment(
         element.getProperty<String>('mainAxisAlignment'),
@@ -128,8 +154,23 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       crossAxisAlignment: _parseCrossAxisAlignment(
         element.getProperty<String>('crossAxisAlignment'),
       ),
-      children: element.children?.map(_buildWidget).toList() ?? <Widget>[],
+      children: spacing != null
+          ? _addSpacing(children, spacing, false)
+          : children,
     );
+  }
+
+  /// Build Expanded widget
+  Widget _buildExpanded(LayoutElement element) {
+    final int? flex = element.getProperty<int>('flex');
+    final LayoutElement? child = element.child;
+
+    if (child == null) {
+      debugPrint('Expanded widget requires a child element');
+      return const SizedBox.shrink();
+    }
+
+    return Expanded(flex: flex ?? 1, child: _buildWidget(child));
   }
 
   /// Build Container widget
@@ -391,11 +432,32 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       return const Center(child: Text('No layout configuration available'));
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _buildWidget(_layoutConfig!.layout),
-      ),
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: _buildWidget(_layoutConfig!.layout),
     );
+  }
+
+  /// Add spacing between children widgets
+  List<Widget> _addSpacing(
+    List<Widget> children,
+    double spacing,
+    bool isColumn,
+  ) {
+    if (children.isEmpty) return children;
+
+    final List<Widget> spacedChildren = <Widget>[];
+    for (int i = 0; i < children.length; i++) {
+      spacedChildren.add(children[i]);
+      if (i < children.length - 1) {
+        if (isColumn) {
+          spacedChildren.add(SizedBox(height: spacing));
+        } else {
+          spacedChildren.add(SizedBox(width: spacing));
+        }
+      }
+    }
+    return spacedChildren;
   }
 }
