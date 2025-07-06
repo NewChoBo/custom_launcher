@@ -1,12 +1,13 @@
 import 'package:custom_launcher/widgets/cards/custom_card_widget.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class DemoPage extends StatelessWidget {
   const DemoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.transparent,
       body: Expanded(
         child: Row(
@@ -23,26 +24,36 @@ class DemoPage extends StatelessWidget {
                     child: Row(
                       spacing: 2,
                       children: <Widget>[
-                        CustomCard(
+                        const CustomCard(
                           title: 'Steam',
                           subtitle: 'Steam Games Launcher',
                           imagePath: 'assets/images/Steam_icon_logo.png',
+                          executablePath: 'D:/Games/Steam/steam.exe',
                         ),
                         CustomCard(
                           title: 'Epic Games',
                           subtitle: 'Epic Games / Unreal Engine',
                           imagePath:
                               'assets/images/Unreal-Engine-Splash-Screen.jpg',
+                          executablePath:
+                              r'C:\Users\' +
+                              Platform.environment['USERNAME']! +
+                              r'\AppData\Local\Discord\Update.exe',
                         ),
                         CustomCard(
                           title: 'Discord',
                           subtitle: 'Discord Launcher',
                           imagePath: 'assets/images/discord-logo.png',
+                          executablePath:
+                              'C:\\Users\\' +
+                              Platform.environment['USERNAME']! +
+                              '\\AppData\\Local\\Discord\\Update.exe',
+                          arguments: <String>['--processStart', 'Discord.exe'],
                         ),
                       ],
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     flex: 2,
                     child: Row(
                       spacing: 2,
