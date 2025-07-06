@@ -221,6 +221,9 @@ class AppSettings {
         window['behavior'] as Map<String, dynamic>? ?? <String, dynamic>{};
 
     return AppSettings(
+      // Mode setting (missing!)
+      mode: map['mode'] as String? ?? 'demo',
+
       // UI settings
       showAppBar: ui['showAppBar'] as bool? ?? false,
       appBarColor: parseAppBarColor(colors['appBarColor']),
@@ -289,6 +292,7 @@ class AppSettings {
     }
 
     return <String, dynamic>{
+      'mode': mode,
       'ui': <String, Object>{
         'showAppBar': showAppBar,
         'colors': <String, String>{
