@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:custom_launcher/models/layout_config.dart';
 import 'package:custom_launcher/widgets/factories/custom_card_widget_factory.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/column_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/row_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/expanded_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/container_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/text_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/icon_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/card_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/sizedbox_builder.dart';
+import 'package:custom_launcher/widgets/dynamic_layout/builders/parse_util.dart';
 
 /// Dynamic layout widget that builds UI from JSON configuration
 class DynamicLayout extends StatefulWidget {
@@ -22,43 +31,33 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   String? _error;
   final CustomCardWidgetFactory _customCardFactory = CustomCardWidgetFactory();
 
-  // Factory 패턴: type별 위젯 빌더 Map (선언과 동시에 초기화)
-  final Map<String, Widget Function(LayoutElement)> _widgetBuilders =
-      <String, Widget Function(LayoutElement p1)>{
-        'column': _buildColumnStatic,
-        'row': _buildRowStatic,
-        'expanded': _buildExpandedStatic,
-        'container': _buildContainerStatic,
-        'text': _buildTextStatic,
-        'icon': _buildIconStatic,
-        'card': _buildCardStatic,
-        'sizedbox': _buildSizedBoxStatic,
-      };
-
-  // 정적 메서드로 위임 (this 전달)
-  static Widget _buildColumnStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildColumn(element));
-  static Widget _buildRowStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildRow(element));
-  static Widget _buildExpandedStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildExpanded(element));
-  static Widget _buildContainerStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildContainer(element));
-  static Widget _buildTextStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildText(element));
-  static Widget _buildIconStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildIcon(element));
-  static Widget _buildCardStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildCard(element));
-  static Widget _buildSizedBoxStatic(LayoutElement element) =>
-      (_dynamicLayoutStateInstance!._buildSizedBox(element));
-
-  static _DynamicLayoutState? _dynamicLayoutStateInstance;
+  // Factory 패턴: type별 위젯 빌더 Map (분리된 빌더 사용)
+  late final Map<String, Widget Function(LayoutElement)> _widgetBuilders;
 
   @override
   void initState() {
     super.initState();
-    _dynamicLayoutStateInstance = this;
+    _widgetBuilders = <String, Widget Function(LayoutElement p1)>{
+      'column': (LayoutElement e) => ColumnBuilder.build(e, _buildWidget),
+      'row': (LayoutElement e) => RowBuilder.build(e, _buildWidget),
+      'expanded': (LayoutElement e) => ExpandedBuilder.build(e, _buildWidget),
+      'container': (LayoutElement e) => ContainerBuilder.build(
+        e,
+        _buildWidget,
+        ParseUtil.parseDimension,
+        ParseUtil.parseColor,
+      ),
+      'text': (LayoutElement e) => TextBuilder.build(
+        e,
+        ParseUtil.parseColor,
+        ParseUtil.parseFontWeight,
+        ParseUtil.parseTextAlign,
+      ),
+      'icon': (LayoutElement e) =>
+          IconBuilder.build(e, ParseUtil.parseIconData, ParseUtil.parseColor),
+      'card': (LayoutElement e) => CardBuilder.build(e, _buildWidget),
+      'sizedbox': (LayoutElement e) => SizedBoxBuilder.build(e),
+    };
     _loadLayoutConfig();
   }
 
@@ -69,15 +68,12 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         _isLoading = true;
         _error = null;
       });
-
       final String jsonString = await rootBundle.loadString(widget.configPath);
       final LayoutConfig config = LayoutConfig.fromJson(jsonString);
-
       setState(() {
         _layoutConfig = config;
         _isLoading = false;
       });
-
       debugPrint('Layout config loaded successfully');
     } catch (e) {
       setState(() {
@@ -97,16 +93,12 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         return customWidget;
       }
     }
-
-    // Factory 패턴: Map에서 빌더 함수 찾기
     final Widget Function(LayoutElement p1)? builder =
         _widgetBuilders[element.type.toLowerCase()];
     if (builder != null) {
       return builder(element);
     }
-
-    // 알 수 없는 타입 처리
-    debugPrint('Unknown widget type: ${element.type}');
+    debugPrint('Unknown widget type: [${element.type}]');
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
@@ -118,287 +110,6 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         style: const TextStyle(color: Colors.red),
       ),
     );
-  }
-
-  /// Build Column widget
-  Widget _buildColumn(LayoutElement element) {
-    final double? spacing =
-        element.getProperty<double>('spacing') ??
-        element.getProperty<int>('spacing')?.toDouble();
-
-    final String? mainAxisSize = element.getProperty<String>('mainAxisSize');
-    final String? mainAlignment = element.getProperty<String>(
-      'mainAxisAlignment',
-    );
-
-    final List<Widget> children =
-        element.children?.map(_buildWidget).toList() ?? <Widget>[];
-
-    return Column(
-      mainAxisSize: mainAxisSize == 'max' || mainAlignment == 'start'
-          ? MainAxisSize.max
-          : MainAxisSize.min,
-      mainAxisAlignment: _parseMainAxisAlignment(mainAlignment),
-      crossAxisAlignment: _parseCrossAxisAlignment(
-        element.getProperty<String>('crossAxisAlignment'),
-      ),
-      children: spacing != null
-          ? _addSpacing(children, spacing, true)
-          : children,
-    );
-  }
-
-  /// Build Row widget
-  Widget _buildRow(LayoutElement element) {
-    final double? spacing =
-        element.getProperty<double>('spacing') ??
-        element.getProperty<int>('spacing')?.toDouble();
-
-    final List<Widget> children =
-        element.children?.map(_buildWidget).toList() ?? <Widget>[];
-
-    return Row(
-      mainAxisAlignment: _parseMainAxisAlignment(
-        element.getProperty<String>('mainAxisAlignment'),
-      ),
-      crossAxisAlignment: _parseCrossAxisAlignment(
-        element.getProperty<String>('crossAxisAlignment'),
-      ),
-      children: spacing != null
-          ? _addSpacing(children, spacing, false)
-          : children,
-    );
-  }
-
-  /// Build Expanded widget
-  Widget _buildExpanded(LayoutElement element) {
-    final int? flex = element.getProperty<int>('flex');
-    final LayoutElement? child = element.child;
-
-    if (child == null) {
-      debugPrint('Expanded widget requires a child element');
-      return const SizedBox.shrink();
-    }
-
-    return Expanded(flex: flex ?? 1, child: _buildWidget(child));
-  }
-
-  /// Build Container widget
-  Widget _buildContainer(LayoutElement element) {
-    final Map<String, dynamic>? paddingMap = element
-        .getProperty<Map<String, dynamic>>('padding');
-    final Map<String, dynamic>? decorationMap = element
-        .getProperty<Map<String, dynamic>>('decoration');
-
-    EdgeInsetsGeometry? padding;
-    if (paddingMap != null) {
-      final LayoutPadding layoutPadding = LayoutPadding.fromMap(paddingMap);
-      if (layoutPadding.all != null) {
-        padding = EdgeInsets.all(layoutPadding.all!);
-      } else {
-        padding = EdgeInsets.only(
-          top: layoutPadding.top ?? 0,
-          bottom: layoutPadding.bottom ?? 0,
-          left: layoutPadding.left ?? 0,
-          right: layoutPadding.right ?? 0,
-        );
-      }
-    }
-
-    Decoration? decoration;
-    if (decorationMap != null) {
-      final LayoutDecoration layoutDecoration = LayoutDecoration.fromMap(
-        decorationMap,
-      );
-      decoration = BoxDecoration(
-        color: layoutDecoration.color != null
-            ? _parseColor(layoutDecoration.color!)
-            : null,
-        borderRadius: layoutDecoration.borderRadius != null
-            ? BorderRadius.circular(layoutDecoration.borderRadius!)
-            : null,
-      );
-    }
-
-    final width = element.getProperty<dynamic>('width');
-    final height = element.getProperty<dynamic>('height');
-
-    return Container(
-      width: _parseDimension(width),
-      height: _parseDimension(height),
-      padding: padding,
-      decoration: decoration,
-      child: element.child != null ? _buildWidget(element.child!) : null,
-    );
-  }
-
-  /// Build Text widget
-  Widget _buildText(LayoutElement element) {
-    final String text = element.getProperty<String>('text') ?? 'No text';
-    final Map<String, dynamic>? styleMap = element
-        .getProperty<Map<String, dynamic>>('style');
-    final String? textAlign = element.getProperty<String>('textAlign');
-
-    TextStyle? style;
-    if (styleMap != null) {
-      final LayoutStyle layoutStyle = LayoutStyle.fromMap(styleMap);
-      style = TextStyle(
-        fontSize: layoutStyle.fontSize,
-        fontWeight: _parseFontWeight(layoutStyle.fontWeight),
-        color: layoutStyle.color != null
-            ? _parseColor(layoutStyle.color!)
-            : null,
-      );
-    }
-
-    return Text(text, style: style, textAlign: _parseTextAlign(textAlign));
-  }
-
-  /// Build Icon widget
-  Widget _buildIcon(LayoutElement element) {
-    final String iconName = element.getProperty<String>('icon') ?? 'help';
-    final double? size = element.getProperty<num>('size', 24)?.toDouble();
-    final String? colorString = element.getProperty<String>('color');
-
-    return Icon(
-      _parseIconData(iconName),
-      size: size,
-      color: colorString != null ? _parseColor(colorString) : null,
-    );
-  }
-
-  /// Build Card widget
-  Widget _buildCard(LayoutElement element) {
-    final double? elevation = element
-        .getProperty<num>('elevation', 1)
-        ?.toDouble();
-
-    return Card(
-      elevation: elevation,
-      child: element.child != null ? _buildWidget(element.child!) : null,
-    );
-  }
-
-  /// Build SizedBox widget
-  Widget _buildSizedBox(LayoutElement element) {
-    final double? width = element.getProperty<num>('width')?.toDouble();
-    final double? height = element.getProperty<num>('height')?.toDouble();
-
-    return SizedBox(width: width, height: height);
-  }
-
-  /// Parse color from hex string
-  Color _parseColor(String colorString) {
-    try {
-      String hex = colorString.replaceFirst('#', '');
-      if (hex.length == 6) {
-        hex = 'FF$hex';
-      }
-      return Color(int.parse(hex, radix: 16));
-    } catch (e) {
-      debugPrint('Invalid color: $colorString');
-      return Colors.black;
-    }
-  }
-
-  /// Parse dimension (supports 'fill' for double.infinity)
-  double? _parseDimension(dynamic value) {
-    if (value == null) return null;
-    if (value is num) return value.toDouble();
-    if (value is String && value.toLowerCase() == 'fill') {
-      return double.infinity;
-    }
-    return null;
-  }
-
-  /// Parse MainAxisAlignment
-  MainAxisAlignment _parseMainAxisAlignment(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'start':
-        return MainAxisAlignment.start;
-      case 'end':
-        return MainAxisAlignment.end;
-      case 'center':
-        return MainAxisAlignment.center;
-      case 'spacebetween':
-        return MainAxisAlignment.spaceBetween;
-      case 'spacearound':
-        return MainAxisAlignment.spaceAround;
-      case 'spaceevenly':
-        return MainAxisAlignment.spaceEvenly;
-      default:
-        return MainAxisAlignment.start;
-    }
-  }
-
-  /// Parse CrossAxisAlignment
-  CrossAxisAlignment _parseCrossAxisAlignment(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'start':
-        return CrossAxisAlignment.start;
-      case 'end':
-        return CrossAxisAlignment.end;
-      case 'center':
-        return CrossAxisAlignment.center;
-      case 'stretch':
-        return CrossAxisAlignment.stretch;
-      default:
-        return CrossAxisAlignment.center;
-    }
-  }
-
-  /// Parse FontWeight
-  FontWeight? _parseFontWeight(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'bold':
-        return FontWeight.bold;
-      case 'w100':
-        return FontWeight.w100;
-      case 'w200':
-        return FontWeight.w200;
-      case 'w300':
-        return FontWeight.w300;
-      case 'w400':
-        return FontWeight.w400;
-      case 'w500':
-        return FontWeight.w500;
-      case 'w600':
-        return FontWeight.w600;
-      case 'w700':
-        return FontWeight.w700;
-      case 'w800':
-        return FontWeight.w800;
-      case 'w900':
-        return FontWeight.w900;
-      default:
-        return null;
-    }
-  }
-
-  /// Parse TextAlign
-  TextAlign? _parseTextAlign(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'left':
-        return TextAlign.left;
-      case 'right':
-        return TextAlign.right;
-      case 'center':
-        return TextAlign.center;
-      case 'justify':
-        return TextAlign.justify;
-      default:
-        return null;
-    }
-  }
-
-  /// Parse IconData from string
-  IconData _parseIconData(String iconName) {
-    // Create IconData from codePoint if it's a number
-    final int? codePoint = int.tryParse(iconName);
-    if (codePoint != null) {
-      return IconData(codePoint, fontFamily: 'MaterialIcons');
-    }
-    return Icons.help;
   }
 
   @override
@@ -415,7 +126,6 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         ),
       );
     }
-
     if (_error != null) {
       return Center(
         child: Column(
@@ -437,37 +147,13 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         ),
       );
     }
-
     if (_layoutConfig == null) {
       return const Center(child: Text('No layout configuration available'));
     }
-
     return Container(
       width: double.infinity,
       height: double.infinity,
       child: _buildWidget(_layoutConfig!.layout),
     );
-  }
-
-  /// Add spacing between children widgets
-  List<Widget> _addSpacing(
-    List<Widget> children,
-    double spacing,
-    bool isColumn,
-  ) {
-    if (children.isEmpty) return children;
-
-    final List<Widget> spacedChildren = <Widget>[];
-    for (int i = 0; i < children.length; i++) {
-      spacedChildren.add(children[i]);
-      if (i < children.length - 1) {
-        if (isColumn) {
-          spacedChildren.add(SizedBox(height: spacing));
-        } else {
-          spacedChildren.add(SizedBox(width: spacing));
-        }
-      }
-    }
-    return spacedChildren;
   }
 }
