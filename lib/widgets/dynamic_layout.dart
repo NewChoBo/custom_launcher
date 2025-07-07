@@ -22,9 +22,43 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   String? _error;
   final CustomCardWidgetFactory _customCardFactory = CustomCardWidgetFactory();
 
+  // Factory 패턴: type별 위젯 빌더 Map (선언과 동시에 초기화)
+  final Map<String, Widget Function(LayoutElement)> _widgetBuilders =
+      <String, Widget Function(LayoutElement p1)>{
+        'column': _buildColumnStatic,
+        'row': _buildRowStatic,
+        'expanded': _buildExpandedStatic,
+        'container': _buildContainerStatic,
+        'text': _buildTextStatic,
+        'icon': _buildIconStatic,
+        'card': _buildCardStatic,
+        'sizedbox': _buildSizedBoxStatic,
+      };
+
+  // 정적 메서드로 위임 (this 전달)
+  static Widget _buildColumnStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildColumn(element));
+  static Widget _buildRowStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildRow(element));
+  static Widget _buildExpandedStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildExpanded(element));
+  static Widget _buildContainerStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildContainer(element));
+  static Widget _buildTextStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildText(element));
+  static Widget _buildIconStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildIcon(element));
+  static Widget _buildCardStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildCard(element));
+  static Widget _buildSizedBoxStatic(LayoutElement element) =>
+      (_dynamicLayoutStateInstance!._buildSizedBox(element));
+
+  static _DynamicLayoutState? _dynamicLayoutStateInstance;
+
   @override
   void initState() {
     super.initState();
+    _dynamicLayoutStateInstance = this;
     _loadLayoutConfig();
   }
 
@@ -64,38 +98,26 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       }
     }
 
-    // Fallback to built-in widgets
-    switch (element.type.toLowerCase()) {
-      case 'column':
-        return _buildColumn(element);
-      case 'row':
-        return _buildRow(element);
-      case 'expanded':
-        return _buildExpanded(element);
-      case 'container':
-        return _buildContainer(element);
-      case 'text':
-        return _buildText(element);
-      case 'icon':
-        return _buildIcon(element);
-      case 'card':
-        return _buildCard(element);
-      case 'sizedbox':
-        return _buildSizedBox(element);
-      default:
-        debugPrint('Unknown widget type: ${element.type}');
-        return Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.2),
-            border: Border.all(color: Colors.red),
-          ),
-          child: Text(
-            'Unknown: ${element.type}',
-            style: const TextStyle(color: Colors.red),
-          ),
-        );
+    // Factory 패턴: Map에서 빌더 함수 찾기
+    final Widget Function(LayoutElement p1)? builder =
+        _widgetBuilders[element.type.toLowerCase()];
+    if (builder != null) {
+      return builder(element);
     }
+
+    // 알 수 없는 타입 처리
+    debugPrint('Unknown widget type: ${element.type}');
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.2),
+        border: Border.all(color: Colors.red),
+      ),
+      child: Text(
+        'Unknown: [${element.type}]',
+        style: const TextStyle(color: Colors.red),
+      ),
+    );
   }
 
   /// Build Column widget
