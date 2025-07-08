@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:custom_launcher/models/app_assets_config.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_assets_config.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_info.dart';
 
-class AppLauncherService {
-  static final AppLauncherService _instance = AppLauncherService._internal();
-  factory AppLauncherService() => _instance;
-  AppLauncherService._internal();
+import 'package:custom_launcher/features/launcher/domain/repositories/app_launcher_repository.dart';
+
+class AppLauncherRepositoryImpl implements AppLauncherRepository {
+  static final AppLauncherRepositoryImpl _instance = AppLauncherRepositoryImpl._internal();
+  factory AppLauncherRepositoryImpl() => _instance;
+  AppLauncherRepositoryImpl._internal();
 
   AppAssetsConfig? _assetsConfig;
   bool _isConfigLoaded = false;
@@ -90,16 +93,4 @@ class AppLauncherService {
   }
 }
 
-class AppInfo {
-  final String name;
-  final String displayName;
-  final String icon;
-  final String description;
 
-  const AppInfo({
-    required this.name,
-    required this.displayName,
-    required this.icon,
-    required this.description,
-  });
-}

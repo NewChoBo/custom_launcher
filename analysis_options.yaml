@@ -16,7 +16,7 @@ linter:
     unused_import: true
     avoid_relative_lib_imports: true
     file_names: snake_case
-    always_specify_types: true
+    # always_specify_types: true
 
 analyzer:
   exclude:

@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:custom_launcher/models/app_settings.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
 
-class SettingsService {
+import 'package:custom_launcher/features/launcher/domain/repositories/settings_repository.dart';
+
+class SettingsRepositoryImpl implements SettingsRepository {
   static const String _assetsPath = 'assets/config/app_settings.json';
   static const String _localFileName = 'app_settings.json';
 

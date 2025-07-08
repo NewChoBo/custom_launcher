@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/services/window_service.dart';
-import 'package:custom_launcher/services/settings_service.dart';
+import 'package:custom_launcher/core/infrastructure/window_service.dart';
+import 'package:custom_launcher/features/launcher/data/repositories/settings_repository_impl.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/get_app_settings.dart';
 
 import 'package:window_manager/window_manager.dart';
-import 'package:custom_launcher/services/system_tray_service.dart';
-import 'package:custom_launcher/models/app_settings.dart';
-import 'package:custom_launcher/pages/home_page.dart';
-import 'package:custom_launcher/pages/demo_page.dart';
+import 'package:custom_launcher/core/infrastructure/system_tray_service.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:custom_launcher/features/launcher/presentation/pages/home_page.dart';
+import 'package:custom_launcher/features/launcher/presentation/pages/demo_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final SettingsService settingsService = SettingsService();
-  await settingsService.initialize();
-  await WindowService.initialize(settingsService.settings);
+  final SettingsRepositoryImpl settingsRepository = SettingsRepositoryImpl();
+  final GetAppSettings getAppSettings = GetAppSettings(settingsRepository);
+  await settingsRepository.initialize();
+  await WindowService.initialize(getAppSettings.call());
 
-  runApp(MyApp(settings: settingsService.settings));
+  runApp(MyApp(settings: getAppSettings.call()));
 }
 
 class MyApp extends StatefulWidget {

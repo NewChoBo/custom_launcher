@@ -1,4 +1,4 @@
-import 'package:custom_launcher/widgets/cards/custom_card_widget.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/cards/custom_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -24,13 +24,13 @@ class DemoPage extends StatelessWidget {
                     child: Row(
                       spacing: 2,
                       children: <Widget>[
-                        const CustomCard(
+                        CustomCard(
                           title: 'Steam',
                           subtitle: 'Steam Games Launcher',
                           imagePath: 'assets/images/Steam_icon_logo.png',
                           executablePath: 'D:/Games/Steam/steam.exe',
                         ),
-                        const CustomCard(
+                        CustomCard(
                           title: 'Epic Games',
                           subtitle: 'Epic Games / Unreal Engine',
                           imagePath:
@@ -41,9 +41,9 @@ class DemoPage extends StatelessWidget {
                           subtitle: 'Discord Launcher',
                           imagePath: 'assets/images/discord-logo.png',
                           executablePath:
-                              'C:\\Users\\' +
+                              r'C:\Users\' +
                               Platform.environment['USERNAME']! +
-                              '\\AppData\\Local\\Discord\\Update.exe',
+                              r'\AppData\Local\Discord\Update.exe',
                           arguments: <String>['--processStart', 'Discord.exe'],
                         ),
                       ],
@@ -54,27 +54,27 @@ class DemoPage extends StatelessWidget {
                     child: Row(
                       spacing: 2,
                       children: <Widget>[
-                        CustomCard(
+                        const CustomCard(
                           title: 'Rainbow Six',
                           subtitle: 'Rainbow Six Siege',
                           imagePath: 'assets/images/IQ_-_Full_Body.webp',
                         ),
-                        CustomCard(
+                        const CustomCard(
                           title: 'Dying Light 2',
                           subtitle: 'Dying Light 2',
                           imagePath: 'assets/images/dyinglight2.jpg',
                         ),
-                        CustomCard(
+                        const CustomCard(
                           title: 'Half-Life Alyx',
                           subtitle: 'Half-Life Alyx',
                           imagePath: 'assets/images/alyx_feature2.jpg',
                         ),
-                        CustomCard(
+                        const CustomCard(
                           title: 'Palworld',
                           subtitle: 'Palworld',
                           imagePath: 'assets/images/palworld.jpg',
                         ),
-                        CustomCard(
+                        const CustomCard(
                           title: 'Cyberpunk 2077',
                           subtitle: 'Cyberpunk 2077',
                           imagePath: 'assets/images/cyberpunk.webp',

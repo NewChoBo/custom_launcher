@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/app_settings.dart';
-import 'package:custom_launcher/widgets/dynamic_layout.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/dynamic_layout.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({

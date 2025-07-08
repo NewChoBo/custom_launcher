@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/layout_config.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
 
 class ContainerBuilder {
   static Widget build(
@@ -40,8 +40,8 @@ class ContainerBuilder {
             : null,
       );
     }
-    final width = element.getProperty<dynamic>('width');
-    final height = element.getProperty<dynamic>('height');
+    final double? width = element.getProperty<dynamic>('width');
+    final double? height = element.getProperty<dynamic>('height');
     return Container(
       width: parseDimension(width),
       height: parseDimension(height),

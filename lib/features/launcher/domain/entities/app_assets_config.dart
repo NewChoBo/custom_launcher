@@ -9,8 +9,8 @@ class AppAssetsConfig {
   factory AppAssetsConfig.fromMap(Map<String, dynamic> map) {
     return AppAssetsConfig(
       apps: (map['apps'] as Map<String, dynamic>? ?? <String, dynamic>{}).map(
-        (String key, value) =>
-            MapEntry(key, CustomAppInfo.fromMap(value as Map<String, dynamic>)),
+        (String key, dynamic value) =>
+            MapEntry<String, CustomAppInfo>(key, CustomAppInfo.fromMap(value as Map<String, dynamic>)),
       ),
     );
   }

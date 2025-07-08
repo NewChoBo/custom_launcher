@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/layout_config.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/spacing_util.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/spacing_util.dart';
 
 class RowBuilder {
   static Widget build(

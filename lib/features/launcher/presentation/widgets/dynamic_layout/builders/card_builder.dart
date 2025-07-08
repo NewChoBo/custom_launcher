@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/layout_config.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
 
 class CardBuilder {
   static Widget build(

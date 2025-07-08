@@ -38,7 +38,7 @@ class LayoutElement {
         ..remove('child'),
       children: map['children'] != null
           ? (map['children'] as List<dynamic>)
-                .map((x) => LayoutElement.fromMap(x as Map<String, dynamic>))
+                .map<LayoutElement>((dynamic x) => LayoutElement.fromMap(x as Map<String, dynamic>))
                 .toList()
           : null,
       child: map['child'] != null
@@ -49,7 +49,7 @@ class LayoutElement {
 
   T? getProperty<T>(String key, [T? defaultValue]) {
     if (properties == null) return defaultValue;
-    final value = properties![key];
+    final dynamic value = properties![key];
     if (value is T) return value;
     return defaultValue;
   }

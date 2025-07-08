@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:custom_launcher/models/layout_config.dart';
-import 'package:custom_launcher/widgets/cards/custom_card_widget.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/cards/custom_card_widget.dart';
 
 class CustomCardWidgetFactory {
   Widget? createWidget(LayoutElement element) {
@@ -22,7 +22,7 @@ class CustomCardWidgetFactory {
     );
 
     final List<String> arguments =
-        argumentsRaw?.map((e) => e.toString()).toList() ?? <String>[];
+        argumentsRaw?.map((dynamic e) => e.toString()).toList() ?? <String>[];
 
     String processedPath = executablePath;
     if (processedPath.contains('%USERNAME%')) {

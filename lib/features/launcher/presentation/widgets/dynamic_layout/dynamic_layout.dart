@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:custom_launcher/models/layout_config.dart';
-import 'package:custom_launcher/widgets/factories/custom_card_widget_factory.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/column_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/row_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/expanded_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/container_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/text_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/icon_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/card_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/sizedbox_builder.dart';
-import 'package:custom_launcher/widgets/dynamic_layout/builders/parse_util.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/factories/custom_card_widget_factory.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/column_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/row_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/expanded_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/container_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/text_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/icon_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/card_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/sizedbox_builder.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/parse_util.dart';
 
 class DynamicLayout extends StatefulWidget {
   final String configPath;

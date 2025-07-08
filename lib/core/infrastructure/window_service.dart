@@ -1,7 +1,7 @@
 import 'package:window_manager/window_manager.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/models/app_settings.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
 
 class WindowService {
   static Future<void> initialize([AppSettings? settings]) async {
@@ -68,7 +68,7 @@ class WindowService {
 
       await windowManager.setSize(size);
       await windowManager.setPosition(position);
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('Error applying window position: $e');
       await windowManager.center();
     }
@@ -106,7 +106,7 @@ class WindowService {
           return allDisplays.isNotEmpty ? allDisplays[0] : primaryDisplay;
         }
       }
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('Error getting target display: $e');
       return await screenRetriever.getPrimaryDisplay();
     }
@@ -198,7 +198,7 @@ class WindowService {
           debugPrint('Setting window to always on top');
           try {
             await windowManager.setAlwaysOnBottom(false);
-          } catch (e) {
+          } on Object catch (e) {
             debugPrint('setAlwaysOnBottom not available or failed: $e');
           }
 
@@ -216,7 +216,7 @@ class WindowService {
           try {
             await windowManager.setAlwaysOnBottom(true);
             debugPrint('Always below enabled');
-          } catch (e) {
+          } on Object catch (e) {
             debugPrint('setAlwaysOnBottom not supported on this platform: $e');
           }
           break;
@@ -226,13 +226,13 @@ class WindowService {
           await windowManager.setAlwaysOnTop(false);
           try {
             await windowManager.setAlwaysOnBottom(false);
-          } catch (e) {
+          } on Object catch (e) {
             debugPrint('setAlwaysOnBottom not available: $e');
           }
           debugPrint('Normal window level set');
           break;
       }
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('Error configuring window level: $e');
     }
   }
@@ -243,7 +243,7 @@ class WindowService {
     Display display,
   ) {
     final Size screenSize = display.visibleSize ?? display.size;
-    double width;
+    double width = 0.0;
     if (widthStr.endsWith('%')) {
       final String percentStr = widthStr.substring(0, widthStr.length - 1);
       final double percent = double.tryParse(percentStr) ?? 80.0;
@@ -252,7 +252,7 @@ class WindowService {
       width = double.tryParse(widthStr) ?? 800.0;
     }
 
-    double height;
+    double height = 0.0;
     if (heightStr.endsWith('%')) {
       final String percentStr = heightStr.substring(0, heightStr.length - 1);
       final double percent = double.tryParse(percentStr) ?? 60.0;
