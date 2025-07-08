@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// Configuration model for application assets
 class AppAssetsConfig {
   final Map<String, CustomAppInfo> apps;
 
@@ -20,11 +19,9 @@ class AppAssetsConfig {
     return AppAssetsConfig.fromMap(json.decode(source) as Map<String, dynamic>);
   }
 
-  /// Get executable path for an app
   String? getExecutablePath(String appName) {
     final String lowerName = appName.toLowerCase();
 
-    // Check apps
     if (apps.containsKey(lowerName)) {
       return _findExecutableInPaths(apps[lowerName]!.paths);
     }
@@ -32,7 +29,6 @@ class AppAssetsConfig {
     return null;
   }
 
-  /// Find first existing executable in paths
   String? _findExecutableInPaths(List<String> paths) {
     for (String path in paths) {
       final String expandedPath = _expandEnvironmentVariables(path);
@@ -44,17 +40,14 @@ class AppAssetsConfig {
     return null;
   }
 
-  /// Expand environment variables in path
   String _expandEnvironmentVariables(String path) {
     String expandedPath = path;
 
-    // Replace %USERNAME%
     final String? username = _getEnvironmentVariable('USERNAME');
     if (username != null) {
       expandedPath = expandedPath.replaceAll('%USERNAME%', username);
     }
 
-    // Replace %USERPROFILE%
     final String? userProfile = _getEnvironmentVariable('USERPROFILE');
     if (userProfile != null) {
       expandedPath = expandedPath.replaceAll('%USERPROFILE%', userProfile);
@@ -63,7 +56,6 @@ class AppAssetsConfig {
     return expandedPath;
   }
 
-  /// Check if file exists
   bool _fileExists(String path) {
     try {
       return File(path).existsSync();
@@ -72,7 +64,6 @@ class AppAssetsConfig {
     }
   }
 
-  /// Get environment variable
   String? _getEnvironmentVariable(String name) {
     try {
       return Platform.environment[name];
@@ -82,7 +73,6 @@ class AppAssetsConfig {
   }
 }
 
-/// Custom application information
 class CustomAppInfo {
   final String name;
   final String displayName;

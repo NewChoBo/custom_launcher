@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:custom_launcher/models/app_settings.dart';
 import 'package:custom_launcher/widgets/dynamic_layout.dart';
 
-/// Home page widget for Custom Launcher
-/// Displays main UI with system tray information
 class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
@@ -21,8 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  /// Parse hex color string with opacity
-  /// Returns null for invalid colors (will use defaults)
   Color? _parseColor(String hexString, double opacity) {
     try {
       if (hexString.isEmpty) return null;
@@ -33,14 +29,11 @@ class _HomePageState extends State<HomePage> {
         return null;
       }
 
-      // Handle RGB and RGBA formats
       if (hex.length == 6) {
-        hex = 'FF$hex'; // Add full alpha for RGB
+        hex = 'FF$hex';
       }
 
       final Color baseColor = Color(int.parse(hex, radix: 16));
-
-      // Apply the opacity setting directly (ignore hex alpha)
       final Color finalColor = baseColor.withValues(alpha: opacity);
 
       debugPrint(

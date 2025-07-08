@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-/// Layout configuration model for dynamic UI generation
 class LayoutConfig {
   final LayoutElement layout;
 
@@ -17,7 +16,6 @@ class LayoutConfig {
   }
 }
 
-/// Individual layout element that can be any widget type
 class LayoutElement {
   final String type;
   final Map<String, dynamic>? properties;
@@ -34,11 +32,14 @@ class LayoutElement {
   factory LayoutElement.fromMap(Map<String, dynamic> map) {
     return LayoutElement(
       type: map['type'] as String,
-      properties: Map<String, dynamic>.from(map)..remove('type')..remove('children')..remove('child'),
+      properties: Map<String, dynamic>.from(map)
+        ..remove('type')
+        ..remove('children')
+        ..remove('child'),
       children: map['children'] != null
           ? (map['children'] as List<dynamic>)
-              .map((x) => LayoutElement.fromMap(x as Map<String, dynamic>))
-              .toList()
+                .map((x) => LayoutElement.fromMap(x as Map<String, dynamic>))
+                .toList()
           : null,
       child: map['child'] != null
           ? LayoutElement.fromMap(map['child'] as Map<String, dynamic>)
@@ -46,7 +47,6 @@ class LayoutElement {
     );
   }
 
-  /// Get property value with default fallback
   T? getProperty<T>(String key, [T? defaultValue]) {
     if (properties == null) return defaultValue;
     final value = properties![key];
@@ -54,13 +54,12 @@ class LayoutElement {
     return defaultValue;
   }
 
-  /// Get nested property (e.g., "padding.top")
   T? getNestedProperty<T>(String path, [T? defaultValue]) {
     if (properties == null) return defaultValue;
-    
+
     final List<String> keys = path.split('.');
     dynamic current = properties;
-    
+
     for (final String key in keys) {
       if (current is Map<String, dynamic> && current.containsKey(key)) {
         current = current[key];
@@ -68,12 +67,11 @@ class LayoutElement {
         return defaultValue;
       }
     }
-    
+
     return current is T ? current : defaultValue;
   }
 }
 
-/// Style configuration for text and decorations
 class LayoutStyle {
   final double? fontSize;
   final String? fontWeight;
@@ -97,7 +95,6 @@ class LayoutStyle {
   }
 }
 
-/// Padding configuration
 class LayoutPadding {
   final double? top;
   final double? bottom;
@@ -105,13 +102,7 @@ class LayoutPadding {
   final double? right;
   final double? all;
 
-  const LayoutPadding({
-    this.top,
-    this.bottom,
-    this.left,
-    this.right,
-    this.all,
-  });
+  const LayoutPadding({this.top, this.bottom, this.left, this.right, this.all});
 
   factory LayoutPadding.fromMap(Map<String, dynamic> map) {
     return LayoutPadding(
@@ -124,15 +115,11 @@ class LayoutPadding {
   }
 }
 
-/// Decoration configuration
 class LayoutDecoration {
   final String? color;
   final double? borderRadius;
 
-  const LayoutDecoration({
-    this.color,
-    this.borderRadius,
-  });
+  const LayoutDecoration({this.color, this.borderRadius});
 
   factory LayoutDecoration.fromMap(Map<String, dynamic> map) {
     return LayoutDecoration(

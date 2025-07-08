@@ -5,8 +5,6 @@ import 'package:custom_launcher/models/app_settings.dart';
 import 'package:custom_launcher/pages/home_page.dart';
 import 'package:custom_launcher/pages/demo_page.dart';
 
-/// Main application widget
-/// Manages app lifecycle, theme, and system tray integration
 class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.settings});
 
@@ -35,7 +33,6 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowClose() async {
-    // Hide to tray instead of closing when user clicks X
     bool isPreventClose = await windowManager.isPreventClose();
     if (isPreventClose) {
       await _systemTrayService.hideWindow();
