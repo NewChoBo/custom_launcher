@@ -20,31 +20,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Color? _parseColor(String hexString, double opacity) {
-    try {
-      if (hexString.isEmpty) return null;
-
-      String hex = hexString.replaceFirst('#', '');
-      if (!RegExp(r'^[0-9A-Fa-f]{6}$|^[0-9A-Fa-f]{8}$').hasMatch(hex)) {
-        debugPrint('Invalid hex format: $hexString');
-        return null;
-      }
-
-      if (hex.length == 6) {
-        hex = 'FF$hex';
-      }
-
-      final Color baseColor = Color(int.parse(hex, radix: 16));
-      final Color finalColor = baseColor.withValues(alpha: opacity);
-
-      debugPrint(
-        'Parsing $hexString -> Base: ${baseColor.toString()}, Final: ${finalColor.toString()} (opacity: $opacity)',
-      );
-
-      return finalColor;
-    } catch (e) {
-      debugPrint('Error parsing color "$hexString": $e');
-      return null;
-    }
+    if (hexString.isEmpty) return null;
+    final String hex = hexString.replaceFirst('#', '');
+    if (hex.length != 6) return null;
+    return Color(int.parse('FF$hex', radix: 16)).withValues(alpha: opacity);
   }
 
   @override
