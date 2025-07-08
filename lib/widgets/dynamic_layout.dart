@@ -97,7 +97,7 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.2),
+        color: Colors.red.withValues(alpha: 0.2),
         border: Border.all(color: Colors.red),
       ),
       child: Text(
