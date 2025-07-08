@@ -6,11 +6,8 @@ import 'package:custom_launcher/app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize settings service
   final SettingsService settingsService = SettingsService();
   await settingsService.initialize();
-
-  // Initialize window with settings
   await WindowService.initialize(settingsService.settings);
 
   runApp(MyApp(settings: settingsService.settings));

@@ -1,52 +1,21 @@
-/// Horizontal position for window placement
-enum HorizontalPosition {
-  /// Position window on the left side of screen
-  left,
+enum HorizontalPosition { left, center, right }
 
-  /// Position window in the center horizontally
-  center,
+enum VerticalPosition { top, center, bottom }
 
-  /// Position window on the right side of screen
-  right,
-}
+enum WindowLevel { normal, alwaysOnTop, alwaysBelow }
 
-/// Vertical position for window placement
-enum VerticalPosition {
-  /// Position window at the top of screen
-  top,
-
-  /// Position window in the center vertically
-  center,
-
-  /// Position window at the bottom of screen
-  bottom,
-}
-
-/// Window level for z-order management
-enum WindowLevel {
-  /// Normal window behavior (default)
-  normal,
-
-  /// Always stay on top of other windows
-  alwaysOnTop,
-
-  /// Always stay below other windows
-  alwaysBelow,
-}
-
-/// Application settings model
 class AppSettings {
   final String mode;
   final double backgroundOpacity;
   final double appBarOpacity;
-  final String windowWidth; // Support both "800" and "80%" formats
-  final String windowHeight; // Support both "600" and "50%" formats
+  final String windowWidth;
+  final String windowHeight;
   final bool skipTaskbar;
-  final bool showAppBar; // Control AppBar visibility
+  final bool showAppBar;
   final WindowLevel windowLevel;
   final HorizontalPosition horizontalPosition;
   final VerticalPosition verticalPosition;
-  final int monitorIndex; // 1, 2, 3, 4... or 0 for auto
+  final int monitorIndex;
   final String appBarColor;
   final String backgroundColor;
 
@@ -63,10 +32,9 @@ class AppSettings {
     this.verticalPosition = VerticalPosition.center,
     this.monitorIndex = 1,
     this.backgroundColor = '#00000000',
-    this.appBarColor = '', // Default to empty (use theme color)
+    this.appBarColor = '',
   });
   factory AppSettings.fromMap(Map<String, dynamic> map) {
-    // Parse window level from string
     WindowLevel parseWindowLevel(String? value) {
       switch (value?.toLowerCase()) {
         case 'alwaysontop':
@@ -83,7 +51,6 @@ class AppSettings {
       }
     }
 
-    // Parse horizontal position from string
     HorizontalPosition parseHorizontalPosition(String? value) {
       switch (value?.toLowerCase()) {
         case 'left':
@@ -96,7 +63,6 @@ class AppSettings {
       }
     }
 
-    // Parse vertical position from string
     VerticalPosition parseVerticalPosition(String? value) {
       switch (value?.toLowerCase()) {
         case 'top':
@@ -107,98 +73,68 @@ class AppSettings {
         default:
           return VerticalPosition.center;
       }
-    } // Parse monitor index from string or number
+    }
 
     int parseMonitorIndex(dynamic value) {
       if (value is int) {
-        return value.clamp(0, 4); // 0 = auto, 1-4 = monitor numbers
+        return value;
       }
-
-      if (value is String) {
-        switch (value.toLowerCase()) {
-          case 'auto':
-            return 0;
-          case '1':
-          case 'monitor1':
-            return 1;
-          case '2':
-          case 'monitor2':
-            return 2;
-          case '3':
-          case 'monitor3':
-            return 3;
-          case '4':
-          case 'monitor4':
-            return 4;
-          default:
-            return int.tryParse(value)?.clamp(0, 4) ?? 1;
-        }
-      }
-      return 1; // Default to monitor 1
+      return 0;
     }
 
-    // Parse window size (supports both absolute values and percentages)
     String parseWindowSize(dynamic value, String defaultValue) {
       if (value == null) return defaultValue;
 
       if (value is String) {
-        // Already a string, validate format
         final String trimmed = value.trim();
         if (trimmed.endsWith('%')) {
-          // Percentage format: "80%"
           final String percentStr = trimmed.substring(0, trimmed.length - 1);
           final double? percent = double.tryParse(percentStr);
           if (percent != null && percent > 0 && percent <= 100) {
             return trimmed;
           }
         } else {
-          // Absolute value as string: "800"
           final double? absoluteValue = double.tryParse(trimmed);
           if (absoluteValue != null && absoluteValue > 0) {
             return trimmed;
           }
         }
-        return defaultValue; // Invalid format, use default
+        return defaultValue;
       }
 
       if (value is num) {
-        // Convert number to string
         return value.toDouble().toString();
       }
       return defaultValue;
-    } // Parse background color from string (hex format)
+    }
 
     String parseBackgroundColor(dynamic value) {
-      if (value == null) return '#00000000'; // Default transparent
+      if (value == null) return '#00000000';
 
       if (value is String) {
         final String trimmed = value.trim();
-        // Validate hex color format
         if (RegExp(r'^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{8}$').hasMatch(trimmed)) {
           return trimmed;
         }
       }
 
-      return '#00000000'; // Fallback to transparent
+      return '#00000000';
     }
 
-    // Parse AppBar color from string (hex format)
     String parseAppBarColor(dynamic value) {
-      if (value == null) return ''; // Default to empty (use theme color)
+      if (value == null) return '';
 
       if (value is String) {
         final String trimmed = value.trim();
-        if (trimmed.isEmpty) return ''; // Empty means use theme color
-        // Validate hex color format
+        if (trimmed.isEmpty) return '';
         if (RegExp(r'^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{8}$').hasMatch(trimmed)) {
           return trimmed;
         }
       }
 
-      return ''; // Fallback to theme color
+      return '';
     }
 
-    // Extract nested sections
     final Map<String, dynamic> ui =
         map['ui'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final Map<String, dynamic> window =
@@ -206,13 +142,11 @@ class AppSettings {
     final Map<String, dynamic> system =
         map['system'] as Map<String, dynamic>? ?? <String, dynamic>{};
 
-    // Extract UI subsections
     final Map<String, dynamic> colors =
         ui['colors'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final Map<String, dynamic> opacity =
         ui['opacity'] as Map<String, dynamic>? ?? <String, dynamic>{};
 
-    // Extract Window subsections
     final Map<String, dynamic> size =
         window['size'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final Map<String, dynamic> position =
@@ -221,10 +155,8 @@ class AppSettings {
         window['behavior'] as Map<String, dynamic>? ?? <String, dynamic>{};
 
     return AppSettings(
-      // Mode setting (missing!)
       mode: map['mode'] as String? ?? 'demo',
 
-      // UI settings
       showAppBar: ui['showAppBar'] as bool? ?? false,
       appBarColor: parseAppBarColor(colors['appBarColor']),
       backgroundColor: parseBackgroundColor(colors['backgroundColor']),
@@ -232,11 +164,9 @@ class AppSettings {
       backgroundOpacity:
           (opacity['backgroundOpacity'] as num?)?.toDouble() ?? 1.0,
 
-      // Window size settings
       windowWidth: parseWindowSize(size['windowWidth'], '800'),
       windowHeight: parseWindowSize(size['windowHeight'], '600'),
 
-      // Window position settings
       horizontalPosition: parseHorizontalPosition(
         position['horizontalPosition'] as String?,
       ),
@@ -244,18 +174,15 @@ class AppSettings {
         position['verticalPosition'] as String?,
       ),
 
-      // Window behavior settings
       windowLevel: parseWindowLevel(behavior['windowLevel'] as String?),
       skipTaskbar: behavior['skipTaskbar'] as bool? ?? true,
 
-      // System settings
       monitorIndex: parseMonitorIndex(
         system['monitorIndex'] ?? map['monitorTarget'],
       ),
     );
   }
   Map<String, dynamic> toMap() {
-    // Convert window level to string
     String windowLevelToString(WindowLevel level) {
       switch (level) {
         case WindowLevel.alwaysOnTop:
@@ -267,7 +194,6 @@ class AppSettings {
       }
     }
 
-    // Convert horizontal position to string
     String horizontalPositionToString(HorizontalPosition position) {
       switch (position) {
         case HorizontalPosition.left:
@@ -279,7 +205,6 @@ class AppSettings {
       }
     }
 
-    // Convert vertical position to string
     String verticalPositionToString(VerticalPosition position) {
       switch (position) {
         case VerticalPosition.top:
@@ -320,10 +245,5 @@ class AppSettings {
       },
       'system': <String, int>{'monitorIndex': monitorIndex},
     };
-  }
-
-  @override
-  String toString() {
-    return 'AppSettings(backgroundOpacity: $backgroundOpacity, appBarOpacity: $appBarOpacity, size: ${windowWidth}x$windowHeight, skipTaskbar: $skipTaskbar, showAppBar: $showAppBar, windowLevel: $windowLevel, position: $horizontalPosition-$verticalPosition, monitorIndex: $monitorIndex, backgroundColor: $backgroundColor, appBarColor: $appBarColor)';
   }
 }

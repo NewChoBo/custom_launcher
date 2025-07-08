@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:custom_launcher/models/layout_config.dart';
 import 'package:custom_launcher/widgets/cards/custom_card_widget.dart';
 
-/// Factory for creating CustomCard widgets from layout configuration
 class CustomCardWidgetFactory {
-  /// Create CustomCard widget from layout element
   Widget? createWidget(LayoutElement element) {
-    // Only handle custom_card type
     if (element.type.toLowerCase() != 'custom_card') {
       return null;
     }
@@ -24,11 +21,9 @@ class CustomCardWidgetFactory {
       'arguments',
     );
 
-    // Convert dynamic list to List<String>
     final List<String> arguments =
         argumentsRaw?.map((e) => e.toString()).toList() ?? <String>[];
 
-    // Handle environment variables in executablePath
     String processedPath = executablePath;
     if (processedPath.contains('%USERNAME%')) {
       final String? username = Platform.environment['USERNAME'];

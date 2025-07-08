@@ -12,7 +12,6 @@ import 'package:custom_launcher/widgets/dynamic_layout/builders/card_builder.dar
 import 'package:custom_launcher/widgets/dynamic_layout/builders/sizedbox_builder.dart';
 import 'package:custom_launcher/widgets/dynamic_layout/builders/parse_util.dart';
 
-/// Dynamic layout widget that builds UI from JSON configuration
 class DynamicLayout extends StatefulWidget {
   final String configPath;
 
@@ -31,7 +30,6 @@ class _DynamicLayoutState extends State<DynamicLayout> {
   String? _error;
   final CustomCardWidgetFactory _customCardFactory = CustomCardWidgetFactory();
 
-  // Factory 패턴: type별 위젯 빌더 Map (분리된 빌더 사용)
   late final Map<String, Widget Function(LayoutElement)> _widgetBuilders;
 
   @override
@@ -61,7 +59,6 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     _loadLayoutConfig();
   }
 
-  /// Load layout configuration from JSON file
   Future<void> _loadLayoutConfig() async {
     try {
       setState(() {
@@ -84,9 +81,7 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     }
   }
 
-  /// Build widget from layout element
   Widget _buildWidget(LayoutElement element) {
-    // Try custom card widget first
     if (element.type.toLowerCase() == 'custom_card') {
       final Widget? customWidget = _customCardFactory.createWidget(element);
       if (customWidget != null) {

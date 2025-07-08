@@ -4,18 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:custom_launcher/models/app_settings.dart';
 
-/// Settings management service
-/// Loads application settings from assets or local file
 class SettingsService {
   static const String _assetsPath = 'assets/config/app_settings.json';
   static const String _localFileName = 'app_settings.json';
 
   AppSettings _settings = const AppSettings();
 
-  /// Current application settings
   AppSettings get settings => _settings;
 
-  /// Initialize and load settings from assets or local file
   Future<void> initialize() async {
     try {
       await _loadSettings();
@@ -26,9 +22,7 @@ class SettingsService {
     }
   }
 
-  /// Load settings from assets first, then local file if exists
   Future<void> _loadSettings() async {
-    // Try to load local settings file first (user customizations)
     final File localFile = await _getLocalSettingsFile();
     if (await localFile.exists()) {
       debugPrint('Loading settings from local file: ${localFile.path}');
@@ -39,7 +33,6 @@ class SettingsService {
       return;
     }
 
-    // If no local file, load from assets
     try {
       debugPrint('Loading settings from assets: $_assetsPath');
       final String jsonString = await rootBundle.loadString(_assetsPath);
@@ -52,9 +45,7 @@ class SettingsService {
     }
   }
 
-  /// Get local settings file reference
   Future<File> _getLocalSettingsFile() async {
-    // Use current directory for local settings file
     final Directory currentDir = Directory.current;
     return File('${currentDir.path}/$_localFileName');
   }
