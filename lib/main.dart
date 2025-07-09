@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_launcher/core/infrastructure/window_service.dart';
 import 'package:custom_launcher/features/launcher/data/repositories/settings_repository_impl.dart';
 import 'package:custom_launcher/features/launcher/domain/usecases/get_app_settings.dart';
@@ -17,7 +18,11 @@ Future<void> main() async {
   await settingsRepository.initialize();
   await WindowService.initialize(getAppSettings.call());
 
-  runApp(MyApp(settings: getAppSettings.call()));
+  runApp(
+    ProviderScope(
+      child: MyApp(settings: getAppSettings.call()),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
