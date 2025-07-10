@@ -191,38 +191,4 @@ class _ReorderableRowWrapperState extends State<_ReorderableRowWrapper> {
       },
     );
   }
-
-  static MainAxisAlignment parseMainAxisAlignment(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'start':
-        return MainAxisAlignment.start;
-      case 'end':
-        return MainAxisAlignment.end;
-      case 'center':
-        return MainAxisAlignment.center;
-      case 'spacebetween':
-        return MainAxisAlignment.spaceBetween;
-      case 'spacearound':
-        return MainAxisAlignment.spaceAround;
-      case 'spaceevenly':
-        return MainAxisAlignment.spaceEvenly;
-      default:
-        return MainAxisAlignment.start;
-    }
-  }
-
-  static CrossAxisAlignment parseCrossAxisAlignment(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'start':
-        return CrossAxisAlignment.start;
-      case 'end':
-        return CrossAxisAlignment.end;
-      case 'center':
-        return CrossAxisAlignment.center;
-      case 'stretch':
-        return CrossAxisAlignment.stretch;
-      default:
-        return CrossAxisAlignment.center;
-    }
-  }
 }

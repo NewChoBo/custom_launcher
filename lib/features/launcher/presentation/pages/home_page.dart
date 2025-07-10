@@ -1,70 +1,85 @@
 import 'package:flutter/material.dart';
-import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:custom_launcher/core/providers/app_providers.dart';
+
 import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/dynamic_layout.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({
     super.key,
     required this.title,
     required this.onHideToTray,
-    required this.settings,
   });
 
   final String title;
   final Future<void> Function() onHideToTray;
-  final AppSettings settings;
+  
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   Color? _parseColor(String hexString, double opacity) {
     if (hexString.isEmpty) return null;
     final String hex = hexString.replaceFirst('#', '');
     if (hex.length != 6) return null;
-    return Color(int.parse('FF$hex', radix: 16)).withValues(alpha: opacity);
+    final int argbValue = int.parse('FF$hex', radix: 16);
+    return Color.fromARGB(
+      (opacity * 255).round(),
+      (argbValue >> 16) & 0xFF, // Red component
+      (argbValue >> 8) & 0xFF,  // Green component
+      argbValue & 0xFF,         // Blue component
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor =
-        _parseColor(
-          widget.settings.backgroundColor,
-          widget.settings.backgroundOpacity,
-        ) ??
-        Colors.transparent;
+    final appSettingsAsyncValue = ref.watch(getAppSettingsProvider);
 
-    final Color? appBarColor = _parseColor(
-      widget.settings.appBarColor,
-      widget.settings.appBarOpacity,
-    );
+    return appSettingsAsyncValue.when(
+      data: (appSettings) {
+        final Color backgroundColor =
+            _parseColor(
+              appSettings.ui.colors.backgroundColor,
+              appSettings.ui.opacity.backgroundOpacity,
+            ) ??
+            Colors.transparent;
 
-    debugPrint(
-      'Background: ${widget.settings.backgroundColor} -> $backgroundColor',
-    );
-    debugPrint('AppBar: ${widget.settings.appBarColor} -> $appBarColor');
+        final Color? appBarColor = _parseColor(
+          appSettings.ui.colors.appBarColor,
+          appSettings.ui.opacity.appBarOpacity,
+        );
 
-    return Scaffold(
-      appBar: widget.settings.showAppBar
-          ? AppBar(
-              backgroundColor:
-                  appBarColor ??
-                  Theme.of(context).colorScheme.inversePrimary.withValues(
-                    alpha: widget.settings.appBarOpacity,
-                  ),
-              title: Text(widget.title),
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.minimize),
-                  onPressed: widget.onHideToTray,
-                  tooltip: 'Hide to System Tray',
-                ),
-              ],
-            )
-          : null,
-      backgroundColor: backgroundColor,
-      body: const DynamicLayout(),
+        debugPrint(
+          'Background: ${appSettings.ui.colors.backgroundColor} -> $backgroundColor',
+        );
+        debugPrint('AppBar: ${appSettings.ui.colors.appBarColor} -> $appBarColor');
+
+        return Scaffold(
+          appBar: appSettings.ui.showAppBar
+              ? AppBar(
+                  backgroundColor:
+                      appBarColor ??
+                      Theme.of(context).colorScheme.inversePrimary.withValues(
+                        alpha: appSettings.ui.opacity.appBarOpacity,
+                      ),
+                  title: Text(widget.title),
+                  actions: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.minimize),
+                      onPressed: widget.onHideToTray,
+                      tooltip: 'Hide to System Tray',
+                    ),
+                  ],
+                )
+              : null,
+          backgroundColor: backgroundColor,
+          body: const DynamicLayout(),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
 }

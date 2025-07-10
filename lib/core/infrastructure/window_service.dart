@@ -2,17 +2,31 @@ import 'package:window_manager/window_manager.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/window_enums.dart'; // Import the new enums
 
 class WindowService {
   static Future<void> initialize([AppSettings? settings]) async {
-    final AppSettings config = settings ?? const AppSettings();
+    final AppSettings config = settings ?? const AppSettings(
+      mode: 'default',
+      ui: UiSettings(
+        showAppBar: false,
+        colors: ColorsSettings(appBarColor: '#2196F3', backgroundColor: '#424242'),
+        opacity: OpacitySettings(appBarOpacity: 0.5, backgroundOpacity: 0.1),
+      ),
+      window: WindowSettings(
+        size: SizeSettings(windowWidth: '80%', windowHeight: '50%'),
+        position: PositionSettings(horizontalPosition: 'center', verticalPosition: 'bottom'),
+        behavior: BehaviorSettings(windowLevel: 'normal', skipTaskbar: true),
+      ),
+      system: SystemSettings(monitorIndex: 0),
+    );
 
     await windowManager.ensureInitialized();
 
     final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
     final Size initialSize = _calculateWindowSize(
-      config.windowWidth,
-      config.windowHeight,
+      config.window.size.windowWidth,
+      config.window.size.windowHeight,
       primaryDisplay,
     );
 
@@ -21,10 +35,10 @@ class WindowService {
         size: initialSize,
         center: false,
         backgroundColor: Colors.transparent,
-        skipTaskbar: config.skipTaskbar,
+        skipTaskbar: config.window.behavior.skipTaskbar,
         titleBarStyle: TitleBarStyle.hidden,
         windowButtonVisibility: false,
-        alwaysOnTop: config.windowLevel == WindowLevel.alwaysOnTop,
+        alwaysOnTop: config.window.behavior.windowLevel == WindowLevel.alwaysOnTop.name,
       ),
       () async {
         await windowManager.show();
@@ -32,7 +46,7 @@ class WindowService {
         await windowManager.setPreventClose(true);
         await windowManager.setAsFrameless();
         await _applyWindowPosition(config);
-        await _configureWindowLevel(config.windowLevel);
+        await _configureWindowLevel(config.window.behavior.windowLevel);
 
         debugPrint('Window initialized with settings: $config');
       },
@@ -42,18 +56,18 @@ class WindowService {
   static Future<void> _applyWindowPosition(AppSettings config) async {
     try {
       final Display targetDisplay = await _getTargetDisplay(
-        config.monitorIndex,
+        config.system.monitorIndex,
       );
 
       final Size size = _calculateWindowSize(
-        config.windowWidth,
-        config.windowHeight,
+        config.window.size.windowWidth,
+        config.window.size.windowHeight,
         targetDisplay,
       );
 
       final Alignment alignment = _getAlignmentFromPosition(
-        config.horizontalPosition,
-        config.verticalPosition,
+        config.window.position.horizontalPosition,
+        config.window.position.verticalPosition,
       );
 
       final Offset position = await _calcWindowPositionForDisplay(
@@ -71,6 +85,100 @@ class WindowService {
     } on Object catch (e) {
       debugPrint('Error applying window position: $e');
       await windowManager.center();
+    }
+  }
+
+  static Alignment _getAlignmentFromPosition(
+    String horizontal,
+    String vertical,
+  ) {
+    final HorizontalPosition horizontalEnum = HorizontalPosition.values.firstWhere(
+      (e) => e.name == horizontal,
+      orElse: () => HorizontalPosition.center,
+    );
+    final VerticalPosition verticalEnum = VerticalPosition.values.firstWhere(
+      (e) => e.name == vertical,
+      orElse: () => VerticalPosition.bottom,
+    );
+
+    const List<List<Alignment>> alignments = <List<Alignment>>[
+      <Alignment>[Alignment.topLeft, Alignment.topCenter, Alignment.topRight],
+      <Alignment>[
+        Alignment.centerLeft,
+        Alignment.center,
+        Alignment.centerRight,
+      ],
+      <Alignment>[
+        Alignment.bottomLeft,
+        Alignment.bottomCenter,
+        Alignment.bottomRight,
+      ],
+    ];
+
+    final int verticalIndex = verticalEnum == VerticalPosition.top
+        ? 0
+        : verticalEnum == VerticalPosition.center
+        ? 1
+        : 2;
+    final int horizontalIndex = horizontalEnum == HorizontalPosition.left
+        ? 0
+        : horizontalEnum == HorizontalPosition.center
+        ? 1
+        : 2;
+
+    return alignments[verticalIndex][horizontalIndex];
+  }
+
+  static Future<void> _configureWindowLevel(String level) async {
+    try {
+      final WindowLevel windowLevel = WindowLevel.values.firstWhere(
+        (e) => e.name == level,
+        orElse: () => WindowLevel.normal,
+      );
+
+      debugPrint('Configuring window level: $windowLevel');
+
+      switch (windowLevel) {
+        case WindowLevel.alwaysOnTop:
+          debugPrint('Setting window to always on top');
+          try {
+            await windowManager.setAlwaysOnBottom(false);
+          } on Object catch (e) {
+            debugPrint('setAlwaysOnBottom not available or failed: $e');
+          }
+
+          await Future.delayed(const Duration(milliseconds: 50));
+          await windowManager.setAlwaysOnTop(true);
+          debugPrint('Always on top enabled');
+          break;
+
+        case WindowLevel.alwaysBelow:
+          debugPrint('Setting window to always below');
+
+          await windowManager.setAlwaysOnTop(false);
+          await Future.delayed(const Duration(milliseconds: 50));
+
+          try {
+            await windowManager.setAlwaysOnBottom(true);
+            debugPrint('Always below enabled');
+          } on Object catch (e) {
+            debugPrint('setAlwaysOnBottom not supported on this platform: $e');
+          }
+          break;
+
+        case WindowLevel.normal:
+          debugPrint('Setting window to normal level');
+          await windowManager.setAlwaysOnTop(false);
+          try {
+            await windowManager.setAlwaysOnBottom(false);
+          } on Object catch (e) {
+            debugPrint('setAlwaysOnBottom not available: $e');
+          }
+          debugPrint('Normal window level set');
+          break;
+      }
+    } on Object catch (e) {
+      debugPrint('Error configuring window level: $e');
     }
   }
 
@@ -155,86 +263,6 @@ class WindowService {
     }
 
     return Offset(x, y);
-  }
-
-  static Alignment _getAlignmentFromPosition(
-    HorizontalPosition horizontal,
-    VerticalPosition vertical,
-  ) {
-    const List<List<Alignment>> alignments = <List<Alignment>>[
-      <Alignment>[Alignment.topLeft, Alignment.topCenter, Alignment.topRight],
-      <Alignment>[
-        Alignment.centerLeft,
-        Alignment.center,
-        Alignment.centerRight,
-      ],
-      <Alignment>[
-        Alignment.bottomLeft,
-        Alignment.bottomCenter,
-        Alignment.bottomRight,
-      ],
-    ];
-
-    final int verticalIndex = vertical == VerticalPosition.top
-        ? 0
-        : vertical == VerticalPosition.center
-        ? 1
-        : 2;
-    final int horizontalIndex = horizontal == HorizontalPosition.left
-        ? 0
-        : horizontal == HorizontalPosition.center
-        ? 1
-        : 2;
-
-    return alignments[verticalIndex][horizontalIndex];
-  }
-
-  static Future<void> _configureWindowLevel(WindowLevel level) async {
-    try {
-      debugPrint('Configuring window level: $level');
-
-      switch (level) {
-        case WindowLevel.alwaysOnTop:
-          debugPrint('Setting window to always on top');
-          try {
-            await windowManager.setAlwaysOnBottom(false);
-          } on Object catch (e) {
-            debugPrint('setAlwaysOnBottom not available or failed: $e');
-          }
-
-          await Future.delayed(const Duration(milliseconds: 50));
-          await windowManager.setAlwaysOnTop(true);
-          debugPrint('Always on top enabled');
-          break;
-
-        case WindowLevel.alwaysBelow:
-          debugPrint('Setting window to always below');
-
-          await windowManager.setAlwaysOnTop(false);
-          await Future.delayed(const Duration(milliseconds: 50));
-
-          try {
-            await windowManager.setAlwaysOnBottom(true);
-            debugPrint('Always below enabled');
-          } on Object catch (e) {
-            debugPrint('setAlwaysOnBottom not supported on this platform: $e');
-          }
-          break;
-
-        case WindowLevel.normal:
-          debugPrint('Setting window to normal level');
-          await windowManager.setAlwaysOnTop(false);
-          try {
-            await windowManager.setAlwaysOnBottom(false);
-          } on Object catch (e) {
-            debugPrint('setAlwaysOnBottom not available: $e');
-          }
-          debugPrint('Normal window level set');
-          break;
-      }
-    } on Object catch (e) {
-      debugPrint('Error configuring window level: $e');
-    }
   }
 
   static Size _calculateWindowSize(
