@@ -5,6 +5,8 @@ import 'package:custom_launcher/features/launcher/domain/repositories/app_reposi
 import 'package:custom_launcher/features/launcher/domain/entities/app_info.dart'; // Add this import
 import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart'; // Add this import
 
+import 'package:custom_launcher/features/launcher/data/app_data_repository.dart';
+
 // Data Sources
 final appLocalDataSourceProvider = Provider<AppLocalDataSource>(
   (ref) => AppLocalDataSourceImpl(),
@@ -23,3 +25,9 @@ final getAppInfoListProvider = FutureProvider<List<AppInfo>>(
 final getAppSettingsProvider = FutureProvider<AppSettings>(
   (ref) => ref.read(appRepositoryProvider).getAppSettings(),
 );
+
+final appDataRepositoryProvider = Provider<AppDataRepository>((ref) {
+  final repository = AppDataRepository();
+  repository.loadAppData(); // 비동기 로드 시작
+  return repository;
+});

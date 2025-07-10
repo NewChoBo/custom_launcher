@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:custom_launcher/core/providers/app_providers.dart';
+import 'package:custom_launcher/features/launcher/data/models/app_model.dart';
 
-class CustomCard extends StatelessWidget {
+class CustomCard extends ConsumerWidget {
   const CustomCard({
     super.key,
-    this.imagePath = 'assets/images/discord-logo.png',
-    this.title = 'title',
-    this.subtitle = '',
-    this.imageOpacity = 0.8,
-    this.executablePath,
-    this.arguments,
+    required this.appId,
   });
 
-  final String imagePath;
-  final String title;
-  final String subtitle;
-  final double imageOpacity;
-  final String? executablePath;
-  final List<String>? arguments;
+  final String appId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appDataRepository = ref.watch(appDataRepositoryProvider);
+    final AppModel? app = appDataRepository.getAppById(appId);
+
+    if (app == null) {
+      return const SizedBox.shrink(); // Or a placeholder for not found app
+    }
+
     return InkWell(
-      onTap: _launchApplication,
+      onTap: () => _launchApplication(app.executablePath, app.arguments, app.title),
       splashColor: Colors.white24,
       child: Card(
         elevation: 0,
@@ -34,11 +34,13 @@ class CustomCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF1F2123).withValues(alpha: 0.5),
             borderRadius: BorderRadius.zero,
-            image: DecorationImage(
-              image: AssetImage(imagePath),
-              fit: BoxFit.cover,
-              opacity: imageOpacity,
-            ),
+            image: app.imagePath != null
+                ? DecorationImage(
+                    image: AssetImage(app.imagePath!),
+                    fit: BoxFit.cover,
+                    opacity: 0.8,
+                  )
+                : null,
           ),
           child: Padding(
             padding: const EdgeInsets.all(30),
@@ -49,7 +51,7 @@ class CustomCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      title,
+                      app.title,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,
@@ -60,7 +62,7 @@ class CustomCard extends StatelessWidget {
                     Row(
                       children: <Widget>[
                         Text(
-                          subtitle,
+                          app.subtitle,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -79,8 +81,8 @@ class CustomCard extends StatelessWidget {
     );
   }
 
-  Future<void> _launchApplication() async {
-    if (executablePath == null || executablePath!.isEmpty) {
+  Future<void> _launchApplication(String? executablePath, List<String>? arguments, String title) async {
+    if (executablePath == null || executablePath.isEmpty) {
       debugPrint('No executable path provided for $title');
       return;
     }
@@ -89,7 +91,7 @@ class CustomCard extends StatelessWidget {
       debugPrint('Launching: $executablePath with args: $arguments');
 
       await Process.start(
-        executablePath!,
+        executablePath,
         arguments ?? [],
         mode: ProcessStartMode.detached,
       );

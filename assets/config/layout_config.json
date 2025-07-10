@@ -15,24 +15,15 @@
           "children": [
             {
               "type": "custom_card",
-              "title": "Steam",
-              "subtitle": "Steam Games Launcher",
-              "imagePath": "assets/images/Steam_icon_logo.png",
-              "executablePath": "D:/Games/Steam/steam.exe"
+              "app_id": "steam"
             },
             {
               "type": "custom_card",
-              "title": "Epic Games",
-              "subtitle": "Epic Games / Unreal Engine",
-              "imagePath": "assets/images/Unreal-Engine-Splash-Screen.jpg"
+              "app_id": "epic_games"
             },
             {
               "type": "custom_card",
-              "title": "Discord",
-              "subtitle": "Discord Launcher",
-              "imagePath": "assets/images/discord-logo.png",
-              "executablePath": "C:\\Users\\%USERNAME%\\AppData\\Local\\Discord\\Update.exe",
-              "arguments": ["--processStart", "Discord.exe"]
+              "app_id": "discord"
             }
           ]
         }
@@ -47,33 +38,23 @@
           "children": [
             {
               "type": "custom_card",
-              "title": "Rainbow Six",
-              "subtitle": "Rainbow Six Siege",
-              "imagePath": "assets/images/IQ_-_Full_Body.webp"
+              "app_id": "rainbow_six"
             },
             {
               "type": "custom_card",
-              "title": "Dying Light 2",
-              "subtitle": "Dying Light 2",
-              "imagePath": "assets/images/dyinglight2.jpg"
+              "app_id": "dying_light_2"
             },
             {
               "type": "custom_card",
-              "title": "Half-Life Alyx",
-              "subtitle": "Half-Life Alyx",
-              "imagePath": "assets/images/alyx_feature2.jpg"
+              "app_id": "half_life_alyx"
             },
             {
               "type": "custom_card",
-              "title": "Palworld",
-              "subtitle": "Palworld",
-              "imagePath": "assets/images/palworld.jpg"
+              "app_id": "palworld"
             },
             {
               "type": "custom_card",
-              "title": "Cyberpunk 2077",
-              "subtitle": "Cyberpunk 2077",
-              "imagePath": "assets/images/cyberpunk.webp"
+              "app_id": "cyberpunk_2077"
             }
           ]
         }
