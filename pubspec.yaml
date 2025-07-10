@@ -43,6 +43,7 @@ dependencies:
   # Screen information retrieval for multi-monitor support
   screen_retriever: ^0.2.0
   flutter_riverpod: ^2.6.1
+  reorderables: ^0.6.0
 
 dev_dependencies:
   flutter_test:
