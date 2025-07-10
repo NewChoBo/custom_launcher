@@ -8,16 +8,16 @@ class CustomCard extends StatelessWidget {
     this.title = 'title',
     this.subtitle = '',
     this.imageOpacity = 0.8,
-    this.executablePath = 'calc.exe',
-    this.arguments = const <String>['--processStart', 'Discord.exe'],
+    this.executablePath,
+    this.arguments,
   });
 
   final String imagePath;
   final String title;
   final String subtitle;
   final double imageOpacity;
-  final String executablePath;
-  final List<String> arguments;
+  final String? executablePath;
+  final List<String>? arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +82,7 @@ class CustomCard extends StatelessWidget {
   }
 
   Future<void> _launchApplication() async {
-    if (executablePath.isEmpty) {
+    if (executablePath == null || executablePath!.isEmpty) {
       debugPrint('No executable path provided for $title');
       return;
     }
@@ -91,8 +91,8 @@ class CustomCard extends StatelessWidget {
       debugPrint('Launching: $executablePath with args: $arguments');
 
       await Process.start(
-        executablePath,
-        arguments,
+        executablePath!,
+        arguments ?? [],
         mode: ProcessStartMode.detached,
       );
 
