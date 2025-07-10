@@ -1,86 +1,79 @@
 {
   "layout": {
-    "type": "row",
+    "type": "column",
     "mainAxisAlignment": "start",
     "crossAxisAlignment": "start",
+    "spacing": 2,
     "children": [
       {
         "type": "expanded",
+        "flex": 1,
         "child": {
-          "type": "column",
-          "mainAxisAlignment": "start",
-          "crossAxisAlignment": "start",
+          "type": "row",
+          "reorderable": true,
           "spacing": 2,
           "children": [
             {
-              "type": "expanded",
-              "child": {
-                "type": "row",
-                "spacing": 2,
-                "children": [
-                  {
-                    "type": "custom_card",
-                    "title": "Epic Games",
-                    "subtitle": "Epic Games / Unreal Engine",
-                    "imagePath": "assets/images/Unreal-Engine-Splash-Screen.jpg"
-                  },
-                  {
-                    "type": "custom_card",
-                    "title": "Steam",
-                    "subtitle": "Steam Games Launcher",
-                    "imagePath": "assets/images/Steam_icon_logo.png",
-                    "executablePath": "D:/Games/Steam/steam.exe"
-                  },
-                  {
-                    "type": "custom_card",
-                    "title": "Discord",
-                    "subtitle": "Discord Launcher",
-                    "imagePath": "assets/images/discord-logo.png",
-                    "executablePath": "C:\\Users\\%USERNAME%\\AppData\\Local\\Discord\\Update.exe",
-                    "arguments": ["--processStart", "Discord.exe"]
-                  }
-                ]
-              }
+              "type": "custom_card",
+              "title": "Steam",
+              "subtitle": "Steam Games Launcher",
+              "imagePath": "assets/images/Steam_icon_logo.png",
+              "executablePath": "D:/Games/Steam/steam.exe"
             },
             {
-              "type": "expanded",
-              "flex": 2,
-              "child": {
-                "type": "row",
-                "spacing": 2,
-                "children": [
-                  {
-                    "type": "custom_card",
-                    "title": "Rainbow Six",
-                    "subtitle": "Rainbow Six Siege",
-                    "imagePath": "assets/images/IQ_-_Full_Body.webp"
-                  },
-                  {
-                    "type": "custom_card",
-                    "title": "Dying Light 2",
-                    "subtitle": "Dying Light 2",
-                    "imagePath": "assets/images/dyinglight2.jpg"
-                  },
-                  {
-                    "type": "custom_card",
-                    "title": "Half-Life Alyx",
-                    "subtitle": "Half-Life Alyx",
-                    "imagePath": "assets/images/alyx_feature2.jpg"
-                  },
-                  {
-                    "type": "custom_card",
-                    "title": "Palworld",
-                    "subtitle": "Palworld",
-                    "imagePath": "assets/images/palworld.jpg"
-                  },
-                  {
-                    "type": "custom_card",
-                    "title": "Cyberpunk 2077",
-                    "subtitle": "Cyberpunk 2077",
-                    "imagePath": "assets/images/cyberpunk.webp"
-                  }
-                ]
-              }
+              "type": "custom_card",
+              "title": "Epic Games",
+              "subtitle": "Epic Games / Unreal Engine",
+              "imagePath": "assets/images/Unreal-Engine-Splash-Screen.jpg"
+            },
+            {
+              "type": "custom_card",
+              "title": "Discord",
+              "subtitle": "Discord Launcher",
+              "imagePath": "assets/images/discord-logo.png",
+              "executablePath": "C:\\Users\\%USERNAME%\\AppData\\Local\\Discord\\Update.exe",
+              "arguments": ["--processStart", "Discord.exe"]
+            }
+          ]
+        }
+      },
+      {
+        "type": "expanded",
+        "flex": 2,
+        "child": {
+          "type": "row",
+          "reorderable": true,
+          "spacing": 2,
+          "children": [
+            {
+              "type": "custom_card",
+              "title": "Rainbow Six",
+              "subtitle": "Rainbow Six Siege",
+              "imagePath": "assets/images/IQ_-_Full_Body.webp"
+            },
+            {
+              "type": "custom_card",
+              "title": "Dying Light 2",
+              "subtitle": "Dying Light 2",
+              "imagePath": "assets/images/dyinglight2.jpg"
+            },
+            {
+              "type": "custom_card",
+              "title": "Half-Life Alyx",
+              "subtitle": "Half-Life Alyx",
+              "imagePath": "assets/images/alyx_feature2.jpg"
+            },
+            {
+              "type": "custom_card",
+              "title": "Palworld",
+              "subtitle": "Palworld",
+              "imagePath": "assets/images/palworld.jpg"
+            },
+            {
+              "type": "custom_card",
+              "title": "Cyberpunk 2077",
+              "subtitle": "Cyberpunk 2077",
+              "imagePath": "assets/images/cyberpunk.webp"
             }
           ]
         }

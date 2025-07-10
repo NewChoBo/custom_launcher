@@ -104,21 +104,29 @@ class _DemoPageState extends State<DemoPage> {
 
   void _onReorderTopRow(int oldIndex, int newIndex) {
     setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
+      int targetIndex = newIndex;
+      final int maxIndex = _topRowCardData.length;
+      if (targetIndex > oldIndex && targetIndex != maxIndex) {
+        targetIndex -= 1;
       }
+      if (targetIndex > maxIndex) targetIndex = maxIndex;
+      if (oldIndex == targetIndex) return;
       final CardData card = _topRowCardData.removeAt(oldIndex);
-      _topRowCardData.insert(newIndex, card);
+      _topRowCardData.insert(targetIndex, card);
     });
   }
 
   void _onReorderBottomRow(int oldIndex, int newIndex) {
     setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
+      int targetIndex = newIndex;
+      final int maxIndex = _bottomRowCardData.length;
+      if (targetIndex > oldIndex && targetIndex != maxIndex) {
+        targetIndex -= 1;
       }
+      if (targetIndex > maxIndex) targetIndex = maxIndex;
+      if (oldIndex == targetIndex) return;
       final CardData card = _bottomRowCardData.removeAt(oldIndex);
-      _bottomRowCardData.insert(newIndex, card);
+      _bottomRowCardData.insert(targetIndex, card);
     });
   }
 

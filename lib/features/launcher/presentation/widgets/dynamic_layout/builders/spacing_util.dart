@@ -12,9 +12,13 @@ class SpacingUtil {
       spacedChildren.add(children[i]);
       if (i < children.length - 1) {
         if (isColumn) {
-          spacedChildren.add(SizedBox(height: spacing));
+          spacedChildren.add(
+            SizedBox(key: ValueKey('spacing_col_$i'), height: spacing),
+          );
         } else {
-          spacedChildren.add(SizedBox(width: spacing));
+          spacedChildren.add(
+            SizedBox(key: ValueKey('spacing_row_$i'), width: spacing),
+          );
         }
       }
     }

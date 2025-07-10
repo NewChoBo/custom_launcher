@@ -14,8 +14,14 @@ class ColumnBuilder {
     final String? mainAlignment = element.getProperty<String>(
       'mainAxisAlignment',
     );
-    final List<Widget> children =
-        element.children?.map(buildWidget).toList() ?? <Widget>[];
+    final List<Widget> children = [];
+    for (final child in element.children ?? <LayoutElement>[]) {
+      if (child.type.toLowerCase() == 'row') {
+        children.add(Expanded(child: buildWidget(child)));
+      } else {
+        children.add(buildWidget(child));
+      }
+    }
     return Column(
       mainAxisSize: mainAxisSize == 'max' || mainAlignment == 'start'
           ? MainAxisSize.max
