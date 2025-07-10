@@ -34,14 +34,13 @@ class _DemoPageState extends State<DemoPage> {
   late List<CardData> _bottomRowCardData; // 두 번째 줄 카드 데이터를 담을 리스트
   late ScrollController _topRowScrollController;
   late ScrollController _bottomRowScrollController;
-  
 
   @override
   void initState() {
     super.initState();
     _topRowScrollController = ScrollController();
     _bottomRowScrollController = ScrollController();
-    
+
     _topRowCardData = <CardData>[
       CardData(
         key: 'steam',
@@ -125,19 +124,10 @@ class _DemoPageState extends State<DemoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
     const double cardHorizontalPadding = 2.0;
-    const double horizontalPaddingPerCard =
-        cardHorizontalPadding * 2; // 각 카드에 적용된 좌우 패딩 합계 (2.0 + 2.0)
-
-    // 윗줄 카드 너비 계산 (3개 카드)
-    final double topCardWidth =
-        (screenWidth - (3 * horizontalPaddingPerCard)) / 3;
-
-    // 아랫줄 카드 너비 계산 (5개 카드)
-    final double bottomCardWidth =
-        (screenWidth - (5 * horizontalPaddingPerCard)) / 5;
-
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double topCardWidth = screenWidth / _topRowCardData.length;
+    final double bottomCardWidth = screenWidth / _bottomRowCardData.length;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
@@ -151,13 +141,13 @@ class _DemoPageState extends State<DemoPage> {
                   child: ReorderableRow(
                     scrollController: _topRowScrollController,
                     children: _topRowCardData.map((data) {
-                      return Padding(
-                        key: ValueKey(data.key), // Key 부여
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: cardHorizontalPadding,
-                        ),
-                        child: SizedBox(
-                          width: topCardWidth, // 동적으로 계산된 너비 적용
+                      return SizedBox(
+                        key: ValueKey(data.key),
+                        width: topCardWidth,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: cardHorizontalPadding,
+                          ),
                           child: CustomCard(
                             title: data.title,
                             subtitle: data.subtitle,
@@ -178,13 +168,13 @@ class _DemoPageState extends State<DemoPage> {
                   child: ReorderableRow(
                     scrollController: _bottomRowScrollController,
                     children: _bottomRowCardData.map((data) {
-                      return Padding(
-                        key: ValueKey(data.key), // Key 부여
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: cardHorizontalPadding,
-                        ),
-                        child: SizedBox(
-                          width: bottomCardWidth, // 동적으로 계산된 너비 적용
+                      return SizedBox(
+                        key: ValueKey(data.key),
+                        width: bottomCardWidth,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: cardHorizontalPadding,
+                          ),
                           child: CustomCard(
                             title: data.title,
                             subtitle: data.subtitle,

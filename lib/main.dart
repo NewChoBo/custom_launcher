@@ -1,3 +1,4 @@
+import 'package:custom_launcher/features/launcher/presentation/pages/demo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_launcher/core/infrastructure/window_service.dart';
@@ -8,7 +9,6 @@ import 'package:window_manager/window_manager.dart';
 import 'package:custom_launcher/core/infrastructure/system_tray_service.dart';
 import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
 import 'package:custom_launcher/features/launcher/presentation/pages/home_page.dart';
-import 'package:custom_launcher/features/launcher/presentation/pages/demo_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +18,7 @@ Future<void> main() async {
   await settingsRepository.initialize();
   await WindowService.initialize(getAppSettings.call());
 
-  runApp(
-    ProviderScope(
-      child: MyApp(settings: getAppSettings.call()),
-    ),
-  );
+  runApp(ProviderScope(child: MyApp(settings: getAppSettings.call())));
 }
 
 class MyApp extends StatefulWidget {
