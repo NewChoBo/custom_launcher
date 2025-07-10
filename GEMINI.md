@@ -89,6 +89,7 @@ When utilizing AI assistants like Gemini or Copilot, adhere to the following gui
 6. **Avoid Over-Reliance**: Use AI as a productivity tool, not a replacement for critical thinking or problem-solving. Develop a strong understanding of the underlying concepts.
 7. **Privacy and Confidentiality**: Be cautious when providing proprietary or sensitive project information to public AI models. Understand the privacy policies of the AI tools you are using. Avoid pasting confidential code snippets into general-purpose AI chat interfaces.
 8. **Context is Key**: Provide clear and concise prompts to the AI, including relevant context (e.g., surrounding code, desired output format, specific libraries to use).
+9. **Action Completion Check**: After any code or configuration change, always run `flutter analyze` before considering the task complete. If any errors or warnings are reported, they must be fixed before the action is finalized and merged.
 
 # Future Enhancements / Roadmap
 
