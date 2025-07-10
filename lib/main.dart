@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:custom_launcher/core/infrastructure/window_service.dart';
-import 'package:custom_launcher/core/providers/app_providers.dart'; // Import the new providers file
+import 'package:custom_launcher/core/services/window_service.dart';
+import 'package:custom_launcher/core/providers/app_providers.dart';
 
 import 'package:window_manager/window_manager.dart';
-import 'package:custom_launcher/core/infrastructure/system_tray_service.dart';
+import 'package:custom_launcher/core/services/system_tray_service.dart';
 
 import 'package:custom_launcher/features/launcher/presentation/pages/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize window service with a placeholder for now, will be refactored later
-  // await WindowService.initialize(getAppSettings.call()); // This line will be removed or refactored
+  
 
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerStatefulWidget {
-  // Changed to ConsumerStatefulWidget
+  
   const MyApp({super.key});
 
   @override
@@ -33,7 +32,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
     super.initState();
     windowManager.addListener(this);
     _systemTrayService.initialize();
-    _initializeWindowSettings(); // New method to handle async initialization
+    _initializeWindowSettings();
   }
 
   Future<void> _initializeWindowSettings() async {
@@ -60,7 +59,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
   Widget build(BuildContext context) {
     final appSettingsAsyncValue = ref.watch(
       getAppSettingsProvider,
-    ); // Watch the provider
+    );
 
     return appSettingsAsyncValue.when(
       data: (appSettings) {
@@ -77,9 +76,8 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
           ),
         );
       },
-      loading: () =>
-          const CircularProgressIndicator(), // Show loading indicator
-      error: (err, stack) => Text('Error: $err'), // Show error message
+      loading: () => const CircularProgressIndicator(),
+      error: (err, stack) => Text('Error: $err'),
     );
   }
 }
