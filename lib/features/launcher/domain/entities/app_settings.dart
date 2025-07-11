@@ -135,21 +135,52 @@ class SizeSettings extends Equatable {
 class PositionSettings extends Equatable {
   final String horizontalPosition;
   final String verticalPosition;
+  final MarginSettings margin;
 
   const PositionSettings({
     required this.horizontalPosition,
     required this.verticalPosition,
+    this.margin = const MarginSettings(),
   });
 
   factory PositionSettings.fromJson(Map<String, dynamic> json) {
     return PositionSettings(
       horizontalPosition: json['horizontalPosition'] as String,
       verticalPosition: json['verticalPosition'] as String,
+      margin: json['margin'] != null
+          ? MarginSettings.fromJson(json['margin'] as Map<String, dynamic>)
+          : const MarginSettings(),
     );
   }
 
   @override
-  List<Object?> get props => [horizontalPosition, verticalPosition];
+  List<Object?> get props => [horizontalPosition, verticalPosition, margin];
+}
+
+class MarginSettings extends Equatable {
+  final double top;
+  final double right;
+  final double bottom;
+  final double left;
+
+  const MarginSettings({
+    this.top = 0.0,
+    this.right = 0.0,
+    this.bottom = 0.0,
+    this.left = 0.0,
+  });
+
+  factory MarginSettings.fromJson(Map<String, dynamic> json) {
+    return MarginSettings(
+      top: (json['top'] as num?)?.toDouble() ?? 0.0,
+      right: (json['right'] as num?)?.toDouble() ?? 0.0,
+      bottom: (json['bottom'] as num?)?.toDouble() ?? 0.0,
+      left: (json['left'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+
+  @override
+  List<Object?> get props => [top, right, bottom, left];
 }
 
 class BehaviorSettings extends Equatable {

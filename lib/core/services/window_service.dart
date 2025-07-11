@@ -28,6 +28,7 @@ class WindowService {
       config.window.size.windowWidth,
       config.window.size.windowHeight,
       primaryDisplay,
+      config.window.position.margin,
     );
 
     await windowManager.waitUntilReadyToShow(
@@ -63,6 +64,7 @@ class WindowService {
         config.window.size.windowWidth,
         config.window.size.windowHeight,
         targetDisplay,
+        config.window.position.margin,
       );
 
       final Alignment alignment = _getAlignmentFromPosition(
@@ -74,6 +76,7 @@ class WindowService {
         size,
         alignment,
         targetDisplay,
+        config.window.position.margin,
       );
 
       debugPrint(
@@ -195,11 +198,12 @@ class WindowService {
       if (monitorIndex == 0) {
         final Offset cursorPos = await screenRetriever.getCursorScreenPoint();
         return allDisplays.firstWhere((Display display) {
+          final Size displaySize = display.visibleSize ?? display.size;
           final Rect displayRect = Rect.fromLTWH(
             display.visiblePosition?.dx ?? 0,
             display.visiblePosition?.dy ?? 0,
-            display.size.width,
-            display.size.height,
+            displaySize.width,
+            displaySize.height,
           );
           return displayRect.contains(cursorPos);
         }, orElse: () => primaryDisplay);
@@ -224,42 +228,43 @@ class WindowService {
     Size windowSize,
     Alignment alignment,
     Display display,
+    MarginSettings margin,
   ) async {
     final Size screenSize = display.visibleSize ?? display.size;
     final Offset screenOffset = display.visiblePosition ?? const Offset(0, 0);
 
-    debugPrint('Screen size: $screenSize, offset: $screenOffset');
+    debugPrint('Screen size: $screenSize, offset: $screenOffset, margin: $margin');
 
     double x = screenOffset.dx;
     double y = screenOffset.dy;
 
     if (alignment == Alignment.topLeft) {
-      x += 0;
-      y += 0;
+      x += margin.left;
+      y += margin.top;
     } else if (alignment == Alignment.topCenter) {
       x += (screenSize.width - windowSize.width) / 2;
-      y += 0;
+      y += margin.top;
     } else if (alignment == Alignment.topRight) {
-      x += screenSize.width - windowSize.width;
-      y += 0;
+      x += screenSize.width - windowSize.width - margin.right;
+      y += margin.top;
     } else if (alignment == Alignment.centerLeft) {
-      x += 0;
+      x += margin.left;
       y += (screenSize.height - windowSize.height) / 2;
     } else if (alignment == Alignment.center) {
       x += (screenSize.width - windowSize.width) / 2;
       y += (screenSize.height - windowSize.height) / 2;
     } else if (alignment == Alignment.centerRight) {
-      x += screenSize.width - windowSize.width;
+      x += screenSize.width - windowSize.width - margin.right;
       y += (screenSize.height - windowSize.height) / 2;
     } else if (alignment == Alignment.bottomLeft) {
-      x += 0;
-      y += screenSize.height - windowSize.height;
+      x += margin.left;
+      y += screenSize.height - windowSize.height - margin.bottom;
     } else if (alignment == Alignment.bottomCenter) {
       x += (screenSize.width - windowSize.width) / 2;
-      y += screenSize.height - windowSize.height;
+      y += screenSize.height - windowSize.height - margin.bottom;
     } else if (alignment == Alignment.bottomRight) {
-      x += screenSize.width - windowSize.width;
-      y += screenSize.height - windowSize.height;
+      x += screenSize.width - windowSize.width - margin.right;
+      y += screenSize.height - windowSize.height - margin.bottom;
     }
 
     return Offset(x, y);
@@ -269,13 +274,14 @@ class WindowService {
     String widthStr,
     String heightStr,
     Display display,
+    MarginSettings margin,
   ) {
     final Size screenSize = display.visibleSize ?? display.size;
     double width = 0.0;
     if (widthStr.endsWith('%')) {
       final String percentStr = widthStr.substring(0, widthStr.length - 1);
       final double percent = double.tryParse(percentStr) ?? 80.0;
-      width = screenSize.width * (percent / 100.0);
+      width = screenSize.width * (percent / 100.0) - (margin.left + margin.right);
     } else {
       width = double.tryParse(widthStr) ?? 800.0;
     }
@@ -284,13 +290,13 @@ class WindowService {
     if (heightStr.endsWith('%')) {
       final String percentStr = heightStr.substring(0, heightStr.length - 1);
       final double percent = double.tryParse(percentStr) ?? 60.0;
-      height = screenSize.height * (percent / 100.0);
+      height = screenSize.height * (percent / 100.0) - (margin.top + margin.bottom);
     } else {
       height = double.tryParse(heightStr) ?? 600.0;
     }
 
-    width = width.clamp(200.0, screenSize.width);
-    height = height.clamp(150.0, screenSize.height);
+    width = width.clamp(200.0, screenSize.width - (margin.left + margin.right));
+    height = height.clamp(150.0, screenSize.height - (margin.top + margin.bottom));
 
     return Size(width, height);
   }

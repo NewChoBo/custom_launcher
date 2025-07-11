@@ -14,11 +14,12 @@
   "window": {
     "size": {
       "windowWidth": "80%",
-      "windowHeight": "50%"
+      "windowHeight": "60%"
     },
     "position": {
       "horizontalPosition": "center",
-      "verticalPosition": "bottom"
+      "verticalPosition": "bottom",
+      "margin": {"top":40, "right":20, "bottom":40, "left":20}
     },
     "behavior": {
       "windowLevel": "alwaysOnTop",
