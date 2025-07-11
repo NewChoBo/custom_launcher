@@ -1,0 +1,55 @@
+{
+  "apps": [
+    {
+      "id": "steam",
+      "title": "Steam",
+      "subtitle": "Steam Games Launcher",
+      "imagePath": "assets/images/Steam_icon_logo.png",
+      "executablePath": "D:/Games/Steam/steam.exe"
+    },
+    {
+      "id": "epic_games",
+      "title": "Epic Games",
+      "subtitle": "Epic Games / Unreal Engine",
+      "imagePath": "assets/images/Unreal-Engine-Splash-Screen.jpg"
+    },
+    {
+      "id": "discord",
+      "title": "Discord",
+      "subtitle": "Discord Launcher",
+      "imagePath": "assets/images/discord-logo.png",
+      "executablePath": "C:\\Users\\%USERNAME%\\AppData\\Local\\Discord\\Update.exe",
+      "arguments": ["--processStart", "Discord.exe"]
+    },
+    {
+      "id": "rainbow_six",
+      "title": "Rainbow Six",
+      "subtitle": "Rainbow Six Siege",
+      "imagePath": "assets/images/IQ_-_Full_Body.webp"
+    },
+    {
+      "id": "dying_light_2",
+      "title": "Dying Light 2",
+      "subtitle": "Dying Light 2",
+      "imagePath": "assets/images/dyinglight2.jpg"
+    },
+    {
+      "id": "half_life_alyx",
+      "title": "Half-Life Alyx",
+      "subtitle": "Half-Life Alyx",
+      "imagePath": "assets/images/alyx_feature2.jpg"
+    },
+    {
+      "id": "palworld",
+      "title": "Palworld",
+      "subtitle": "Palworld",
+      "imagePath": "assets/images/palworld.jpg"
+    },
+    {
+      "id": "cyberpunk_2077",
+      "title": "Cyberpunk 2077",
+      "subtitle": "Cyberpunk 2077",
+      "imagePath": "assets/images/cyberpunk.webp"
+    }
+  ]
+}

@@ -1,223 +1,60 @@
 {
   "layout": {
     "type": "column",
-    "mainAxisAlignment": "center",
-    "crossAxisAlignment": "center",
-    "padding": {
-      "top": 20,
-      "bottom": 20,
-      "left": 16,
-      "right": 16
-    },
+    "mainAxisAlignment": "start",
+    "crossAxisAlignment": "start",
+    "spacing": 2,
     "children": [
       {
-        "type": "container",
-        "width": "fill",
-        "height": 60,
-        "decoration": {
-          "color": "#E3F2FD",
-          "borderRadius": 8
-        },
-        "padding": {
-          "all": 16
-        },
+        "type": "expanded",
+        "flex": 1,
         "child": {
-          "type": "text",
-          "text": "Custom Launcher Dashboard",
-          "style": {
-            "fontSize": 18,
-            "fontWeight": "bold",
-            "color": "#1976D2"
-          },
-          "textAlign": "center"
-        }
-      },
-      {
-        "type": "sizedBox",
-        "height": 20
-      },
-      {
-        "type": "container",
-        "width": "fill",
-        "decoration": {
-          "color": "#FFF3E0",
-          "borderRadius": 8
-        },
-        "padding": {
-          "all": 16
-        },
-        "child": {
-          "type": "column",
-          "crossAxisAlignment": "start",
+          "type": "row",
+          "reorderable": true,
+          "spacing": 2,
           "children": [
             {
-              "type": "text",
-              "text": "Quick Launch",
-              "style": {
-                "fontSize": 14,
-                "fontWeight": "bold",
-                "color": "#E65100"
-              }
+              "type": "custom_card",
+              "app_id": "steam"
             },
             {
-              "type": "sizedBox",
-              "height": 12
+              "type": "custom_card",
+              "app_id": "epic_games"
             },
             {
-              "type": "row",
-              "mainAxisAlignment": "spaceEvenly",
-              "children": [
-                {
-                  "type": "launcher",
-                  "appName": "calculator",
-                  "displayName": "Calculator",
-                  "icon": "calculate",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#FF9800",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "chrome",
-                  "displayName": "Chrome",
-                  "icon": "web",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#4285F4",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "steam",
-                  "displayName": "Steam",
-                  "icon": "games",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#1B2838",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                }
-              ]
-            },
-            {
-              "type": "sizedBox",
-              "height": 12
-            },
-            {
-              "type": "row",
-              "mainAxisAlignment": "spaceEvenly",
-              "children": [
-                {
-                  "type": "launcher",
-                  "appName": "vscode",
-                  "displayName": "VS Code",
-                  "icon": "code",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#007ACC",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "discord",
-                  "displayName": "Discord",
-                  "icon": "chat",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#5865F2",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                },
-                {
-                  "type": "launcher",
-                  "appName": "spotify",
-                  "displayName": "Spotify",
-                  "icon": "music_note",
-                  "width": 80,
-                  "height": 80,
-                  "style": {
-                    "elevation": 2,
-                    "iconSize": 28,
-                    "iconColor": "#1DB954",
-                    "fontSize": 10,
-                    "fontWeight": "w500"
-                  }
-                }
-              ]
+              "type": "custom_card",
+              "app_id": "discord"
             }
           ]
         }
       },
       {
-        "type": "sizedBox",
-        "height": 20
-      },
-      {
-        "type": "container",
-        "width": "fill",
-        "decoration": {
-          "color": "#F5F5F5",
-          "borderRadius": 8
-        },
-        "padding": {
-          "all": 16
-        },
+        "type": "expanded",
+        "flex": 2,
         "child": {
-          "type": "column",
-          "crossAxisAlignment": "start",
+          "type": "row",
+          "reorderable": true,
+          "spacing": 2,
           "children": [
             {
-              "type": "text",
-              "text": "System Information",
-              "style": {
-                "fontSize": 14,
-                "fontWeight": "bold",
-                "color": "#424242"
-              }
+              "type": "custom_card",
+              "app_id": "rainbow_six"
             },
             {
-              "type": "sizedBox",
-              "height": 8
+              "type": "custom_card",
+              "app_id": "dying_light_2"
             },
             {
-              "type": "text",
-              "text": "Status: Running",
-              "style": {
-                "fontSize": 12,
-                "color": "#666666"
-              }
+              "type": "custom_card",
+              "app_id": "half_life_alyx"
             },
             {
-              "type": "text",
-              "text": "Memory: 128 MB",
-              "style": {
-                "fontSize": 12,
-                "color": "#666666"
-              }
+              "type": "custom_card",
+              "app_id": "palworld"
+            },
+            {
+              "type": "custom_card",
+              "app_id": "cyberpunk_2077"
             }
           ]
         }
