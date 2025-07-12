@@ -2,24 +2,39 @@ import 'package:window_manager/window_manager.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
-import 'package:custom_launcher/features/launcher/domain/entities/window_enums.dart'; // Import the new enums
+import 'package:custom_launcher/features/launcher/domain/entities/window_enums.dart';
+import 'package:custom_launcher/core/logging/logging.dart';
 
 class WindowService {
   static Future<void> initialize([AppSettings? settings]) async {
-    final AppSettings config = settings ?? const AppSettings(
-      mode: 'default',
-      ui: UiSettings(
-        showAppBar: false,
-        colors: ColorsSettings(appBarColor: '#2196F3', backgroundColor: '#424242'),
-        opacity: OpacitySettings(appBarOpacity: 0.5, backgroundOpacity: 0.1),
-      ),
-      window: WindowSettings(
-        size: SizeSettings(windowWidth: '80%', windowHeight: '50%'),
-        position: PositionSettings(horizontalPosition: 'center', verticalPosition: 'bottom'),
-        behavior: BehaviorSettings(windowLevel: 'normal', skipTaskbar: true),
-      ),
-      system: SystemSettings(monitorIndex: 0),
-    );
+    final AppSettings config =
+        settings ??
+        const AppSettings(
+          mode: 'default',
+          ui: UiSettings(
+            showAppBar: false,
+            colors: ColorsSettings(
+              appBarColor: '#2196F3',
+              backgroundColor: '#424242',
+            ),
+            opacity: OpacitySettings(
+              appBarOpacity: 0.5,
+              backgroundOpacity: 0.1,
+            ),
+          ),
+          window: WindowSettings(
+            size: SizeSettings(windowWidth: '80%', windowHeight: '50%'),
+            position: PositionSettings(
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            ),
+            behavior: BehaviorSettings(
+              windowLevel: 'normal',
+              skipTaskbar: true,
+            ),
+          ),
+          system: SystemSettings(monitorIndex: 0),
+        );
 
     await windowManager.ensureInitialized();
 
@@ -39,7 +54,8 @@ class WindowService {
         skipTaskbar: config.window.behavior.skipTaskbar,
         titleBarStyle: TitleBarStyle.hidden,
         windowButtonVisibility: false,
-        alwaysOnTop: config.window.behavior.windowLevel == WindowLevel.alwaysOnTop.name,
+        alwaysOnTop:
+            config.window.behavior.windowLevel == WindowLevel.alwaysOnTop.name,
       ),
       () async {
         await windowManager.show();
@@ -49,7 +65,10 @@ class WindowService {
         await _applyWindowPosition(config);
         await _configureWindowLevel(config.window.behavior.windowLevel);
 
-        debugPrint('Window initialized with settings: $config');
+        LogManager.info(
+          'Window initialized with settings: $config',
+          tag: 'WindowService',
+        );
       },
     );
   }
@@ -79,14 +98,19 @@ class WindowService {
         config.window.position.margin,
       );
 
-      debugPrint(
+      LogManager.debug(
         'Setting window size to: $size and position to: $position (alignment: $alignment, display: ${targetDisplay.size})',
+        tag: 'WindowService',
       );
 
       await windowManager.setSize(size);
       await windowManager.setPosition(position);
     } on Object catch (e) {
-      debugPrint('Error applying window position: $e');
+      LogManager.error(
+        'Error applying window position',
+        tag: 'WindowService',
+        error: e,
+      );
       await windowManager.center();
     }
   }
@@ -95,10 +119,11 @@ class WindowService {
     String horizontal,
     String vertical,
   ) {
-    final HorizontalPosition horizontalEnum = HorizontalPosition.values.firstWhere(
-      (e) => e.name == horizontal,
-      orElse: () => HorizontalPosition.center,
-    );
+    final HorizontalPosition horizontalEnum = HorizontalPosition.values
+        .firstWhere(
+          (e) => e.name == horizontal,
+          orElse: () => HorizontalPosition.center,
+        );
     final VerticalPosition verticalEnum = VerticalPosition.values.firstWhere(
       (e) => e.name == vertical,
       orElse: () => VerticalPosition.bottom,
@@ -139,49 +164,77 @@ class WindowService {
         orElse: () => WindowLevel.normal,
       );
 
-      debugPrint('Configuring window level: $windowLevel');
+      LogManager.debug(
+        'Configuring window level: $windowLevel',
+        tag: 'WindowService',
+      );
 
       switch (windowLevel) {
         case WindowLevel.alwaysOnTop:
-          debugPrint('Setting window to always on top');
+          LogManager.debug(
+            'Setting window to always on top',
+            tag: 'WindowService',
+          );
           try {
             await windowManager.setAlwaysOnBottom(false);
           } on Object catch (e) {
-            debugPrint('setAlwaysOnBottom not available or failed: $e');
+            LogManager.warn(
+              'setAlwaysOnBottom not available or failed',
+              tag: 'WindowService',
+              error: e,
+            );
           }
 
           await Future.delayed(const Duration(milliseconds: 50));
           await windowManager.setAlwaysOnTop(true);
-          debugPrint('Always on top enabled');
+          LogManager.info('Always on top enabled', tag: 'WindowService');
           break;
 
         case WindowLevel.alwaysBelow:
-          debugPrint('Setting window to always below');
+          LogManager.debug(
+            'Setting window to always below',
+            tag: 'WindowService',
+          );
 
           await windowManager.setAlwaysOnTop(false);
           await Future.delayed(const Duration(milliseconds: 50));
 
           try {
             await windowManager.setAlwaysOnBottom(true);
-            debugPrint('Always below enabled');
+            LogManager.info('Always below enabled', tag: 'WindowService');
           } on Object catch (e) {
-            debugPrint('setAlwaysOnBottom not supported on this platform: $e');
+            LogManager.warn(
+              'setAlwaysOnBottom not supported on this platform',
+              tag: 'WindowService',
+              error: e,
+            );
           }
           break;
 
         case WindowLevel.normal:
-          debugPrint('Setting window to normal level');
+          LogManager.debug(
+            'Setting window to normal level',
+            tag: 'WindowService',
+          );
           await windowManager.setAlwaysOnTop(false);
           try {
             await windowManager.setAlwaysOnBottom(false);
           } on Object catch (e) {
-            debugPrint('setAlwaysOnBottom not available: $e');
+            LogManager.warn(
+              'setAlwaysOnBottom not available',
+              tag: 'WindowService',
+              error: e,
+            );
           }
-          debugPrint('Normal window level set');
+          LogManager.info('Normal window level set', tag: 'WindowService');
           break;
       }
     } on Object catch (e) {
-      debugPrint('Error configuring window level: $e');
+      LogManager.error(
+        'Error configuring window level',
+        tag: 'WindowService',
+        error: e,
+      );
     }
   }
 
@@ -190,10 +243,16 @@ class WindowService {
       final Display primaryDisplay = await screenRetriever.getPrimaryDisplay();
       final List<Display> allDisplays = await screenRetriever.getAllDisplays();
 
-      debugPrint('Available displays: ${allDisplays.length}');
+      LogManager.debug(
+        'Available displays: ${allDisplays.length}',
+        tag: 'WindowService',
+      );
       for (int i = 0; i < allDisplays.length; i++) {
         final Display display = allDisplays[i];
-        debugPrint('Display $i: ${display.size} at ${display.visiblePosition}');
+        LogManager.debug(
+          'Display $i: ${display.size} at ${display.visiblePosition}',
+          tag: 'WindowService',
+        );
       }
       if (monitorIndex == 0) {
         final Offset cursorPos = await screenRetriever.getCursorScreenPoint();
@@ -212,14 +271,19 @@ class WindowService {
         if (displayIndex >= 0 && displayIndex < allDisplays.length) {
           return allDisplays[displayIndex];
         } else {
-          debugPrint(
+          LogManager.warn(
             'Monitor $monitorIndex not available (only ${allDisplays.length} displays), falling back to Monitor 1',
+            tag: 'WindowService',
           );
           return allDisplays.isNotEmpty ? allDisplays[0] : primaryDisplay;
         }
       }
     } on Object catch (e) {
-      debugPrint('Error getting target display: $e');
+      LogManager.error(
+        'Error getting target display',
+        tag: 'WindowService',
+        error: e,
+      );
       return await screenRetriever.getPrimaryDisplay();
     }
   }
@@ -233,7 +297,10 @@ class WindowService {
     final Size screenSize = display.visibleSize ?? display.size;
     final Offset screenOffset = display.visiblePosition ?? const Offset(0, 0);
 
-    debugPrint('Screen size: $screenSize, offset: $screenOffset, margin: $margin');
+    LogManager.debug(
+      'Screen size: $screenSize, offset: $screenOffset, margin: $margin',
+      tag: 'WindowService',
+    );
 
     double x = screenOffset.dx;
     double y = screenOffset.dy;
@@ -281,7 +348,8 @@ class WindowService {
     if (widthStr.endsWith('%')) {
       final String percentStr = widthStr.substring(0, widthStr.length - 1);
       final double percent = double.tryParse(percentStr) ?? 80.0;
-      width = screenSize.width * (percent / 100.0) - (margin.left + margin.right);
+      width =
+          screenSize.width * (percent / 100.0) - (margin.left + margin.right);
     } else {
       width = double.tryParse(widthStr) ?? 800.0;
     }
@@ -290,13 +358,17 @@ class WindowService {
     if (heightStr.endsWith('%')) {
       final String percentStr = heightStr.substring(0, heightStr.length - 1);
       final double percent = double.tryParse(percentStr) ?? 60.0;
-      height = screenSize.height * (percent / 100.0) - (margin.top + margin.bottom);
+      height =
+          screenSize.height * (percent / 100.0) - (margin.top + margin.bottom);
     } else {
       height = double.tryParse(heightStr) ?? 600.0;
     }
 
     width = width.clamp(200.0, screenSize.width - (margin.left + margin.right));
-    height = height.clamp(150.0, screenSize.height - (margin.top + margin.bottom));
+    height = height.clamp(
+      150.0,
+      screenSize.height - (margin.top + margin.bottom),
+    );
 
     return Size(width, height);
   }
