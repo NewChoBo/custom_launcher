@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_launcher/core/services/window_service.dart';
 import 'package:custom_launcher/core/providers/app_providers.dart';
 import 'package:custom_launcher/core/logging/logging.dart';
+import 'package:custom_launcher/core/services/keyboard_service.dart';
+import 'package:custom_launcher/core/di/service_locator.dart';
 
 import 'package:window_manager/window_manager.dart';
 import 'package:custom_launcher/core/services/system_tray_service.dart';
@@ -31,6 +33,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> with WindowListener {
   final SystemTrayService _systemTrayService = SystemTrayService();
+  KeyboardService? _keyboardService;
   bool _windowInitialized = false;
 
   @override
@@ -38,6 +41,34 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
     super.initState();
     windowManager.addListener(this);
     _systemTrayService.initialize();
+    _initializeKeyboardService();
+  }
+
+  Future<void> _initializeKeyboardService() async {
+    try {
+      _keyboardService = sl.get<KeyboardService>();
+      await _keyboardService!.initialize();
+
+      // Register keyboard shortcut callbacks
+      _keyboardService!.registerActionCallback(
+        ShortcutAction.hideToTray,
+        () => _systemTrayService.hideWindow(),
+      );
+
+      _keyboardService!.registerActionCallback(
+        ShortcutAction.refreshApps,
+        () => ref.refresh(appListNotifierProvider),
+      );
+
+      LogManager.info('Keyboard service initialized', tag: 'Main');
+    } catch (e, stackTrace) {
+      LogManager.error(
+        'Failed to initialize keyboard service: $e',
+        tag: 'Main',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Future<void> _initializeWindowSettings() async {
@@ -64,6 +95,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
   void dispose() {
     windowManager.removeListener(this);
     _systemTrayService.dispose();
+    _keyboardService?.dispose();
     super.dispose();
   }
 
@@ -154,7 +186,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
           _initializeWindowSettings();
         });
 
-        return MaterialApp(
+        final materialApp = MaterialApp(
           navigatorKey: navigatorKey,
           title: 'Custom Launcher',
           theme: ThemeData(
@@ -167,6 +199,21 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
             onHideToTray: _systemTrayService.hideWindow,
           ),
         );
+
+        // Wrap with keyboard shortcuts if service is available
+        if (_keyboardService != null) {
+          return _keyboardService!.createShortcutsWidget(
+            child: materialApp,
+            additionalCallbacks: {
+              ShortcutAction.openSettings: () {
+                // Navigate to settings page - placeholder for now
+                LogManager.info('Settings shortcut pressed', tag: 'Main');
+              },
+            },
+          );
+        }
+
+        return materialApp;
       },
       loading: () => MaterialApp(
         navigatorKey: navigatorKey,

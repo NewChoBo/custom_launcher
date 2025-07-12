@@ -2,6 +2,7 @@ import 'package:custom_launcher/core/di/service_locator.dart';
 import 'package:custom_launcher/core/logging/logging.dart';
 import 'package:custom_launcher/core/error/error_handler.dart';
 import 'package:custom_launcher/core/services/system_tray_service.dart';
+import 'package:custom_launcher/core/services/keyboard_service.dart';
 import 'package:custom_launcher/features/launcher/data/data_sources/app_local_data_source.dart';
 import 'package:custom_launcher/features/launcher/data/repositories/app_repository_impl.dart';
 import 'package:custom_launcher/features/launcher/data/repositories/settings_repository_impl.dart';
@@ -95,6 +96,9 @@ class InjectionContainer {
     // 시스템 트레이 서비스
     sl.registerLazySingleton<SystemTrayService>(() => SystemTrayService());
 
+    // 키보드 서비스
+    sl.registerLazySingleton<KeyboardService>(() => KeyboardService());
+
     LogManager.debug('Services registered', tag: 'DI');
   }
 
@@ -109,6 +113,14 @@ class InjectionContainer {
       }
     } catch (e) {
       LogManager.warn('Error disposing SystemTrayService', tag: 'DI', error: e);
+    }
+
+    try {
+      if (sl.isRegistered<KeyboardService>()) {
+        sl.get<KeyboardService>().dispose();
+      }
+    } catch (e) {
+      LogManager.warn('Error disposing KeyboardService', tag: 'DI', error: e);
     }
 
     // 서비스 로케이터 리셋

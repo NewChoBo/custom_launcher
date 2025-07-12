@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:custom_launcher/core/error/app_error.dart';
-import 'package:custom_launcher/core/logging/logging.dart';
+import 'package:custom_launcher/core/mixins/logging_mixin.dart';
+import 'package:custom_launcher/core/mixins/error_handling_mixin.dart';
 
 /// UseCase 실행 결과를 나타내는 클래스
 abstract class UseCaseResult<T> extends Equatable {
@@ -67,29 +68,22 @@ extension UseCaseResultExtensions<T> on UseCaseResult<T> {
   }
 }
 
-abstract class UseCase<T> {
-  final Logger _logger = LogManager.instance.logger;
-
+abstract class UseCase<T> with LoggingMixin, ErrorHandlingMixin {
   String get name => runtimeType.toString();
 
   Future<UseCaseResult<T>> call() async {
-    _logger.info('Executing UseCase: $name', tag: 'UseCase');
+    logInfo('Executing UseCase: $name');
 
     try {
       final result = await execute();
-      _logger.info('UseCase $name completed successfully', tag: 'UseCase');
+      logInfo('UseCase $name completed successfully');
       return Success(result);
     } on AppError catch (e) {
-      _logger.error(
-        'UseCase $name failed with AppError: ${e.message}',
-        tag: 'UseCase',
-        error: e,
-      );
+      logError('UseCase $name failed with AppError: ${e.message}', error: e);
       return Failure(e);
     } catch (e, stackTrace) {
-      _logger.error(
+      logError(
         'UseCase $name failed with unexpected error: $e',
-        tag: 'UseCase',
         error: e,
         stackTrace: stackTrace,
       );
@@ -105,32 +99,22 @@ abstract class UseCase<T> {
   Future<T> execute();
 }
 
-abstract class UseCaseWithParams<T, P> {
-  final Logger _logger = LogManager.instance.logger;
-
+abstract class UseCaseWithParams<T, P> with LoggingMixin, ErrorHandlingMixin {
   String get name => runtimeType.toString();
 
   Future<UseCaseResult<T>> call(P params) async {
-    _logger.info(
-      'Executing UseCase: $name with params: $params',
-      tag: 'UseCase',
-    );
+    logInfo('Executing UseCase: $name with params: $params');
 
     try {
       final result = await execute(params);
-      _logger.info('UseCase $name completed successfully', tag: 'UseCase');
+      logInfo('UseCase $name completed successfully');
       return Success(result);
     } on AppError catch (e) {
-      _logger.error(
-        'UseCase $name failed with AppError: ${e.message}',
-        tag: 'UseCase',
-        error: e,
-      );
+      logError('UseCase $name failed with AppError: ${e.message}', error: e);
       return Failure(e);
     } catch (e, stackTrace) {
-      _logger.error(
+      logError(
         'UseCase $name failed with unexpected error: $e',
-        tag: 'UseCase',
         error: e,
         stackTrace: stackTrace,
       );

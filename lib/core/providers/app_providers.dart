@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_launcher/core/di/injection_container.dart';
-import 'package:custom_launcher/core/di/service_locator.dart';
 import 'package:custom_launcher/core/error/error_handler.dart';
 import 'package:custom_launcher/core/logging/logging.dart';
+import 'package:custom_launcher/core/providers/provider_factory.dart';
 import 'package:custom_launcher/features/launcher/data/data_sources/app_local_data_source.dart';
 
 import 'package:custom_launcher/features/launcher/domain/repositories/app_repository.dart';
@@ -18,49 +18,38 @@ import 'package:custom_launcher/features/launcher/domain/usecases/launch_app.dar
 import 'package:custom_launcher/features/launcher/domain/usecases/update_app.dart';
 import 'package:custom_launcher/features/launcher/domain/usecases/save_settings.dart';
 
-final errorHandlerProvider = Provider<ErrorHandler>((ref) {
-  return sl.get<ErrorHandler>();
-});
+// Core providers using factory patterns
+final errorHandlerProvider = CommonProviders.errorHandlerProvider;
+final loggerProvider = CommonProviders.loggerProvider;
 
-final loggerProvider = Provider<Logger>((ref) {
-  return LogManager.instance.logger;
-});
+// Repository providers using factory patterns
+final appLocalDataSourceProvider =
+    CommonProviders.repository<AppLocalDataSource>();
+final appRepositoryProvider = CommonProviders.repository<AppRepository>();
+final settingsRepositoryProvider =
+    CommonProviders.repository<SettingsRepository>();
+final layoutRepositoryProvider = CommonProviders.repository<LayoutRepository>();
 
-final appLocalDataSourceProvider = Provider<AppLocalDataSource>((ref) {
-  return sl.get<AppLocalDataSource>();
-});
+// UseCase providers using factory patterns
+final getAppsUseCaseProvider = CommonProviders.useCase<GetApps>(
+  (ref) => GetApps(ref.read(appRepositoryProvider)),
+);
 
-final appRepositoryProvider = Provider<AppRepository>((ref) {
-  return sl.get<AppRepository>();
-});
+final getAppSettingsUseCaseProvider = CommonProviders.useCase<GetAppSettings>(
+  (ref) => GetAppSettings(ref.read(settingsRepositoryProvider)),
+);
 
-final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
-  return sl.get<SettingsRepository>();
-});
+final launchAppUseCaseProvider = CommonProviders.useCase<LaunchApp>(
+  (ref) => LaunchApp(ref.read(appRepositoryProvider)),
+);
 
-final layoutRepositoryProvider = Provider<LayoutRepository>((ref) {
-  return sl.get<LayoutRepository>();
-});
+final updateAppUseCaseProvider = CommonProviders.useCase<UpdateApp>(
+  (ref) => UpdateApp(ref.read(appRepositoryProvider)),
+);
 
-final getAppsUseCaseProvider = Provider<GetApps>((ref) {
-  return GetApps(ref.read(appRepositoryProvider));
-});
-
-final getAppSettingsUseCaseProvider = Provider<GetAppSettings>((ref) {
-  return GetAppSettings(ref.read(settingsRepositoryProvider));
-});
-
-final launchAppUseCaseProvider = Provider<LaunchApp>((ref) {
-  return LaunchApp(ref.read(appRepositoryProvider));
-});
-
-final updateAppUseCaseProvider = Provider<UpdateApp>((ref) {
-  return UpdateApp(ref.read(appRepositoryProvider));
-});
-
-final saveSettingsUseCaseProvider = Provider<SaveSettings>((ref) {
-  return SaveSettings(ref.read(settingsRepositoryProvider));
-});
+final saveSettingsUseCaseProvider = CommonProviders.useCase<SaveSettings>(
+  (ref) => SaveSettings(ref.read(settingsRepositoryProvider)),
+);
 
 class AppListNotifier extends StateNotifier<AsyncValue<List<AppModel>>> {
   final GetApps _getAppsUseCase;

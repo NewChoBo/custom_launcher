@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
 import 'package:custom_launcher/features/launcher/presentation/widgets/layout_editor/element_palette.dart';
 import 'package:custom_launcher/features/launcher/presentation/widgets/layout_editor/draggable_layout_item.dart';
-// import 'package:custom_launcher/features/launcher/presentation/widgets/cards/custom_card_widget.dart';
-// import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/dynamic_layout.dart';
 import 'package:custom_launcher/core/providers/app_providers.dart';
 import 'dart:async'; // Added for Timer
 
@@ -47,7 +45,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
         Expanded(
           child: Row(
             children: [
-              // Element Palette (왼쪽)
               Container(
                 width: 280,
                 decoration: BoxDecoration(
@@ -59,14 +56,12 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
                 ),
                 child: ElementPalette(onElementSelected: _addNewElement),
               ),
-              // Main Layout Area (가운데)
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   child: _buildEditableLayout(),
                 ),
               ),
-              // Properties Panel (오른쪽)
               Container(
                 width: 280,
                 decoration: BoxDecoration(
@@ -154,11 +149,9 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
 
   Widget _buildEditableLayout() {
     if (!_isEditMode) {
-      // 프리뷰 모드: 실제 레이아웃을 보여줌
       return _buildPreviewLayout(_currentConfig.layout);
     }
 
-    // 편집 모드: 드래그 앤 드롭 가능한 레이아웃
     return LayoutDropTarget(
       targetPath: 'root',
       onAccept: _handleElementDrop,
@@ -180,10 +173,8 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
   }) {
     final isSelected = _selectedElementPath == path;
 
-    // 실제 레이아웃 요소 빌드
     Widget child = _buildLayoutWidget(element, path);
 
-    // 편집 모드에서는 DraggableLayoutItem으로 감싸기
     if (_isEditMode && path != 'root') {
       child = DraggableLayoutItem(
         element: element,
@@ -248,7 +239,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Column 표시
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -272,7 +262,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
               ),
             ),
             const SizedBox(height: 8),
-            // 자식 요소들
             if (children.isEmpty)
               _buildEmptyDropZone('Drop elements here')
             else
@@ -321,7 +310,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row 표시
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -345,7 +333,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
               ),
             ),
             const SizedBox(height: 8),
-            // 자식 요소들
             if (children.isEmpty)
               _buildEmptyDropZone('Drop elements here')
             else
@@ -398,7 +385,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Expanded 표시
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -422,7 +408,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
               ),
             ),
             const SizedBox(height: 8),
-            // 자식 요소
             if (child == null)
               _buildEmptyDropZone('Drop element here')
             else
@@ -456,7 +441,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container 표시
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -480,7 +464,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
               ),
             ),
             const SizedBox(height: 8),
-            // 자식 요소
             if (child == null)
               _buildEmptyDropZone('Drop element here')
             else
@@ -512,7 +495,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // App Card 표시
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -536,7 +518,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
             ),
           ),
           const SizedBox(height: 8),
-          // 앱 카드 내용
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -600,7 +581,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Text 표시
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -624,7 +604,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
             ),
           ),
           const SizedBox(height: 8),
-          // 텍스트 내용
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -660,7 +639,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // SizedBox 표시
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -684,7 +662,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
             ),
           ),
           const SizedBox(height: 8),
-          // 공간 표시
           Container(
             constraints: const BoxConstraints(
               minWidth: 50,
@@ -737,7 +714,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Unknown Element 표시
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
@@ -761,7 +737,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
             ),
           ),
           const SizedBox(height: 8),
-          // 플레이스홀더 내용
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -800,7 +775,7 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // 높이 제약 조건 문제 해결
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Properties',
@@ -833,7 +808,7 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min, // 높이 제약 조건 문제 해결
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Type: ${element.type}',
@@ -858,7 +833,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
           ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        // 높이 제약 조건 문제 해결을 위해 간단한 Column 사용
         ..._buildEditableProperties(element),
       ],
     );
@@ -1710,71 +1684,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
     return element;
   }
 
-  // Helper methods (temporarily commented out - may be needed later)
-  /*
-  MainAxisAlignment _parseMainAxisAlignment(String value) {
-    switch (value) {
-      case 'start':
-        return MainAxisAlignment.start;
-      case 'center':
-        return MainAxisAlignment.center;
-      case 'end':
-        return MainAxisAlignment.end;
-      case 'spaceBetween':
-        return MainAxisAlignment.spaceBetween;
-      case 'spaceAround':
-        return MainAxisAlignment.spaceAround;
-      case 'spaceEvenly':
-        return MainAxisAlignment.spaceEvenly;
-      default:
-        return MainAxisAlignment.start;
-    }
-  }
-
-  CrossAxisAlignment _parseCrossAxisAlignment(String value) {
-    switch (value) {
-      case 'start':
-        return CrossAxisAlignment.start;
-      case 'center':
-        return CrossAxisAlignment.center;
-      case 'end':
-        return CrossAxisAlignment.end;
-      case 'stretch':
-        return CrossAxisAlignment.stretch;
-      default:
-        return CrossAxisAlignment.start;
-    }
-  }
-
-  EdgeInsets? _parsePadding(Map<String, dynamic>? properties) {
-    if (properties == null) return null;
-
-    final all = properties['padding'] as double?;
-    if (all != null) return EdgeInsets.all(all);
-
-    final top = properties['paddingTop'] as double? ?? 0;
-    final right = properties['paddingRight'] as double? ?? 0;
-    final bottom = properties['paddingBottom'] as double? ?? 0;
-    final left = properties['paddingLeft'] as double? ?? 0;
-
-    return EdgeInsets.only(top: top, right: right, bottom: bottom, left: left);
-  }
-
-  EdgeInsets? _parseMargin(Map<String, dynamic>? properties) {
-    if (properties == null) return null;
-
-    final all = properties['margin'] as double?;
-    if (all != null) return EdgeInsets.all(all);
-
-    final top = properties['marginTop'] as double? ?? 0;
-    final right = properties['marginRight'] as double? ?? 0;
-    final bottom = properties['marginBottom'] as double? ?? 0;
-    final left = properties['marginLeft'] as double? ?? 0;
-
-    return EdgeInsets.only(top: top, right: right, bottom: bottom, left: left);
-  }
-  */
-
   Color? _parseColor(String? colorString) {
     if (colorString == null || colorString.isEmpty) return null;
 
@@ -1785,33 +1694,6 @@ class _VisualLayoutEditorState extends ConsumerState<VisualLayoutEditor> {
       return null;
     }
   }
-
-  /*
-  IconData _getElementIcon(String type) {
-    switch (type) {
-      case 'column':
-        return Icons.view_column;
-      case 'row':
-        return Icons.view_stream;
-      case 'container':
-        return Icons.crop_square;
-      case 'text':
-        return Icons.text_fields;
-      case 'icon':
-        return Icons.star;
-      case 'custom_card':
-        return Icons.rectangle;
-      case 'expanded':
-        return Icons.open_in_full;
-      case 'sizedbox':
-        return Icons.crop_free;
-      case 'card':
-        return Icons.credit_card;
-      default:
-        return Icons.widgets;
-    }
-  }
-  */
 
   LayoutElement? _getElementByPath(String path) {
     if (path == 'root') {
