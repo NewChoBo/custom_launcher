@@ -13,13 +13,13 @@
   },
   "window": {
     "size": {
-      "windowWidth": "90%",
+      "windowWidth": "80%",
       "windowHeight": "60%"
     },
     "position": {
       "horizontalPosition": "center",
       "verticalPosition": "bottom",
-      "margin": { "top": 40, "right": 20, "bottom": 20, "left": 20 }
+      "margin": {"top":40, "right":20, "bottom":40, "left":20}
     },
     "behavior": {
       "windowLevel": "alwaysOnTop",
@@ -27,6 +27,6 @@
     }
   },
   "system": {
-    "monitorIndex": 2
+    "monitorIndex": 3
   }
 }
