@@ -11,13 +11,10 @@ import 'package:custom_launcher/features/launcher/presentation/pages/home_page.d
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  
-
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerStatefulWidget {
-  
   const MyApp({super.key});
 
   @override
@@ -57,9 +54,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    final appSettingsAsyncValue = ref.watch(
-      getAppSettingsProvider,
-    );
+    final appSettingsAsyncValue = ref.watch(getAppSettingsProvider);
 
     return appSettingsAsyncValue.when(
       data: (appSettings) {
