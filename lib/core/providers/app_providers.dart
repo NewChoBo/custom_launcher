@@ -1,33 +1,309 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:custom_launcher/core/di/injection_container.dart';
+import 'package:custom_launcher/core/di/service_locator.dart';
+import 'package:custom_launcher/core/error/error_handler.dart';
+import 'package:custom_launcher/core/logging/logging.dart';
 import 'package:custom_launcher/features/launcher/data/data_sources/app_local_data_source.dart';
-import 'package:custom_launcher/features/launcher/data/repositories/app_repository_impl.dart';
+
 import 'package:custom_launcher/features/launcher/domain/repositories/app_repository.dart';
-import 'package:custom_launcher/features/launcher/domain/entities/app_info.dart'; // Add this import
-import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart'; // Add this import
+import 'package:custom_launcher/features/launcher/domain/repositories/settings_repository.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:custom_launcher/features/launcher/data/models/app_model.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/base_usecase.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/get_apps.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/get_app_settings.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/launch_app.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/update_app.dart';
+import 'package:custom_launcher/features/launcher/domain/usecases/save_settings.dart';
 
-import 'package:custom_launcher/features/launcher/data/app_data_repository.dart';
+final errorHandlerProvider = Provider<ErrorHandler>((ref) {
+  return sl.get<ErrorHandler>();
+});
 
-// Data Sources
-final appLocalDataSourceProvider = Provider<AppLocalDataSource>(
-  (ref) => AppLocalDataSourceImpl(),
-);
+final loggerProvider = Provider<Logger>((ref) {
+  return LogManager.instance.logger;
+});
 
-// Repositories
-final appRepositoryProvider = Provider<AppRepository>(
-  (ref) => AppRepositoryImpl(localDataSource: ref.read(appLocalDataSourceProvider)),
-);
+final appLocalDataSourceProvider = Provider<AppLocalDataSource>((ref) {
+  return sl.get<AppLocalDataSource>();
+});
 
-// Use Cases
-final getAppInfoListProvider = FutureProvider<List<AppInfo>>(
-  (ref) => ref.read(appRepositoryProvider).getAppInfoList(),
-);
+final appRepositoryProvider = Provider<AppRepository>((ref) {
+  return sl.get<AppRepository>();
+});
 
-final getAppSettingsProvider = FutureProvider<AppSettings>(
-  (ref) => ref.read(appRepositoryProvider).getAppSettings(),
-);
+final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
+  return sl.get<SettingsRepository>();
+});
 
-final appDataRepositoryProvider = Provider<AppDataRepository>((ref) {
-  final repository = AppDataRepository();
-  repository.loadAppData(); // 비동기 로드 시작
-  return repository;
+final getAppsUseCaseProvider = Provider<GetApps>((ref) {
+  return GetApps(ref.read(appRepositoryProvider));
+});
+
+final getAppSettingsUseCaseProvider = Provider<GetAppSettings>((ref) {
+  return GetAppSettings(ref.read(settingsRepositoryProvider));
+});
+
+final launchAppUseCaseProvider = Provider<LaunchApp>((ref) {
+  return LaunchApp(ref.read(appRepositoryProvider));
+});
+
+final updateAppUseCaseProvider = Provider<UpdateApp>((ref) {
+  return UpdateApp(ref.read(appRepositoryProvider));
+});
+
+final saveSettingsUseCaseProvider = Provider<SaveSettings>((ref) {
+  return SaveSettings(ref.read(settingsRepositoryProvider));
+});
+
+class AppListNotifier extends StateNotifier<AsyncValue<List<AppModel>>> {
+  final GetApps _getAppsUseCase;
+  final LaunchApp _launchAppUseCase;
+  final UpdateApp _updateAppUseCase;
+  final ErrorHandler _errorHandler;
+  final Logger _logger;
+
+  AppListNotifier(
+    this._getAppsUseCase,
+    this._launchAppUseCase,
+    this._updateAppUseCase,
+    this._errorHandler,
+    this._logger,
+  ) : super(const AsyncValue.loading()) {
+    Future.microtask(() => _loadApps());
+  }
+
+  Future<void> _loadApps() async {
+    try {
+      state = const AsyncValue.loading();
+      final result = await _getAppsUseCase();
+
+      if (mounted) {
+        result
+            .onSuccess((apps) {
+              state = AsyncValue.data(apps);
+            })
+            .onFailure((error) {
+              _logger.error(
+                'Failed to load apps: ${error.message}',
+                tag: 'AppListNotifier',
+              );
+              state = AsyncValue.error(error, StackTrace.current);
+            });
+      }
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Unexpected error in _loadApps: $e',
+        tag: 'AppListNotifier',
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> updateApp(String appId, Map<String, dynamic> updates) async {
+    try {
+      final params = UpdateAppParams(appId: appId, updates: updates);
+      final result = await _updateAppUseCase(params);
+
+      if (mounted) {
+        result
+            .onSuccess((_) {
+              _logger.info(
+                'App updated successfully: $appId',
+                tag: 'AppListNotifier',
+              );
+              _loadApps();
+            })
+            .onFailure((error) {
+              _logger.error(
+                'Failed to update app: ${error.message}',
+                tag: 'AppListNotifier',
+              );
+              _errorHandler.handleError(error);
+            });
+      }
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Unexpected error in updateApp: $e',
+        tag: 'AppListNotifier',
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> launchApp(String appId) async {
+    try {
+      final params = AppIdParams(appId);
+      final result = await _launchAppUseCase(params);
+
+      if (mounted) {
+        result
+            .onSuccess((_) {
+              _logger.info(
+                'App launched successfully: $appId',
+                tag: 'AppListNotifier',
+              );
+              _loadApps();
+            })
+            .onFailure((error) {
+              _logger.error(
+                'Failed to launch app: ${error.message}',
+                tag: 'AppListNotifier',
+              );
+              _errorHandler.handleError(error);
+            });
+      }
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Unexpected error in launchApp: $e',
+        tag: 'AppListNotifier',
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> refresh() async {
+    await _loadApps();
+  }
+}
+
+final appListNotifierProvider =
+    StateNotifierProvider<AppListNotifier, AsyncValue<List<AppModel>>>(
+      (ref) => AppListNotifier(
+        ref.read(getAppsUseCaseProvider),
+        ref.read(launchAppUseCaseProvider),
+        ref.read(updateAppUseCaseProvider),
+        ref.read(errorHandlerProvider),
+        ref.read(loggerProvider),
+      ),
+    );
+
+class SettingsNotifier extends StateNotifier<AsyncValue<AppSettings>> {
+  final GetAppSettings _getSettingsUseCase;
+  final SaveSettings _saveSettingsUseCase;
+  final ErrorHandler _errorHandler;
+  final Logger _logger;
+
+  SettingsNotifier(
+    this._getSettingsUseCase,
+    this._saveSettingsUseCase,
+    this._errorHandler,
+    this._logger,
+  ) : super(const AsyncValue.loading()) {
+    Future.microtask(() => _loadSettings());
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      state = const AsyncValue.loading();
+      final result = await _getSettingsUseCase();
+
+      if (mounted) {
+        result
+            .onSuccess((settings) {
+              state = AsyncValue.data(settings);
+            })
+            .onFailure((error) {
+              _logger.error(
+                'Failed to load settings: ${error.message}',
+                tag: 'SettingsNotifier',
+              );
+              state = AsyncValue.error(error, StackTrace.current);
+            });
+      }
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Unexpected error in _loadSettings: $e',
+        tag: 'SettingsNotifier',
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> saveSettings(AppSettings settings) async {
+    try {
+      final result = await _saveSettingsUseCase(settings);
+
+      if (mounted) {
+        result
+            .onSuccess((_) {
+              _logger.info(
+                'Settings saved successfully',
+                tag: 'SettingsNotifier',
+              );
+              state = AsyncValue.data(settings);
+            })
+            .onFailure((error) {
+              _logger.error(
+                'Failed to save settings: ${error.message}',
+                tag: 'SettingsNotifier',
+              );
+              _errorHandler.handleError(error);
+            });
+      }
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Unexpected error in saveSettings: $e',
+        tag: 'SettingsNotifier',
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> refresh() async {
+    await _loadSettings();
+  }
+}
+
+final settingsNotifierProvider =
+    StateNotifierProvider<SettingsNotifier, AsyncValue<AppSettings>>(
+      (ref) => SettingsNotifier(
+        ref.read(getAppSettingsUseCaseProvider),
+        ref.read(saveSettingsUseCaseProvider),
+        ref.read(errorHandlerProvider),
+        ref.read(loggerProvider),
+      ),
+    );
+
+final getAppSettingsProvider = FutureProvider<AppSettings>((ref) async {
+  final useCase = ref.read(getAppSettingsUseCaseProvider);
+  final result = await useCase();
+
+  if (result.isSuccess) {
+    return result.data!;
+  } else {
+    throw result.error!;
+  }
+});
+
+final appInitializationProvider = FutureProvider<void>((ref) async {
+  final logger = ref.read(loggerProvider);
+
+  logger.info('Initializing app dependencies...', tag: 'AppInitialization');
+
+  try {
+    await InjectionContainer.init();
+    logger.info(
+      'App dependencies initialized successfully',
+      tag: 'AppInitialization',
+    );
+  } catch (e, stackTrace) {
+    logger.error(
+      'Failed to initialize app dependencies: $e',
+      tag: 'AppInitialization',
+      error: e,
+      stackTrace: stackTrace,
+    );
+    rethrow;
+  }
 });

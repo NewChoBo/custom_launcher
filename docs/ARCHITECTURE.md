@@ -77,7 +77,8 @@ lib/
   * `appLocalDataSourceProvider`: `AppLocalDataSource` 인스턴스를 제공합니다.
   * `appRepositoryProvider`: `AppRepository` 인스턴스를 제공합니다.
   * `getAppSettingsProvider`: 애플리케이션 설정을 비동기적으로 가져오는 `FutureProvider`.
-  * `appDataRepositoryProvider`: 애플리케이션 데이터(`List<AppModel>`)를 관리하고 제공하는 `AsyncNotifierProvider`.
+  * `appListNotifierProvider`: 애플리케이션 데이터(`List<AppModel>`)를 관리하고 제공하는 `StateNotifierProvider`.
+  * `settingsNotifierProvider`: 애플리케이션 설정을 관리하는 `StateNotifierProvider`.
 
 ### `lib/core/services/system_tray_service.dart`
 
