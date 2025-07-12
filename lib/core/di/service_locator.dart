@@ -4,7 +4,6 @@ class ServiceLocator {
 
   ServiceLocator._();
 
-  final Map<Type, dynamic> _services = {};
   final Map<Type, dynamic> _singletons = {};
   final Map<Type, dynamic Function()> _factories = {};
   final Map<Type, dynamic Function()> _lazyFactories = {};

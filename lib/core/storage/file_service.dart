@@ -98,7 +98,7 @@ class FileService {
     try {
       final filePath = await _getFilePath(fileName);
       return await File(filePath).exists();
-    } catch (e, stackTrace) {
+    } catch (e) {
       LogManager.warn(
         'Error checking file existence: $fileName',
         tag: 'FileService',
@@ -220,7 +220,7 @@ class FileService {
         tag: 'FileService',
       );
       return totalSize;
-    } catch (e, stackTrace) {
+    } catch (e) {
       LogManager.warn(
         'Failed to calculate directory size',
         tag: 'FileService',

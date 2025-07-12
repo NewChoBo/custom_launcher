@@ -58,8 +58,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               ? AppBar(
                   backgroundColor:
                       appBarColor ??
-                      Theme.of(context).colorScheme.inversePrimary.withOpacity(
-                        appSettings.ui.opacity.appBarOpacity,
+                      Theme.of(context).colorScheme.inversePrimary.withValues(
+                        alpha: appSettings.ui.opacity.appBarOpacity,
                       ),
                   title: Text(widget.title),
                   actions: <Widget>[
@@ -101,9 +101,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  ref.refresh(settingsNotifierProvider);
-                },
+                onPressed: () => ref.refresh(settingsNotifierProvider),
                 child: const Text('Retry'),
               ),
             ],

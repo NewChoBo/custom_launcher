@@ -200,7 +200,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
         );
         _appSettings = {};
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       LogManager.warn(
         'Failed to load app settings, starting with empty settings',
         tag: 'SettingsRepository',

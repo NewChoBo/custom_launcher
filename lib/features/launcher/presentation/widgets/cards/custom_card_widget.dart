@@ -36,7 +36,7 @@ class CustomCard extends ConsumerWidget {
       error: (error, stack) => Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.1),
+          color: Colors.red.withValues(alpha: 0.1),
           border: Border.all(color: Colors.red),
           borderRadius: BorderRadius.circular(4),
         ),
@@ -60,7 +60,7 @@ class CustomCard extends ConsumerWidget {
         clipBehavior: Clip.hardEdge,
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1F2123).withOpacity(0.5),
+            color: const Color(0xFF1F2123).withValues(alpha: 0.5),
             borderRadius: BorderRadius.zero,
             image: _getBackgroundImage(app),
           ),
