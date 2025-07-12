@@ -13,12 +13,10 @@ import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_l
 import 'package:custom_launcher/features/launcher/presentation/widgets/dynamic_layout/builders/parse_util.dart';
 
 class DynamicLayout extends StatefulWidget {
-  final String configPath;
+  final String? configPath;
+  final LayoutConfig? layoutConfig;
 
-  const DynamicLayout({
-    super.key,
-    this.configPath = 'assets/config/layout_config.json',
-  });
+  const DynamicLayout({super.key, this.configPath, this.layoutConfig});
 
   @override
   State<DynamicLayout> createState() => _DynamicLayoutState();
@@ -56,7 +54,29 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       'card': (LayoutElement e) => CardBuilder.build(e, _buildWidget),
       'sizedbox': (LayoutElement e) => SizedBoxBuilder.build(e),
     };
-    _loadLayoutConfig();
+
+    if (widget.layoutConfig != null) {
+      _layoutConfig = widget.layoutConfig;
+      _isLoading = false;
+    } else {
+      _loadLayoutConfig();
+    }
+  }
+
+  @override
+  void didUpdateWidget(DynamicLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.layoutConfig != oldWidget.layoutConfig) {
+      if (widget.layoutConfig != null) {
+        setState(() {
+          _layoutConfig = widget.layoutConfig;
+          _isLoading = false;
+          _error = null;
+        });
+      } else if (widget.configPath != oldWidget.configPath) {
+        _loadLayoutConfig();
+      }
+    }
   }
 
   Future<void> _loadLayoutConfig() async {
@@ -65,13 +85,17 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         _isLoading = true;
         _error = null;
       });
-      final String jsonString = await rootBundle.loadString(widget.configPath);
+
+      final configPath =
+          widget.configPath ?? 'assets/config/layout_config.json';
+      final String jsonString = await rootBundle.loadString(configPath);
       final LayoutConfig config = LayoutConfig.fromJson(jsonString);
+
       setState(() {
         _layoutConfig = config;
         _isLoading = false;
       });
-      debugPrint('Layout config loaded successfully');
+      debugPrint('Layout config loaded successfully from $configPath');
     } catch (e) {
       setState(() {
         _error = 'Failed to load layout config: $e';
@@ -93,7 +117,7 @@ class _DynamicLayoutState extends State<DynamicLayout> {
     if (builder != null) {
       return builder(element);
     }
-    debugPrint('Unknown widget type: [${element.type}]');
+    debugPrint('Unknown widget type: [${element.type}]');
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
@@ -101,7 +125,7 @@ class _DynamicLayoutState extends State<DynamicLayout> {
         border: Border.all(color: Colors.red),
       ),
       child: Text(
-        'Unknown: [${element.type}]',
+        'Unknown: [${element.type}]',
         style: const TextStyle(color: Colors.red),
       ),
     );
@@ -150,5 +174,17 @@ class _DynamicLayoutState extends State<DynamicLayout> {
       height: double.infinity,
       child: _buildWidget(_layoutConfig!.layout),
     );
+  }
+}
+
+// New widget for Riverpod integration
+class DynamicLayoutWidget extends StatelessWidget {
+  final LayoutConfig layoutConfig;
+
+  const DynamicLayoutWidget({super.key, required this.layoutConfig});
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicLayout(layoutConfig: layoutConfig);
   }
 }

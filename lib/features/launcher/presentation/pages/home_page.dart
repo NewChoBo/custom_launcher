@@ -31,6 +31,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final appSettingsAsyncValue = ref.watch(settingsNotifierProvider);
+    final layoutConfigAsyncValue = ref.watch(layoutNotifierProvider);
 
     return appSettingsAsyncValue.when(
       data: (appSettings) {
@@ -72,7 +73,39 @@ class _HomePageState extends ConsumerState<HomePage> {
                 )
               : null,
           backgroundColor: backgroundColor,
-          body: const DynamicLayout(),
+          body: layoutConfigAsyncValue.when(
+            data: (layoutConfig) =>
+                DynamicLayoutWidget(layoutConfig: layoutConfig),
+            loading: () => const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Loading layout...'),
+                ],
+              ),
+            ),
+            error: (error, stack) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error, color: Colors.red, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading layout: $error',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => ref.refresh(layoutNotifierProvider),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
       loading: () => const Scaffold(

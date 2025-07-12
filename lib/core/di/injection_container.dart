@@ -5,8 +5,10 @@ import 'package:custom_launcher/core/services/system_tray_service.dart';
 import 'package:custom_launcher/features/launcher/data/data_sources/app_local_data_source.dart';
 import 'package:custom_launcher/features/launcher/data/repositories/app_repository_impl.dart';
 import 'package:custom_launcher/features/launcher/data/repositories/settings_repository_impl.dart';
+import 'package:custom_launcher/features/launcher/data/repositories/layout_repository_impl.dart';
 import 'package:custom_launcher/features/launcher/domain/repositories/app_repository.dart';
 import 'package:custom_launcher/features/launcher/domain/repositories/settings_repository.dart';
+import 'package:custom_launcher/features/launcher/domain/repositories/layout_repository.dart';
 
 /// 의존성 주입 컨테이너 초기화
 class InjectionContainer {
@@ -73,6 +75,9 @@ class InjectionContainer {
       () =>
           SettingsRepositoryImpl(localDataSource: sl.get<AppLocalDataSource>()),
     );
+
+    // 레이아웃 리포지토리
+    sl.registerLazySingleton<LayoutRepository>(() => LayoutRepositoryImpl());
 
     LogManager.debug('Repositories registered', tag: 'DI');
   }

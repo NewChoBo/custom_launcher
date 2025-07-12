@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_launcher/core/providers/app_providers.dart';
 import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:custom_launcher/features/launcher/presentation/widgets/layout_editor/visual_layout_editor.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -18,7 +19,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -40,6 +41,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
             Tab(text: 'UI Settings', icon: Icon(Icons.palette)),
             Tab(text: 'Window Settings', icon: Icon(Icons.window)),
             Tab(text: 'System Settings', icon: Icon(Icons.settings)),
+            Tab(text: 'Layout Editor', icon: Icon(Icons.dashboard_customize)),
           ],
         ),
       ),
@@ -52,6 +54,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
               _buildUISettings(settings),
               _buildWindowSettings(settings),
               _buildSystemSettings(settings),
+              _buildLayoutEditor(settings),
             ],
           );
         },
@@ -595,6 +598,61 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLayoutEditor(AppSettings settings) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final layoutConfigAsync = ref.watch(layoutNotifierProvider);
+
+        return layoutConfigAsync.when(
+          data: (layoutConfig) => VisualLayoutEditor(
+            initialConfig: layoutConfig,
+            onLayoutChanged: (config) {
+              ref
+                  .read(layoutNotifierProvider.notifier)
+                  .saveLayoutConfig(config);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Layout changes saved!'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
+          loading: () => const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Loading layout configuration...'),
+              ],
+            ),
+          ),
+          error: (error, stack) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, color: Colors.red, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading layout: $error',
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(layoutNotifierProvider),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

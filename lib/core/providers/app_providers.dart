@@ -7,7 +7,9 @@ import 'package:custom_launcher/features/launcher/data/data_sources/app_local_da
 
 import 'package:custom_launcher/features/launcher/domain/repositories/app_repository.dart';
 import 'package:custom_launcher/features/launcher/domain/repositories/settings_repository.dart';
+import 'package:custom_launcher/features/launcher/domain/repositories/layout_repository.dart';
 import 'package:custom_launcher/features/launcher/domain/entities/app_settings.dart';
+import 'package:custom_launcher/features/launcher/domain/entities/layout_config.dart';
 import 'package:custom_launcher/features/launcher/data/models/app_model.dart';
 import 'package:custom_launcher/features/launcher/domain/usecases/base_usecase.dart';
 import 'package:custom_launcher/features/launcher/domain/usecases/get_apps.dart';
@@ -34,6 +36,10 @@ final appRepositoryProvider = Provider<AppRepository>((ref) {
 
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return sl.get<SettingsRepository>();
+});
+
+final layoutRepositoryProvider = Provider<LayoutRepository>((ref) {
+  return sl.get<LayoutRepository>();
 });
 
 final getAppsUseCaseProvider = Provider<GetApps>((ref) {
@@ -271,6 +277,116 @@ final settingsNotifierProvider =
         ref.read(getAppSettingsUseCaseProvider),
         ref.read(saveSettingsUseCaseProvider),
         ref.read(errorHandlerProvider),
+        ref.read(loggerProvider),
+      ),
+    );
+
+class LayoutNotifier extends StateNotifier<AsyncValue<LayoutConfig>> {
+  final LayoutRepository _layoutRepository;
+  final Logger _logger;
+
+  LayoutNotifier(this._layoutRepository, this._logger)
+    : super(const AsyncValue.loading()) {
+    Future.microtask(() => _loadLayoutConfig());
+  }
+
+  Future<void> _loadLayoutConfig() async {
+    try {
+      state = const AsyncValue.loading();
+      final config = await _layoutRepository.getLayoutConfig();
+      if (mounted) {
+        state = AsyncValue.data(config);
+      }
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to load layout config: $e',
+        tag: 'LayoutNotifier',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> saveLayoutConfig(LayoutConfig config) async {
+    try {
+      await _layoutRepository.saveLayoutConfig(config);
+      if (mounted) {
+        state = AsyncValue.data(config);
+      }
+      _logger.info('Layout config saved successfully', tag: 'LayoutNotifier');
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to save layout config: $e',
+        tag: 'LayoutNotifier',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+    }
+  }
+
+  Future<void> updateElement(
+    String elementPath,
+    Map<String, dynamic> updates,
+  ) async {
+    try {
+      await _layoutRepository.updateLayoutElement(elementPath, updates);
+      await _loadLayoutConfig();
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to update layout element: $e',
+        tag: 'LayoutNotifier',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> addElement(
+    String parentPath,
+    Map<String, dynamic> elementData,
+  ) async {
+    try {
+      await _layoutRepository.addLayoutElement(parentPath, elementData);
+      await _loadLayoutConfig();
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to add layout element: $e',
+        tag: 'LayoutNotifier',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> removeElement(String elementPath) async {
+    try {
+      await _layoutRepository.removeLayoutElement(elementPath);
+      await _loadLayoutConfig();
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to remove layout element: $e',
+        tag: 'LayoutNotifier',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> refresh() async {
+    await _loadLayoutConfig();
+  }
+}
+
+final layoutNotifierProvider =
+    StateNotifierProvider<LayoutNotifier, AsyncValue<LayoutConfig>>(
+      (ref) => LayoutNotifier(
+        ref.read(layoutRepositoryProvider),
         ref.read(loggerProvider),
       ),
     );
