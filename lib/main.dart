@@ -9,6 +9,8 @@ import 'package:custom_launcher/core/services/system_tray_service.dart';
 
 import 'package:custom_launcher/features/launcher/presentation/pages/home_page.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -80,6 +82,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
     return initializationAsyncValue.when(
       data: (_) => _buildMainApp(),
       loading: () => MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Custom Launcher',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -100,6 +103,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
         ),
       ),
       error: (err, stack) => MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Custom Launcher',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
@@ -151,6 +155,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
         });
 
         return MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Custom Launcher',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -164,6 +169,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
         );
       },
       loading: () => MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Custom Launcher',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -184,6 +190,7 @@ class _MyAppState extends ConsumerState<MyApp> with WindowListener {
         ),
       ),
       error: (err, stack) => MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Custom Launcher',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),

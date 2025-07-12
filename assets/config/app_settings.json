@@ -1,5 +1,5 @@
 {
-  "mode": "dynamic",
+  "mode": "development",
   "ui": {
     "showAppBar": false,
     "colors": {

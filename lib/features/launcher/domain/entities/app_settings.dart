@@ -22,6 +22,20 @@ class AppSettings extends Equatable {
     );
   }
 
+  AppSettings copyWith({
+    String? mode,
+    UiSettings? ui,
+    WindowSettings? window,
+    SystemSettings? system,
+  }) {
+    return AppSettings(
+      mode: mode ?? this.mode,
+      ui: ui ?? this.ui,
+      window: window ?? this.window,
+      system: system ?? this.system,
+    );
+  }
+
   @override
   List<Object?> get props => [mode, ui, window, system];
 }
@@ -41,7 +55,21 @@ class UiSettings extends Equatable {
     return UiSettings(
       showAppBar: json['showAppBar'] as bool,
       colors: ColorsSettings.fromJson(json['colors'] as Map<String, dynamic>),
-      opacity: OpacitySettings.fromJson(json['opacity'] as Map<String, dynamic>),
+      opacity: OpacitySettings.fromJson(
+        json['opacity'] as Map<String, dynamic>,
+      ),
+    );
+  }
+
+  UiSettings copyWith({
+    bool? showAppBar,
+    ColorsSettings? colors,
+    OpacitySettings? opacity,
+  }) {
+    return UiSettings(
+      showAppBar: showAppBar ?? this.showAppBar,
+      colors: colors ?? this.colors,
+      opacity: opacity ?? this.opacity,
     );
   }
 
@@ -65,6 +93,13 @@ class ColorsSettings extends Equatable {
     );
   }
 
+  ColorsSettings copyWith({String? appBarColor, String? backgroundColor}) {
+    return ColorsSettings(
+      appBarColor: appBarColor ?? this.appBarColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+    );
+  }
+
   @override
   List<Object?> get props => [appBarColor, backgroundColor];
 }
@@ -82,6 +117,13 @@ class OpacitySettings extends Equatable {
     return OpacitySettings(
       appBarOpacity: (json['appBarOpacity'] as num).toDouble(),
       backgroundOpacity: (json['backgroundOpacity'] as num).toDouble(),
+    );
+  }
+
+  OpacitySettings copyWith({double? appBarOpacity, double? backgroundOpacity}) {
+    return OpacitySettings(
+      appBarOpacity: appBarOpacity ?? this.appBarOpacity,
+      backgroundOpacity: backgroundOpacity ?? this.backgroundOpacity,
     );
   }
 
@@ -103,8 +145,24 @@ class WindowSettings extends Equatable {
   factory WindowSettings.fromJson(Map<String, dynamic> json) {
     return WindowSettings(
       size: SizeSettings.fromJson(json['size'] as Map<String, dynamic>),
-      position: PositionSettings.fromJson(json['position'] as Map<String, dynamic>),
-      behavior: BehaviorSettings.fromJson(json['behavior'] as Map<String, dynamic>),
+      position: PositionSettings.fromJson(
+        json['position'] as Map<String, dynamic>,
+      ),
+      behavior: BehaviorSettings.fromJson(
+        json['behavior'] as Map<String, dynamic>,
+      ),
+    );
+  }
+
+  WindowSettings copyWith({
+    SizeSettings? size,
+    PositionSettings? position,
+    BehaviorSettings? behavior,
+  }) {
+    return WindowSettings(
+      size: size ?? this.size,
+      position: position ?? this.position,
+      behavior: behavior ?? this.behavior,
     );
   }
 
@@ -116,15 +174,19 @@ class SizeSettings extends Equatable {
   final String windowWidth;
   final String windowHeight;
 
-  const SizeSettings({
-    required this.windowWidth,
-    required this.windowHeight,
-  });
+  const SizeSettings({required this.windowWidth, required this.windowHeight});
 
   factory SizeSettings.fromJson(Map<String, dynamic> json) {
     return SizeSettings(
       windowWidth: json['windowWidth'] as String,
       windowHeight: json['windowHeight'] as String,
+    );
+  }
+
+  SizeSettings copyWith({String? windowWidth, String? windowHeight}) {
+    return SizeSettings(
+      windowWidth: windowWidth ?? this.windowWidth,
+      windowHeight: windowHeight ?? this.windowHeight,
     );
   }
 
@@ -150,6 +212,18 @@ class PositionSettings extends Equatable {
       margin: json['margin'] != null
           ? MarginSettings.fromJson(json['margin'] as Map<String, dynamic>)
           : const MarginSettings(),
+    );
+  }
+
+  PositionSettings copyWith({
+    String? horizontalPosition,
+    String? verticalPosition,
+    MarginSettings? margin,
+  }) {
+    return PositionSettings(
+      horizontalPosition: horizontalPosition ?? this.horizontalPosition,
+      verticalPosition: verticalPosition ?? this.verticalPosition,
+      margin: margin ?? this.margin,
     );
   }
 
@@ -179,6 +253,20 @@ class MarginSettings extends Equatable {
     );
   }
 
+  MarginSettings copyWith({
+    double? top,
+    double? right,
+    double? bottom,
+    double? left,
+  }) {
+    return MarginSettings(
+      top: top ?? this.top,
+      right: right ?? this.right,
+      bottom: bottom ?? this.bottom,
+      left: left ?? this.left,
+    );
+  }
+
   @override
   List<Object?> get props => [top, right, bottom, left];
 }
@@ -199,6 +287,13 @@ class BehaviorSettings extends Equatable {
     );
   }
 
+  BehaviorSettings copyWith({String? windowLevel, bool? skipTaskbar}) {
+    return BehaviorSettings(
+      windowLevel: windowLevel ?? this.windowLevel,
+      skipTaskbar: skipTaskbar ?? this.skipTaskbar,
+    );
+  }
+
   @override
   List<Object?> get props => [windowLevel, skipTaskbar];
 }
@@ -206,14 +301,14 @@ class BehaviorSettings extends Equatable {
 class SystemSettings extends Equatable {
   final int monitorIndex;
 
-  const SystemSettings({
-    required this.monitorIndex,
-  });
+  const SystemSettings({required this.monitorIndex});
 
   factory SystemSettings.fromJson(Map<String, dynamic> json) {
-    return SystemSettings(
-      monitorIndex: json['monitorIndex'] as int,
-    );
+    return SystemSettings(monitorIndex: json['monitorIndex'] as int);
+  }
+
+  SystemSettings copyWith({int? monitorIndex}) {
+    return SystemSettings(monitorIndex: monitorIndex ?? this.monitorIndex);
   }
 
   @override

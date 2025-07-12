@@ -1,7 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
+import 'package:custom_launcher/main.dart';
+import 'package:custom_launcher/features/launcher/presentation/pages/settings_page.dart';
 
 class SystemTrayService with TrayListener {
   bool _isInitialized = false;
@@ -33,6 +35,8 @@ class SystemTrayService with TrayListener {
         MenuItem(key: 'show', label: 'Show Window'),
         MenuItem(key: 'hide', label: 'Hide Window'),
         MenuItem.separator(),
+        MenuItem(key: 'settings', label: 'Settings'),
+        MenuItem.separator(),
         MenuItem(key: 'exit', label: 'Exit'),
       ],
     );
@@ -58,6 +62,9 @@ class SystemTrayService with TrayListener {
       case 'hide':
         hideWindow();
         break;
+      case 'settings':
+        openSettings();
+        break;
       case 'exit':
         exitApplication();
         break;
@@ -79,6 +86,22 @@ class SystemTrayService with TrayListener {
       await hideWindow();
     } else {
       await showWindow();
+    }
+  }
+
+  Future<void> openSettings() async {
+    // First ensure the window is visible
+    await showWindow();
+
+    // Wait a bit to ensure the window is fully shown
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    // Navigate to settings page using the global navigator key
+    final NavigatorState? navigator = navigatorKey.currentState;
+    if (navigator != null) {
+      navigator.push(
+        MaterialPageRoute(builder: (context) => const SettingsPage()),
+      );
     }
   }
 
