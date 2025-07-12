@@ -26,6 +26,26 @@ class SettingsRepositoryImpl implements SettingsRepository {
       return _cachedSettings!;
     }
 
+    try {
+      if (await FileService.instance.fileExists('app_settings.json')) {
+        final data = await FileService.instance.readJsonFile(
+          'app_settings.json',
+        );
+        _cachedSettings = AppSettings.fromJson(data);
+        LogManager.instance.logger.info(
+          'Loaded user settings from app_settings.json',
+          tag: 'SettingsRepository',
+        );
+        return _cachedSettings!;
+      }
+    } catch (e) {
+      LogManager.instance.logger.warn(
+        'Failed to load user settings, falling back to default settings',
+        tag: 'SettingsRepository',
+        error: e,
+      );
+    }
+
     _cachedSettings = await localDataSource.getAppSettings();
     return _cachedSettings!;
   }
@@ -45,7 +65,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
     try {
       _cachedSettings = settings;
 
-      // AppSettings를 JSON으로 변환 (toJson 메서드가 있다고 가정)
       final settingsData = {
         'mode': settings.mode,
         'ui': {
@@ -80,17 +99,18 @@ class SettingsRepositoryImpl implements SettingsRepository {
           },
         },
         'system': {'monitorIndex': settings.system.monitorIndex},
-        'version': '1.0.0',
-        'lastModified': DateTime.now().toIso8601String(),
       };
 
-      await fileService.writeJsonFile('user_settings.json', settingsData);
-      LogManager.info(
-        'Saved user settings to user_settings.json',
+      await FileService.instance.writeJsonFile(
+        'app_settings.json',
+        settingsData,
+      );
+      LogManager.instance.logger.info(
+        'Saved user settings to app_settings.json',
         tag: 'SettingsRepository',
       );
     } catch (e, stackTrace) {
-      LogManager.error(
+      LogManager.instance.logger.error(
         'Failed to save settings',
         tag: 'SettingsRepository',
         error: e,
@@ -119,13 +139,16 @@ class SettingsRepositoryImpl implements SettingsRepository {
         'lastModified': DateTime.now().toIso8601String(),
       };
 
-      await fileService.writeJsonFile('app_settings.json', appSettingsData);
-      LogManager.debug(
+      await FileService.instance.writeJsonFile(
+        'app_individual_settings.json',
+        appSettingsData,
+      );
+      LogManager.instance.logger.debug(
         'Updated app settings for $appId',
         tag: 'SettingsRepository',
       );
     } catch (e, stackTrace) {
-      LogManager.error(
+      LogManager.instance.logger.error(
         'Failed to update app settings for $appId',
         tag: 'SettingsRepository',
         error: e,
@@ -156,13 +179,16 @@ class SettingsRepositoryImpl implements SettingsRepository {
         'lastModified': DateTime.now().toIso8601String(),
       };
 
-      await fileService.writeJsonFile('app_settings.json', appSettingsData);
-      LogManager.debug(
+      await FileService.instance.writeJsonFile(
+        'app_individual_settings.json',
+        appSettingsData,
+      );
+      LogManager.instance.logger.debug(
         'Deleted app settings for $appId',
         tag: 'SettingsRepository',
       );
     } catch (e, stackTrace) {
-      LogManager.error(
+      LogManager.instance.logger.error(
         'Failed to delete app settings for $appId',
         tag: 'SettingsRepository',
         error: e,
@@ -179,8 +205,12 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
   Future<void> _loadAppSettings() async {
     try {
-      if (await fileService.fileExists('app_settings.json')) {
-        final data = await fileService.readJsonFile('app_settings.json');
+      if (await FileService.instance.fileExists(
+        'app_individual_settings.json',
+      )) {
+        final data = await FileService.instance.readJsonFile(
+          'app_individual_settings.json',
+        );
         if (data.containsKey('appSettings')) {
           _appSettings = Map<String, Map<String, dynamic>>.from(
             (data['appSettings'] as Map<String, dynamic>).map(
@@ -189,19 +219,19 @@ class SettingsRepositoryImpl implements SettingsRepository {
             ),
           );
         }
-        LogManager.debug(
+        LogManager.instance.logger.debug(
           'Loaded app settings for ${_appSettings.length} apps',
           tag: 'SettingsRepository',
         );
       } else {
-        LogManager.debug(
+        LogManager.instance.logger.debug(
           'No app settings file found, starting with empty settings',
           tag: 'SettingsRepository',
         );
         _appSettings = {};
       }
     } catch (e) {
-      LogManager.warn(
+      LogManager.instance.logger.warn(
         'Failed to load app settings, starting with empty settings',
         tag: 'SettingsRepository',
         error: e,
